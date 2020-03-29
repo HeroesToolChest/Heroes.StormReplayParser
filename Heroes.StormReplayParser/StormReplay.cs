@@ -1,15 +1,16 @@
 ﻿using Heroes.StormReplayParser.MessageEvent;
 using Heroes.StormReplayParser.Player;
+using Heroes.StormReplayParser.Replay;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Heroes.StormReplayParser.Replay
+namespace Heroes.StormReplayParser
 {
     /// <summary>
     /// Contains the properties and methods for the parsed replay.
     /// </summary>
-    public class StormReplay
+    public partial class StormReplay
     {
         private readonly Lazy<Dictionary<int, TeamLevel>> _teamBlueLevels = new Lazy<Dictionary<int, TeamLevel>>();
         private readonly Lazy<Dictionary<int, TeamLevel>> _teamRedLevels = new Lazy<Dictionary<int, TeamLevel>>();

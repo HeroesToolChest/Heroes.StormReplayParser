@@ -1,5 +1,4 @@
-﻿using Heroes.StormReplayParser.Replay;
-using System;
+﻿using System;
 
 namespace Heroes.StormReplayParser
 {

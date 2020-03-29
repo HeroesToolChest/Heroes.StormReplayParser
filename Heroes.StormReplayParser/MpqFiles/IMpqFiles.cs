@@ -1,4 +1,4 @@
-﻿using Heroes.StormReplayParser.Replay;
+﻿using Heroes.StormReplayParser;
 using System;
 
 namespace Heroes.ReplayParser.MpqFiles
