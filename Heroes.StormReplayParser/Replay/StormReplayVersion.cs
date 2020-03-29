@@ -5,7 +5,7 @@ namespace Heroes.StormReplayParser.Replay
     /// <summary>
     /// Contains the properties for the replay version.
     /// </summary>
-    public class ReplayVersion
+    public class StormReplayVersion
     {
         /// <summary>
         /// Gets or sets the first number.
@@ -41,7 +41,7 @@ namespace Heroes.StormReplayParser.Replay
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is ReplayVersion item))
+            if (!(obj is StormReplayVersion item))
                 return false;
 
             return item.BaseBuild == BaseBuild && item.Build == Build && item.Revision == Revision && item.Minor == Minor && item.Major == Major;

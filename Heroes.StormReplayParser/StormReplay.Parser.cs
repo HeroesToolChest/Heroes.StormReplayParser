@@ -35,7 +35,7 @@ namespace Heroes.StormReplayParser
         /// <param name="allowPTRRegion">If false, the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</param>
         /// <param name="parseBattleLobby">If enabled, the battle lobby file will be parsed which gives more available data.</param>
         /// <returns>A <see cref="StormReplayResult"/>.</returns>
-        public static StormReplayResult Parse(string fileName, bool allowPTRRegion = false, bool parseBattleLobby = false)
+        public static StormReplayResult Parse(string fileName, bool allowPTRRegion = false, bool parseBattleLobby = true)
         {
             StormReplay stormReplay = ParseStormReplay(fileName, allowPTRRegion, parseBattleLobby);
 

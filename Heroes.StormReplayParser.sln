@@ -10,6 +10,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.StormReplayParser", "Heroes.StormReplayParser\Heroes.StormReplayParser.csproj", "{3F6D1D01-9A8C-48FA-9B5D-CD02316EFDF6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.StormReplayParser.Tests", "Tests\Heroes.StormReplayParser.Tests\Heroes.StormReplayParser.Tests.csproj", "{0CC70740-B12C-4736-A5D4-A00DCA533AB2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C07BCF88-2E8B-4F7E-A12A-3238FC1C7262}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +24,16 @@ Global
 		{3F6D1D01-9A8C-48FA-9B5D-CD02316EFDF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F6D1D01-9A8C-48FA-9B5D-CD02316EFDF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F6D1D01-9A8C-48FA-9B5D-CD02316EFDF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CC70740-B12C-4736-A5D4-A00DCA533AB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CC70740-B12C-4736-A5D4-A00DCA533AB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CC70740-B12C-4736-A5D4-A00DCA533AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CC70740-B12C-4736-A5D4-A00DCA533AB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0CC70740-B12C-4736-A5D4-A00DCA533AB2} = {C07BCF88-2E8B-4F7E-A12A-3238FC1C7262}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AA80EEE1-EC92-41B7-A52B-0A2DCBC47F37}

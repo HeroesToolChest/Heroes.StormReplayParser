@@ -33,7 +33,7 @@ namespace Heroes.StormReplayParser
         /// <summary>
         /// Gets or sets the version of the replay.
         /// </summary>
-        public ReplayVersion ReplayVersion { get; set; } = new ReplayVersion();
+        public StormReplayVersion ReplayVersion { get; set; } = new StormReplayVersion();
 
         /// <summary>
         /// Gets the build number of the replay.
