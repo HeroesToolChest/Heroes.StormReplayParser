@@ -89,14 +89,24 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <param name="source">The read-only span of bytes to read.</param>
         /// <param name="numberOfBits">The number of bits to read.</param>
         /// <returns></returns>
+        public static bool[] ReadBitArray(this ReadOnlySpan<byte> source, uint numberOfBits)
+        {
+            bool[] bitArray = new bool[numberOfBits];
+
+            return SetBitArray(source, bitArray);
+        }
+
+        /// <summary>
+        /// Read a number of bits from the read-only span as an array of booleans.
+        /// </summary>
+        /// <param name="source">The read-only span of bytes to read.</param>
+        /// <param name="numberOfBits">The number of bits to read.</param>
+        /// <returns></returns>
         public static bool[] ReadBitArray(this ReadOnlySpan<byte> source, int numberOfBits)
         {
             bool[] bitArray = new bool[numberOfBits];
 
-            for (int i = 0; i < bitArray.Length; i++)
-                bitArray[i] = source.ReadBoolean();
-
-            return bitArray;
+            return SetBitArray(source, bitArray);
         }
 
         /// <summary>
@@ -570,6 +580,14 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             }
 
             return value;
+        }
+
+        private static bool[] SetBitArray(ReadOnlySpan<byte> source, bool[] bitArray)
+        {
+            for (int i = 0; i < bitArray.Length; i++)
+                bitArray[i] = source.ReadBoolean();
+
+            return bitArray;
         }
     }
 }

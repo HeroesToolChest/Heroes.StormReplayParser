@@ -138,18 +138,18 @@ namespace Heroes.StormReplayParser.MpqFiles
             uint slotDescriptionLength = source.ReadBits(5);
             for (int i = 0; i < slotDescriptionLength; i++)
             {
-                source.ReadBitArray((int)source.ReadBits(6)); // m_allowedColors
-                source.ReadBitArray((int)source.ReadBits(8)); // m_allowedRaces
-                source.ReadBitArray((int)source.ReadBits(6)); // m_allowedDifficulty
+                source.ReadBitArray(source.ReadBits(6)); // m_allowedColors
+                source.ReadBitArray(source.ReadBits(8)); // m_allowedRaces
+                source.ReadBitArray(source.ReadBits(6)); // m_allowedDifficulty
 
                 // m_allowedControls
                 if (replay.ReplayBuild < 59279)
-                    source.ReadBitArray((int)source.ReadBits(8));
+                    source.ReadBitArray(source.ReadBits(8));
                 else
-                    source.ReadBitArray((int)source.ReadBits(4));
+                    source.ReadBitArray(source.ReadBits(4));
 
-                source.ReadBitArray((int)source.ReadBits(2)); // m_allowedObserveTypes
-                source.ReadBitArray((int)source.ReadBits(7)); // m_allowedAIBuilds
+                source.ReadBitArray(source.ReadBits(2)); // m_allowedObserveTypes
+                source.ReadBitArray(source.ReadBits(7)); // m_allowedAIBuilds
             }
 
             source.ReadBits(6); // m_defaultDifficulty
@@ -176,13 +176,13 @@ namespace Heroes.StormReplayParser.MpqFiles
 
             for (int i = 0; i < slotsLength; i++)
             {
-                int? userId = null;
-                int? workingSetSlotID = null;
+                uint? userId = null;
+                uint? workingSetSlotID = null;
 
                 source.ReadBits(8); // m_control
 
                 if (source.ReadBoolean())
-                    userId = (int)source.ReadBits(4); // m_userId
+                    userId = source.ReadBits(4); // m_userId
 
                 source.ReadBits(4); // m_teamId
 
@@ -213,7 +213,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                 }
 
                 if (source.ReadBoolean())
-                    workingSetSlotID = (int)source.ReadBits(8); // m_workingSetSlotId
+                    workingSetSlotID = source.ReadBits(8); // m_workingSetSlotId
 
                 if (userId.HasValue && workingSetSlotID.HasValue)
                 {

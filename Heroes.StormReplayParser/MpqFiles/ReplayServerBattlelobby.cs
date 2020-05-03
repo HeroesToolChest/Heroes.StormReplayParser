@@ -296,7 +296,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                     // repeat of the collection section above
                     if (replay.ReplayBuild > 51609 || replay.ReplayBuild == 47903 || replay.ReplayBuild == 47479)
                     {
-                        source.ReadBitArray((int)source.ReadBits(12));
+                        source.ReadBitArray(source.ReadBits(12));
                     }
                     else if (replay.ReplayBuild > 47219)
                     {
@@ -305,7 +305,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                     }
                     else
                     {
-                        source.ReadBitArray((int)source.ReadBits(9));
+                        source.ReadBitArray(source.ReadBits(9));
                     }
 
                     source.ReadBoolean();

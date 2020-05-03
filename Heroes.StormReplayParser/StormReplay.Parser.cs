@@ -106,6 +106,8 @@ namespace Heroes.StormReplayParser
             ValidateResult(stormReplay);
 
             stormReplay.SetStormPlayerData();
+
+            _stormMpqArchive.Dispose();
         }
 
         private void ValidateResult(StormReplay stormReplay)
