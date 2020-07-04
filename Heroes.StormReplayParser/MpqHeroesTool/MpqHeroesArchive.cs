@@ -9,6 +9,8 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
 {
     internal class MpqHeroesArchive : IDisposable
     {
+        public const int HeaderSize = 0x100;
+
         private static readonly uint[] _stormBuffer = BuildStormBuffer();
 
         private readonly Stream _archiveStream;
@@ -32,10 +34,9 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             Span<byte> headerBuffer = stackalloc byte[2048]; // guess how much the header will be
             stream.Read(headerBuffer);
 
-            BitReader.ResetIndex();
-            BitReader.EndianType = EndianType.LittleEndian;
+            BitReader bitReader = new BitReader(headerBuffer, EndianType.LittleEndian);
 
-            _mpqHeader = new MpqHeader(headerBuffer);
+            _mpqHeader = new MpqHeader(ref bitReader);
 
             if (_mpqHeader.HashTableOffsetHigh != 0 || _mpqHeader.ExtendedBlockTableOffset != 0 || _mpqHeader.BlockTableOffsetHigh != 0)
                 throw new MpqHeroesToolException("MPQ format version 1 features are not supported");
@@ -51,11 +52,10 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
 
             _mpqHashes = new MpqHash[_mpqHeader.HashTableSize];
 
-            BitReader.ResetIndex();
-            BitReader.EndianType = EndianType.LittleEndian;
+            BitReader mpqHashesBitReader = new BitReader(hashBuffer, EndianType.LittleEndian);
 
             for (int i = 0; i < _mpqHeader.HashTableSize; i++)
-                _mpqHashes[i] = new MpqHash(hashBuffer);
+                _mpqHashes[i] = new MpqHash(ref mpqHashesBitReader);
 
             // LoadEntryTable;
             Span<byte> entryBuffer = stackalloc byte[(int)(_mpqHeader.BlockTableSize * MpqHeroesArchiveEntry.Size)]; // get the entry table buffer
@@ -65,12 +65,10 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             DecryptTable(entryBuffer, "(block table)");
 
             _mpqArchiveEntries = new MpqHeroesArchiveEntry[_mpqHeader.BlockTableSize];
-
-            BitReader.ResetIndex();
-            BitReader.EndianType = EndianType.LittleEndian;
+            BitReader mpqArchivesEntryBitReader = new BitReader(entryBuffer, EndianType.LittleEndian);
 
             for (int i = 0; i < _mpqHeader.BlockTableSize; i++)
-                _mpqArchiveEntries[i] = new MpqHeroesArchiveEntry(entryBuffer, (uint)_mpqHeader.HeaderOffset);
+                _mpqArchiveEntries[i] = new MpqHeroesArchiveEntry(ref mpqArchivesEntryBitReader, (uint)_mpqHeader.HeaderOffset);
         }
 
         public ReadOnlySpan<byte> GetHeaderBytes(int size = 0x100)
@@ -82,6 +80,24 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             return data;
         }
 
+        public void GetHeaderBytes(Span<byte> buffer)
+        {
+            _archiveStream.Position = 0;
+            _archiveStream.Read(buffer);
+        }
+
+        public MpqHeroesArchiveEntry GetEntry(string fileName)
+        {
+            if (!TryGetHashEntry(fileName, out MpqHash hash))
+                throw new FileNotFoundException("File not found: " + fileName);
+
+            MpqHeroesArchiveEntry entry = _mpqArchiveEntries[hash.BlockIndex];
+            if (entry.FileName == null)
+                entry.FileName = fileName;
+
+            return entry;
+        }
+
         public ReadOnlySpan<byte> OpenFile(string filename)
         {
             if (!TryGetHashEntry(filename, out MpqHash hash))
@@ -91,7 +107,11 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             if (entry.FileName == null)
                 entry.FileName = filename;
 
-            return DecompressEntry(entry);
+            Span<byte> buffer = new byte[(int)entry.FileSize];
+
+            DecompressEntry(entry, buffer);
+
+            return buffer;
         }
 
         public bool AddListfileFileNames()
@@ -99,12 +119,17 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             if (!AddFileName("(listfile)"))
                 return false;
 
-            AddFilenames(OpenFile("(listfile)"));
+            MpqHeroesArchiveEntry entry = GetEntry("(listfile)");
+
+            Span<byte> buffer = stackalloc byte[(int)entry.FileSize];
+            DecompressEntry(entry, buffer);
+
+            AddFileNames(buffer);
 
             return true;
         }
 
-        public void AddFilenames(ReadOnlySpan<byte> source)
+        public void AddFileNames(ReadOnlySpan<byte> source)
         {
             int startIndex = 0;
             int index = 0;
@@ -155,6 +180,60 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             GC.SuppressFinalize(this);
         }
 
+        public void DecompressEntry(MpqHeroesArchiveEntry mpqArchiveEntry, Span<byte> buffer)
+        {
+            if (mpqArchiveEntry.IsCompressed && !mpqArchiveEntry.IsSingleUnit)
+            {
+                int blockPositionCount = (int)((mpqArchiveEntry.FileSize + _blockSize - 1) / _blockSize) + 1;
+
+                // Files with metadata have an extra block containing block checksums
+                if ((mpqArchiveEntry.Flags & MpqFileFlags.FileHasMetadata) != 0)
+                    blockPositionCount++;
+
+                Span<uint> blockPositionsUint = stackalloc uint[blockPositionCount];
+                Span<byte> blockPositionByte = stackalloc byte[4 * blockPositionCount];
+
+                _archiveStream.Seek(mpqArchiveEntry.FilePosition, SeekOrigin.Begin);
+                _archiveStream.Read(blockPositionByte);
+
+                SetBlockPositions(blockPositionByte, blockPositionsUint, blockPositionCount);
+
+                if (mpqArchiveEntry.IsEncrypted)
+                {
+                    throw new MpqHeroesToolException("Its encrypted...");
+                }
+
+                int toRead = (int)mpqArchiveEntry.FileSize;
+                int offset = 0;
+                int position = 0;
+
+                while (toRead > offset)
+                {
+                    int sizeOfBlock = LoadBlockPositions(mpqArchiveEntry, blockPositionsUint, position, buffer.Slice(offset));
+
+                    if (sizeOfBlock < 1)
+                        break;
+
+                    offset += sizeOfBlock;
+                    position = offset / _blockSize;
+                }
+            }
+            else
+            {
+                _archiveStream.Position = mpqArchiveEntry.FilePosition;
+
+                int read = _archiveStream.Read(buffer.Slice(0, (int)mpqArchiveEntry.CompressedSize));
+
+                if (read != mpqArchiveEntry.CompressedSize)
+                    throw new MpqHeroesToolException("Insufficient data or invalid data length");
+
+                if (mpqArchiveEntry.CompressedSize != mpqArchiveEntry.FileSize)
+                {
+                    DecompressByteData(buffer);
+                }
+            }
+        }
+
         internal static uint HashString(ReadOnlySpan<char> input, int offset)
         {
             Span<char> upperInput = stackalloc char[input.Length];
@@ -164,10 +243,10 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
 
             input.ToUpperInvariant(upperInput);
 
-            foreach (int val in upperInput)
+            for (int i = 0; i < upperInput.Length; i++)
             {
-                seed1 = _stormBuffer[offset + val] ^ (seed1 + seed2);
-                seed2 = (uint)val + seed1 + seed2 + (seed2 << 5) + 3;
+                seed1 = _stormBuffer[offset + upperInput[i]] ^ (seed1 + seed2);
+                seed2 = upperInput[i] + seed1 + seed2 + (seed2 << 5) + 3;
             }
 
             return seed1;
@@ -288,7 +367,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             DecryptBlock(data, HashString(key, 0x300));
         }
 
-        private static void DecompressByteData(Span<byte> buffer, int compressedSize)
+        private static void DecompressByteData(Span<byte> buffer)
         {
             byte compressionType = buffer[0];
 
@@ -297,12 +376,12 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
                 case 1: // Huffman
                     throw new MpqHeroesToolException("Huffman not yet supported");
                 case 2: // ZLib/Deflate
-                    ZlibDecompress(buffer, compressedSize);
+                    ZlibDecompress(buffer);
                     break;
                 case 8: // PKLib/Impode
                     throw new MpqHeroesToolException("PKLib/Impode not yet supported");
                 case 0x10:
-                    BZip2Decompress(buffer, compressedSize);
+                    BZip2Decompress(buffer);
                     break;
                 case 0x80: // IMA ADPCM Stereo
                     throw new MpqHeroesToolException("IMA ADPCM Stereo not yet supported");
@@ -329,17 +408,23 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             }
         }
 
-        private static void BZip2Decompress(Span<byte> buffer, int compressedSize)
+        private static void BZip2Decompress(Span<byte> buffer)
         {
-            using MemoryStream memoryStream = new MemoryStream(buffer.Slice(1, compressedSize).ToArray());
+            using MemoryStream memoryStream = new MemoryStream();
+            memoryStream.Write(buffer.Slice(1));
+            memoryStream.Position = 0;
+
             using BZip2InputStream stream = new BZip2InputStream(memoryStream);
 
             stream.Read(buffer);
         }
 
-        private static void ZlibDecompress(Span<byte> buffer, int compressedSize)
+        private static void ZlibDecompress(Span<byte> buffer)
         {
-            using MemoryStream memoryStream = new MemoryStream(buffer.Slice(1, compressedSize).ToArray());
+            using MemoryStream memoryStream = new MemoryStream();
+            memoryStream.Write(buffer.Slice(1));
+            memoryStream.Position = 0;
+
             using ZlibStream stream = new ZlibStream(memoryStream, CompressionMode.Decompress);
 
             stream.Read(buffer);
@@ -347,89 +432,24 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
 
         private static void SetBlockPositions(ReadOnlySpan<byte> source, Span<uint> blockPositions, int blockPositionCount)
         {
+            BitReader bitReader = new BitReader(source, EndianType.LittleEndian);
+
             for (int i = 0; i < blockPositionCount; i++)
             {
-                blockPositions[i] = source.ReadUInt32Aligned();
+                blockPositions[i] = bitReader.ReadUInt32Aligned();
             }
         }
 
-        private ReadOnlySpan<byte> DecompressEntry(MpqHeroesArchiveEntry mpqArchiveEntry)
-        {
-            byte[] fileData = new byte[(int)mpqArchiveEntry.FileSize];
-
-            if (mpqArchiveEntry.IsCompressed && !mpqArchiveEntry.IsSingleUnit)
-            {
-                int blockPositionCount = (int)((mpqArchiveEntry.FileSize + _blockSize - 1) / _blockSize) + 1;
-
-                // Files with metadata have an extra block containing block checksums
-                if ((mpqArchiveEntry.Flags & MpqFileFlags.FileHasMetadata) != 0)
-                    blockPositionCount++;
-
-                Span<uint> blockPositions = stackalloc uint[blockPositionCount];
-                Span<byte> blockPositionSpan = stackalloc byte[4 * blockPositionCount];
-
-                _archiveStream.Seek(mpqArchiveEntry.FilePosition, SeekOrigin.Begin);
-                _archiveStream.Read(blockPositionSpan);
-
-                BitReader.ResetIndex();
-                BitReader.EndianType = EndianType.LittleEndian;
-
-                SetBlockPositions(blockPositionSpan, blockPositions, blockPositionCount);
-
-                if (mpqArchiveEntry.IsEncrypted)
-                {
-                    throw new MpqHeroesToolException("Its encrypted...");
-                }
-
-                int toRead = (int)mpqArchiveEntry.FileSize;
-                int offset = 0;
-                int position = 0;
-
-                while (toRead > 0)
-                {
-                    byte[] uncompressedBlockData = LoadBlockPositions(mpqArchiveEntry, blockPositions, position);
-
-                    if (uncompressedBlockData.Length == 0)
-                        break;
-
-                    Array.Copy(uncompressedBlockData, 0, fileData, offset, uncompressedBlockData.Length);
-                    offset += uncompressedBlockData.Length;
-
-                    position = offset / _blockSize;
-
-                    toRead -= uncompressedBlockData.Length;
-                }
-            }
-            else
-            {
-                _archiveStream.Position = mpqArchiveEntry.FilePosition;
-
-                int read = _archiveStream.Read(fileData, 0, (int)mpqArchiveEntry.CompressedSize);
-
-                if (read != mpqArchiveEntry.CompressedSize)
-                    throw new MpqHeroesToolException("Insufficient data or invalid data length");
-
-                if (mpqArchiveEntry.CompressedSize == mpqArchiveEntry.FileSize)
-                {
-                    return fileData;
-                }
-                else
-                {
-                    DecompressByteData(fileData, (int)mpqArchiveEntry.CompressedSize);
-                }
-            }
-
-            return fileData;
-        }
-
-        private byte[] LoadBlockPositions(MpqHeroesArchiveEntry mpqArchiveEntry, ReadOnlySpan<uint> blockPositions, int position)
+        private int LoadBlockPositions(MpqHeroesArchiveEntry mpqArchiveEntry, ReadOnlySpan<uint> blockPositions, int position, Span<byte> buffer)
         {
             int expectedlength = (int)Math.Min(mpqArchiveEntry.FileSize - (position * _blockSize), _blockSize);
+            if (expectedlength < 1)
+                return 0;
 
-            return LoadBlock(mpqArchiveEntry, blockPositions, position, expectedlength);
+            return LoadBlock(mpqArchiveEntry, blockPositions, position, expectedlength, buffer);
         }
 
-        private byte[] LoadBlock(MpqHeroesArchiveEntry mpqArchiveEntry, ReadOnlySpan<uint> blockPositions, int blockIndex, int expectedLength)
+        private int LoadBlock(MpqHeroesArchiveEntry mpqArchiveEntry, ReadOnlySpan<uint> blockPositions, int blockIndex, int expectedLength, Span<byte> buffer)
         {
             uint offset;
             int toRead;
@@ -448,10 +468,8 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
 
             offset += mpqArchiveEntry.FilePosition;
 
-            byte[] data = new byte[expectedLength];
-
             _archiveStream.Seek(offset, SeekOrigin.Begin);
-            int read = _archiveStream.Read(data, 0, toRead);
+            int read = _archiveStream.Read(buffer.Slice(0, toRead));
 
             if (read != toRead)
                 throw new MpqHeroesToolException("Insufficient data or invalid data length");
@@ -462,18 +480,18 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
                     throw new MpqHeroesToolException("Unable to determine encryption key");
 
                 encryptionSeed = (uint)(blockIndex + mpqArchiveEntry.EncryptionSeed);
-                DecryptBlock(data, encryptionSeed);
+                DecryptBlock(buffer.Slice(0, expectedLength), encryptionSeed);
             }
 
             if (mpqArchiveEntry.IsCompressed && (toRead != expectedLength))
             {
                 if ((mpqArchiveEntry.Flags & MpqFileFlags.CompressedMulti) != 0)
-                    DecompressByteData(data, toRead);
+                    DecompressByteData(buffer.Slice(0, expectedLength));
                 else
                     throw new MpqHeroesToolException("Non-single unit must be decompresssed using pk");
             }
 
-            return data;
+            return expectedLength;
         }
 
         private bool TryGetHashEntry(ReadOnlySpan<char> filename, out MpqHash hash)
@@ -497,7 +515,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
                     return true;
             }
 
-            hash = new MpqHash();
+            hash = new MpqHash(0, 0, 0, 0);
             return false;
         }
     }

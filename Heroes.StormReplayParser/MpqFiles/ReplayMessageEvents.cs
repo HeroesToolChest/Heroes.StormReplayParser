@@ -13,18 +13,17 @@ namespace Heroes.StormReplayParser.MpqFiles
             if (source.Length <= 1)
                 return;
 
-            BitReader.ResetIndex();
-            BitReader.EndianType = EndianType.BigEndian;
+            BitReader bitReader = new BitReader(source, EndianType.BigEndian);
 
             uint ticksElapsed = 0;
 
-            while (BitReader.Index < source.Length)
+            while (bitReader.Index < source.Length)
             {
-                ticksElapsed += source.ReadBits(6 + ((int)source.ReadBits(2) << 3));
+                ticksElapsed += bitReader.ReadBits(6 + ((int)bitReader.ReadBits(2) << 3));
                 TimeSpan timeStamp = TimeSpan.FromSeconds(ticksElapsed / 16.0);
 
-                int playerIndex = (int)source.ReadBits(5);
-                StormMessageEventType messageEventType = (StormMessageEventType)source.ReadBits(4);
+                int playerIndex = (int)bitReader.ReadBits(5);
+                StormMessageEventType messageEventType = (StormMessageEventType)bitReader.ReadBits(4);
 
                 StormMessage? message = null;
 
@@ -33,8 +32,8 @@ namespace Heroes.StormReplayParser.MpqFiles
                     case StormMessageEventType.SChatMessage:
                         ChatMessage chatMessage = new ChatMessage
                         {
-                            MessageTarget = (StormMessageTarget)source.ReadBits(3), // m_recipient (the target)
-                            Message = source.ReadBlobAsString(11), // m_string
+                            MessageTarget = (StormMessageTarget)bitReader.ReadBits(3), // m_recipient (the target)
+                            Message = bitReader.ReadBlobAsString(11), // m_string
                         };
 
                         message = new StormMessage(chatMessage);
@@ -43,8 +42,8 @@ namespace Heroes.StormReplayParser.MpqFiles
                     case StormMessageEventType.SPingMessage:
                         PingMessage pingMessage = new PingMessage()
                         {
-                            MessageTarget = (StormMessageTarget)source.ReadBits(3), // m_recipient (the target)
-                            Point = new Point((double)(source.ReadInt32Unaligned() - (-2147483648)) / 4096, ((double)source.ReadInt32Unaligned() - (-2147483648)) / 4096), // m_point x and m_point y
+                            MessageTarget = (StormMessageTarget)bitReader.ReadBits(3), // m_recipient (the target)
+                            Point = new Point((double)(bitReader.ReadInt32Unaligned() - (-2147483648)) / 4096, ((double)bitReader.ReadInt32Unaligned() - (-2147483648)) / 4096), // m_point x and m_point y
                         };
 
                         message = new StormMessage(pingMessage);
@@ -53,7 +52,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                     case StormMessageEventType.SLoadingProgressMessage:
                         LoadingProgressMessage loadingProgressMessage = new LoadingProgressMessage()
                         {
-                            LoadingProgress = source.ReadInt32Unaligned() - (-2147483648), // m_progress
+                            LoadingProgress = bitReader.ReadInt32Unaligned() - (-2147483648), // m_progress
                         };
 
                         message = new StormMessage(loadingProgressMessage);
@@ -62,12 +61,12 @@ namespace Heroes.StormReplayParser.MpqFiles
                     case StormMessageEventType.SServerPingMessage:
                         break;
                     case StormMessageEventType.SReconnectNotifyMessage:
-                        source.ReadBits(2); // m_status; is either a 1 or a 2
+                        bitReader.ReadBits(2); // m_status; is either a 1 or a 2
                         break;
                     case StormMessageEventType.SPlayerAnnounceMessage:
                         PlayerAnnounceMessage playerAnnounceMessage = new PlayerAnnounceMessage()
                         {
-                            AnnouncementType = (AnnouncementType)source.ReadBits(2),
+                            AnnouncementType = (AnnouncementType)bitReader.ReadBits(2),
                         };
 
                         switch (playerAnnounceMessage.AnnouncementType)
@@ -75,18 +74,18 @@ namespace Heroes.StormReplayParser.MpqFiles
                             case AnnouncementType.None:
                                 break;
                             case AnnouncementType.Ability:
-                                int abilityLink = source.ReadInt16Unaligned(); // m_abilLink
-                                int abilityIndex = (int)source.ReadBits(5); // m_abilCmdIndex
-                                int buttonLink = source.ReadInt16Unaligned(); // m_buttonLink
+                                int abilityLink = bitReader.ReadInt16Unaligned(); // m_abilLink
+                                int abilityIndex = (int)bitReader.ReadBits(5); // m_abilCmdIndex
+                                int buttonLink = bitReader.ReadInt16Unaligned(); // m_buttonLink
                                 playerAnnounceMessage.AbilityAnnouncement = new AbilityAnnouncement(abilityIndex, abilityLink, buttonLink);
 
                                 break;
                             case AnnouncementType.Behavior:
-                                source.ReadInt16Unaligned(); // m_behaviorLink
-                                source.ReadInt16Unaligned(); // m_buttonLink
+                                bitReader.ReadInt16Unaligned(); // m_behaviorLink
+                                bitReader.ReadInt16Unaligned(); // m_buttonLink
                                 break;
                             case AnnouncementType.Vitals:
-                                playerAnnounceMessage.VitalAnnouncement = new VitalAnnouncement((VitalType)(source.ReadInt16Unaligned() - (-32768)));
+                                playerAnnounceMessage.VitalAnnouncement = new VitalAnnouncement((VitalType)(bitReader.ReadInt16Unaligned() - (-32768)));
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -95,11 +94,11 @@ namespace Heroes.StormReplayParser.MpqFiles
                         if (replay.ReplayBuild > 45635)
                         {
                             // m_announceLink
-                            source.ReadInt16Unaligned();
+                            bitReader.ReadInt16Unaligned();
                         }
 
-                        source.ReadInt32Unaligned(); // m_otherUnitTag
-                        source.ReadInt32Unaligned(); // m_unitTag
+                        bitReader.ReadInt32Unaligned(); // m_otherUnitTag
+                        bitReader.ReadInt32Unaligned(); // m_unitTag
 
                         message = new StormMessage(playerAnnounceMessage);
                         break;
@@ -121,7 +120,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                     replay.MessagesInternal.Add(message);
                 }
 
-                BitReader.AlignToByte();
+                bitReader.AlignToByte();
             }
         }
     }

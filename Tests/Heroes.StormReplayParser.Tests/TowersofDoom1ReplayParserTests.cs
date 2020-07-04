@@ -22,12 +22,11 @@ namespace Heroes.StormReplayParser.Tests
             _result = result.Status;
         }
 
-        // TODO: Old File Parse battelobby
-        /*[TestMethod]
-        * public void ParseResultTest()
-        * {
-        *    Assert.AreEqual(StormReplayParseStatus.Success, _result);
-        }*/
+        [TestMethod]
+        public void ParseResultTest()
+        {
+            Assert.AreEqual(StormReplayParseStatus.Success, _result);
+        }
 
         [TestMethod]
         public void StormReplayHeaderTest()

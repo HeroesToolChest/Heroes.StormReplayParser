@@ -1,31 +1,29 @@
-﻿using System;
-
-namespace Heroes.StormReplayParser.MpqHeroesTool
+﻿namespace Heroes.StormReplayParser.MpqHeroesTool
 {
     internal class MpqHeader
     {
         public const uint MpqId = 0x1a51504d; // 441536589
         public const uint Size = 32;
 
-        public MpqHeader(ReadOnlySpan<byte> source)
+        public MpqHeader(ref BitReader bitReaderStruct)
         {
-            if (!LocateHeader(source))
+            if (!LocateHeader(ref bitReaderStruct))
                 throw new MpqHeroesToolException("Could not locate the header");
 
-            DataOffset = source.ReadUInt32Aligned();
-            ArchiveSize = source.ReadUInt32Aligned();
-            MpqVersion = source.ReadUInt16Aligned();
-            BlockSize = source.ReadUInt16Aligned();
-            HashTablePos = source.ReadUInt32Aligned();
-            BlockTablePos = source.ReadUInt32Aligned();
-            HashTableSize = source.ReadUInt32Aligned();
-            BlockTableSize = source.ReadUInt32Aligned();
+            DataOffset = bitReaderStruct.ReadUInt32Aligned();
+            ArchiveSize = bitReaderStruct.ReadUInt32Aligned();
+            MpqVersion = bitReaderStruct.ReadUInt16Aligned();
+            BlockSize = bitReaderStruct.ReadUInt16Aligned();
+            HashTablePos = bitReaderStruct.ReadUInt32Aligned();
+            BlockTablePos = bitReaderStruct.ReadUInt32Aligned();
+            HashTableSize = bitReaderStruct.ReadUInt32Aligned();
+            BlockTableSize = bitReaderStruct.ReadUInt32Aligned();
 
             if (MpqVersion == 1)
             {
-                ExtendedBlockTableOffset = source.ReadInt64Aligned();
-                HashTableOffsetHigh = source.ReadInt16Aligned();
-                BlockTableOffsetHigh = source.ReadInt16Aligned();
+                ExtendedBlockTableOffset = bitReaderStruct.ReadInt64Aligned();
+                HashTableOffsetHigh = bitReaderStruct.ReadInt16Aligned();
+                BlockTableOffsetHigh = bitReaderStruct.ReadInt16Aligned();
             }
 
             HashTablePos += (uint)HeaderOffset;
@@ -52,12 +50,12 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
 
         public long HeaderOffset { get; private set; }
 
-        private bool LocateHeader(ReadOnlySpan<byte> source)
+        private bool LocateHeader(ref BitReader bitReaderStruct)
         {
-            for (int i = 0x200; i < source.Length - Size; i += 0x200)
+            for (int i = 0x200; i < bitReaderStruct.Length - Size; i += 0x200)
             {
-                BitReader.Index = i;
-                uint id = source.ReadUInt32Aligned();
+                bitReaderStruct.Index = i;
+                uint id = bitReaderStruct.ReadUInt32Aligned();
 
                 if (id == MpqId)
                 {

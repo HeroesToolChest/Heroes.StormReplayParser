@@ -265,14 +265,13 @@ namespace Heroes.StormReplayParser.Tests
             Assert.IsTrue(messages.All(x => x.ChatMessage != null && !string.IsNullOrEmpty(x.ChatMessage.Message)));
         }
 
-        /* TODO: Complete battlelobby parsing
-         * [TestMethod]
+        [TestMethod]
         public void BattleLobbyDataTest()
         {
             List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
 
-            Assert.AreEqual(2319, players[0].AccountLevel);
+            Assert.AreEqual(2331, players[0].AccountLevel);
             Assert.AreEqual(null, players[0].PartyValue);
-        } */
+        }
     }
 }

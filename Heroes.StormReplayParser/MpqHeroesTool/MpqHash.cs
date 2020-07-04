@@ -1,26 +1,28 @@
-﻿using System;
-
-namespace Heroes.StormReplayParser.MpqHeroesTool
+﻿namespace Heroes.StormReplayParser.MpqHeroesTool
 {
-    internal class MpqHash
+    internal struct MpqHash
     {
         public const uint Size = 16;
 
-        public MpqHash()
+        public MpqHash(uint name1, uint name2, uint locale, uint blockIndex)
         {
+            Name1 = name1;
+            Name2 = name2;
+            Locale = locale;
+            BlockIndex = blockIndex;
         }
 
-        public MpqHash(ReadOnlySpan<byte> source)
+        public MpqHash(ref BitReader bitReaderStruct)
         {
-            Name1 = source.ReadUInt32Aligned();
-            Name2 = source.ReadUInt32Aligned();
-            Locale = source.ReadUInt32Aligned(); // Normally 0 or UInt32.MaxValue (0xffffffff)
-            BlockIndex = source.ReadUInt32Aligned();
+            Name1 = bitReaderStruct.ReadUInt32Aligned();
+            Name2 = bitReaderStruct.ReadUInt32Aligned();
+            Locale = bitReaderStruct.ReadUInt32Aligned(); // Normally 0 or UInt32.MaxValue (0xffffffff)
+            BlockIndex = bitReaderStruct.ReadUInt32Aligned();
         }
 
-        public uint Name1 { get; private set; }
-        public uint Name2 { get; private set; }
-        public uint Locale { get; private set; }
-        public uint BlockIndex { get; private set; }
+        public uint Name1 { get; }
+        public uint Name2 { get; }
+        public uint Locale { get; }
+        public uint BlockIndex { get; }
     }
 }

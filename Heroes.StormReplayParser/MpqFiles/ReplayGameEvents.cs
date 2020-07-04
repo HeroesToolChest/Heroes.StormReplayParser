@@ -10,18 +10,19 @@ namespace Heroes.StormReplayParser.MpqFiles
 
         public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
         {
-            BitReader.ResetIndex();
-            BitReader.EndianType = EndianType.BigEndian;
+            BitReader bitReader = new BitReader(source, EndianType.BigEndian);
+            //BitReaderOld.ResetIndex();
+           // BitReaderOld.EndianType = EndianType.BigEndian;
 
             uint ticksElapsed = 0;
 
-            while (BitReader.Index < source.Length)
+            while (bitReader.Index < bitReader.Length)
             {
-                ticksElapsed += source.ReadBits(6 + ((int)source.ReadBits(2) << 3));
+                ticksElapsed += bitReader.ReadBits(6 + ((int)bitReader.ReadBits(2) << 3));
                 TimeSpan timeStamp = TimeSpan.FromSeconds(ticksElapsed / 16.0);
 
-                int playerIndex = (int)source.ReadBits(5);
-                StormGameEventType gameEventType = (StormGameEventType)source.ReadBits(7);
+                int playerIndex = (int)bitReader.ReadBits(5);
+                StormGameEventType gameEventType = (StormGameEventType)bitReader.ReadBits(7);
 
                 StormGameEvent? gameEvent = null;
 
@@ -43,7 +44,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                 //    replay.MessagesInternal.Add(gameEvent);
                 //}
 
-                BitReader.AlignToByte();
+                //BitReaderOld.AlignToByte();
 
             }
         }

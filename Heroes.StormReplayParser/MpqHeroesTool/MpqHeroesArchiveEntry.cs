@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Heroes.StormReplayParser.MpqHeroesTool
 {
-    internal class MpqHeroesArchiveEntry
+    internal struct MpqHeroesArchiveEntry
     {
         public const uint Size = 16;
 
@@ -11,21 +10,22 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
 
         private string? _fileName;
 
-        internal MpqHeroesArchiveEntry(ReadOnlySpan<byte> source, uint headerOffset)
+        internal MpqHeroesArchiveEntry(ref BitReader bitReaderStruct, uint headerOffset)
         {
-            _fileOffset = source.ReadUInt32Aligned();
+            _fileOffset = bitReaderStruct.ReadUInt32Aligned();
             FilePosition = headerOffset + _fileOffset;
-            CompressedSize = source.ReadUInt32Aligned();
-            FileSize = source.ReadUInt32Aligned();
-            Flags = (MpqFileFlags)source.ReadUInt32Aligned();
+            CompressedSize = bitReaderStruct.ReadUInt32Aligned();
+            FileSize = bitReaderStruct.ReadUInt32Aligned();
+            Flags = (MpqFileFlags)bitReaderStruct.ReadUInt32Aligned();
             EncryptionSeed = 0;
+            _fileName = null;
         }
 
-        public uint CompressedSize { get; private set; }
-        public uint FileSize { get; private set; }
-        public MpqFileFlags Flags { get; internal set; }
+        public uint CompressedSize { get; }
+        public uint FileSize { get; }
+        public MpqFileFlags Flags { get; }
         public uint EncryptionSeed { get; internal set; }
-        public uint FilePosition { get; private set; } // Absolute position in the file
+        public uint FilePosition { get; } // Absolute position in the file
 
         public string? FileName
         {

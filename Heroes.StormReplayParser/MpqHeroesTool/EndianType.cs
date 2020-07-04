@@ -1,6 +1,6 @@
 ﻿namespace Heroes.StormReplayParser.MpqHeroesTool
 {
-    internal enum EndianType
+    public enum EndianType
     {
         /// <summary>
         /// Indicates a big endian type.

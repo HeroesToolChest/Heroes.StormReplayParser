@@ -2,6 +2,7 @@
 using Heroes.StormReplayParser.Player;
 using Heroes.StormReplayParser.Replay;
 using System;
+using System.Text;
 
 namespace Heroes.StormReplayParser.MpqFiles
 {
@@ -11,12 +12,11 @@ namespace Heroes.StormReplayParser.MpqFiles
 
         public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
         {
-            BitReader.ResetIndex();
-            BitReader.EndianType = EndianType.LittleEndian;
+            BitReader bitReader = new BitReader(source, EndianType.LittleEndian);
 
-            source.ReadAlignedByte();
-            source.ReadUInt32Aligned();
-            int count = source.ReadInt32Aligned();
+            bitReader.ReadAlignedByte();
+            bitReader.ReadUInt32Aligned();
+            int count = bitReader.ReadInt32Aligned();
 
             // The 'PlayerID' in attributes does not seem to match any existing player array
             // It almost matches the 'Replay.Player' array, except for games with less than 10 players
@@ -24,40 +24,48 @@ namespace Heroes.StormReplayParser.MpqFiles
 
             ReplayAttributeEventType attribute;
             int playerId;
-            string value;
+            Span<char> value = stackalloc char[4];
+            Span<char> upperValue = stackalloc char[4];
 
             for (int i = 0; i < count; i++)
             {
-                source.ReadUInt32Aligned(); // namespace
+                bitReader.ReadUInt32Aligned(); // namespace
 
-                attribute = (ReplayAttributeEventType)source.ReadUInt32Aligned(); // attrid
-                playerId = source.ReadAlignedByte();
-                value = source.ReadStringFromBytes(4);
+                attribute = (ReplayAttributeEventType)bitReader.ReadUInt32Aligned(); // attrid
+                playerId = bitReader.ReadAlignedByte();
+                Encoding.UTF8.GetChars(bitReader.ReadBytes(4), value);
+
+                value.Reverse();
+
+                for (int j = 0; j < value.Length; j++)
+                {
+                    upperValue[j] = char.ToUpperInvariant(value[j]);
+                }
 
                 switch (attribute)
                 {
                     case ReplayAttributeEventType.PlayerTypeAttribute:
                         {
-                            if (value.Equals("comp", StringComparison.OrdinalIgnoreCase) || value.Equals("humn", StringComparison.OrdinalIgnoreCase))
+                            if (upperValue.SequenceEqual("COMP") || upperValue.SequenceEqual("HUMN"))
                             {
                                 replay.PlayersWithOpenSlots[playerId - 1] = replay.Players[playerId - replayPlayersWithOpenSlotsIndex];
                             }
 
-                            if (value.Equals("comp", StringComparison.OrdinalIgnoreCase))
+                            if (upperValue.SequenceEqual("COMP"))
                                 replay.PlayersWithOpenSlots[playerId - 1].PlayerType = PlayerType.Computer;
-                            else if (value.Equals("humn", StringComparison.OrdinalIgnoreCase))
+                            else if (upperValue.SequenceEqual("HUMN"))
                                 replay.PlayersWithOpenSlots[playerId - 1].PlayerType = PlayerType.Human;
-                            else if (value.Equals("open", StringComparison.OrdinalIgnoreCase))
+                            else if (upperValue.SequenceEqual("OPEN"))
                                 replayPlayersWithOpenSlotsIndex++; // Less than 10 players in a Custom game
                             else
-                                throw new StormParseException($"Unexpected value for PlayerTypeAttribute: {value}");
+                                throw new StormParseException($"Unexpected value for PlayerTypeAttribute: {value.ToString()}");
 
                             break;
                         }
 
                     case ReplayAttributeEventType.TeamSizeAttribute:
                         {
-                            replay.TeamSize = value;
+                            replay.TeamSize = value.Trim('\0').ToString();
                             break;
                         }
 
@@ -67,7 +75,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                             if (player != null)
                             {
-                                player.PlayerDifficulty = value switch
+                                player.PlayerDifficulty = value.ToString() switch
                                 {
                                     "VyEy" => PlayerDifficulty.Beginner,
                                     "Easy" => PlayerDifficulty.Recruit,
@@ -83,13 +91,13 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                     case ReplayAttributeEventType.GameSpeedAttribute:
                         {
-                            replay.GameSpeed = value switch
+                            replay.GameSpeed = upperValue switch
                             {
-                                string _ when value.Equals("slor", StringComparison.OrdinalIgnoreCase) => GameSpeed.Slower,
-                                string _ when value.Equals("slow", StringComparison.OrdinalIgnoreCase) => GameSpeed.Slow,
-                                string _ when value.Equals("norm", StringComparison.OrdinalIgnoreCase) => GameSpeed.Normal,
-                                string _ when value.Equals("fast", StringComparison.OrdinalIgnoreCase) => GameSpeed.Fast,
-                                string _ when value.Equals("fasr", StringComparison.OrdinalIgnoreCase) => GameSpeed.Faster,
+                                Span<char> _ when upperValue.SequenceEqual("SLOR") => GameSpeed.Slower,
+                                Span<char> _ when upperValue.SequenceEqual("SLOW") => GameSpeed.Slow,
+                                Span<char> _ when upperValue.SequenceEqual("NORM") => GameSpeed.Normal,
+                                Span<char> _ when upperValue.SequenceEqual("FAST") => GameSpeed.Fast,
+                                Span<char> _ when upperValue.SequenceEqual("FASR") => GameSpeed.Faster,
                                 _ => GameSpeed.Unknown,
                             };
 
@@ -98,17 +106,17 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                     case ReplayAttributeEventType.GameModeAttribute:
                         {
-                            switch (value)
+                            switch (upperValue)
                             {
-                                case string _ when value.Equals("priv", StringComparison.OrdinalIgnoreCase):
+                                case Span<char> _ when upperValue.SequenceEqual("PRIV"):
                                     replay.GameMode = GameMode.Custom;
                                     break;
-                                case string _ when value.AsSpan(0, 3).Equals("amm", StringComparison.OrdinalIgnoreCase):
+                                case Span<char> _ when upperValue.Slice(1, 3).SequenceEqual("AMM"):
                                     if (replay.ReplayBuild < 33684)
                                         replay.GameMode = GameMode.QuickMatch;
                                     break;
                                 default:
-                                    throw new StormParseException($"Unexpected GameTypeAttribute: {value}");
+                                    throw new StormParseException($"Unexpected GameTypeAttribute: {value.ToString()}");
                             }
 
                             break;
@@ -120,8 +128,8 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                             if (player != null)
                             {
-                                player.IsAutoSelect = value == "Rand";
-                                player.PlayerHero.HeroAttributeId = value;
+                                player.IsAutoSelect = upperValue.SequenceEqual("RAND");
+                                player.PlayerHero.HeroAttributeId = value.Trim('\0').ToString();
                             }
 
                             break;
@@ -133,8 +141,8 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                             if (player != null)
                             {
-                                player.IsAutoSelect = value == "Rand";
-                                player.PlayerLoadout.SkinAndSkinTintAttributeId = value;
+                                player.IsAutoSelect = upperValue.SequenceEqual("RAND");
+                                player.PlayerLoadout.SkinAndSkinTintAttributeId = value.Trim('\0').ToString();
                             }
 
                             break;
@@ -146,7 +154,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                             if (player != null)
                             {
-                                player.PlayerLoadout.MountAndMountTintAttributeId = value;
+                                player.PlayerLoadout.MountAndMountTintAttributeId = value.Trim('\0').ToString();
                             }
 
                             break;
@@ -158,7 +166,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                             if (player != null)
                             {
-                                player.PlayerLoadout.BannerAttributeId = value;
+                                player.PlayerLoadout.BannerAttributeId = value.Trim('\0').ToString();
                             }
 
                             break;
@@ -170,7 +178,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                             if (player != null)
                             {
-                                player.PlayerLoadout.SprayAttributeId = value;
+                                player.PlayerLoadout.SprayAttributeId = value.Trim('\0').ToString();
                             }
 
                             break;
@@ -182,7 +190,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                             if (player != null)
                             {
-                                player.PlayerLoadout.VoiceLineAttributeId = value;
+                                player.PlayerLoadout.VoiceLineAttributeId = value.Trim('\0').ToString();
                             }
 
                             break;
@@ -194,7 +202,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                             if (player != null)
                             {
-                                player.PlayerLoadout.AnnouncerPackAttributeId = value;
+                                player.PlayerLoadout.AnnouncerPackAttributeId = value.Trim('\0').ToString();
                             }
 
                             break;
@@ -221,10 +229,10 @@ namespace Heroes.StormReplayParser.MpqFiles
                             {
                                 switch (value)
                                 {
-                                    case string _ when value.Equals("stan", StringComparison.OrdinalIgnoreCase):
+                                    case Span<char> _ when upperValue.SequenceEqual("STAN"):
                                         replay.GameMode = GameMode.QuickMatch;
                                         break;
-                                    case string _ when value.Equals("drft", StringComparison.OrdinalIgnoreCase):
+                                    case Span<char> _ when upperValue.SequenceEqual("DRFT"):
                                         replay.GameMode = GameMode.HeroLeague;
                                         break;
                                     default:
@@ -237,7 +245,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                     case ReplayAttributeEventType.ReadyMode:
                         {
-                            if (replay.ReplayBuild < 43905 && replay.GameMode == GameMode.HeroLeague && value.Equals("fcfs", StringComparison.OrdinalIgnoreCase))
+                            if (replay.ReplayBuild < 43905 && replay.GameMode == GameMode.HeroLeague && upperValue.SequenceEqual("FCFS"))
                                 replay.GameMode = GameMode.TeamLeague;
                             break;
                         }
@@ -251,22 +259,22 @@ namespace Heroes.StormReplayParser.MpqFiles
                         switch (attribute)
                         {
                             case ReplayAttributeEventType.DraftTeam1Ban1:
-                                replay.TeamHeroAttributeIdBans[0][0] = value;
+                                replay.TeamHeroAttributeIdBans[0][0] = value.Trim('\0').ToString();
                                 break;
                             case ReplayAttributeEventType.DraftTeam1Ban2:
-                                replay.TeamHeroAttributeIdBans[0][1] = value;
+                                replay.TeamHeroAttributeIdBans[0][1] = value.Trim('\0').ToString();
                                 break;
                             case ReplayAttributeEventType.DraftTeam1Ban3:
-                                replay.TeamHeroAttributeIdBans[0][2] = value;
+                                replay.TeamHeroAttributeIdBans[0][2] = value.Trim('\0').ToString();
                                 break;
                             case ReplayAttributeEventType.DraftTeam2Ban1:
-                                replay.TeamHeroAttributeIdBans[1][0] = value;
+                                replay.TeamHeroAttributeIdBans[1][0] = value.Trim('\0').ToString();
                                 break;
                             case ReplayAttributeEventType.DraftTeam2Ban2:
-                                replay.TeamHeroAttributeIdBans[1][1] = value;
+                                replay.TeamHeroAttributeIdBans[1][1] = value.Trim('\0').ToString();
                                 break;
                             case ReplayAttributeEventType.DraftTeam2Ban3:
-                                replay.TeamHeroAttributeIdBans[1][2] = value;
+                                replay.TeamHeroAttributeIdBans[1][2] = value.Trim('\0').ToString();
                                 break;
                         }
 

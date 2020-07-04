@@ -8,16 +8,15 @@ namespace Heroes.StormReplayParser.MpqFiles
     {
         public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
         {
-            BitReader.ResetIndex();
-            BitReader.EndianType = EndianType.BigEndian;
+            BitReader bitReader = new BitReader(source, EndianType.BigEndian);
 
-            source.ReadAlignedBytes(3);
-            source.ReadAlignedByte();
-            source.ReadAlignedBytes(4); // Data Max Size
-            source.ReadAlignedBytes(4); // Header Offset
-            source.ReadAlignedBytes(4); // User Data Header Size
+            bitReader.ReadAlignedBytes(3);
+            bitReader.ReadAlignedByte();
+            bitReader.ReadAlignedBytes(4); // Data Max Size
+            bitReader.ReadAlignedBytes(4); // Header Offset
+            bitReader.ReadAlignedBytes(4); // User Data Header Size
 
-            VersionedDecoder versionedDecoder = new VersionedDecoder(source);
+            VersionedDecoder versionedDecoder = new VersionedDecoder(ref bitReader);
 
             // headerStructure.StructureByIndex[0].GetValueAsString(); // m_signature => "Heroes of the Storm replay 11
 

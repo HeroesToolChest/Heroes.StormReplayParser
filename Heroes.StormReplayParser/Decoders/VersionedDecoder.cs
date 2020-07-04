@@ -18,53 +18,52 @@ namespace Heroes.StormReplayParser.Decoders
         /// <summary>
         /// Initializes a new instance of the <see cref="VersionedDecoder"/> class.
         /// </summary>
-        /// <param name="source">The read-only span of bytes to read.</param>
-        public VersionedDecoder(ReadOnlySpan<byte> source)
+        /// <param name="bitReader">The <see cref="BitReader"/> containg the bytes to read.</param>
+        public VersionedDecoder(ref BitReader bitReader)
         {
-            _dataType = source.ReadAlignedByte();
+            _dataType = bitReader.ReadAlignedByte();
 
             switch (_dataType)
             {
                 case 0x00: // array
-                    ArrayData = new VersionedDecoder[source.ReadVInt()];
+                    ArrayData = new VersionedDecoder[bitReader.ReadVInt()];
                     for (var i = 0; i < ArrayData.Length; i++)
-                        ArrayData[i] = new VersionedDecoder(source);
+                        ArrayData[i] = new VersionedDecoder(ref bitReader);
                     break;
                 case 0x01: // bitblob
                     throw new NotImplementedException();
                 case 0x02: // blob
-                    _value = source.ReadAlignedBytes((int)source.ReadVInt()).ToArray();
-
+                    _value = bitReader.ReadAlignedBytes((int)bitReader.ReadVInt()).ToArray();
                     break;
                 case 0x03: // choice
-                    _value = source.ReadBytesForVInt().ToArray();
-                    ChoiceData = new VersionedDecoder(source);
+                    _value = bitReader.ReadBytesForVInt().ToArray();
+                    ChoiceData = new VersionedDecoder(ref bitReader);
                     break;
                 case 0x04: // optional
-                    if (source.ReadAlignedByte() != 0)
-                        OptionalData = new VersionedDecoder(source);
+                    if (bitReader.ReadAlignedByte() != 0)
+                        OptionalData = new VersionedDecoder(ref bitReader);
                     break;
                 case 0x05: // struct
-                    StructureByIndex = new Dictionary<int, VersionedDecoder>();
-                    int size = (int)source.ReadVInt();
+                    int size = (int)bitReader.ReadVInt();
+                    StructureByIndex = new Dictionary<int, VersionedDecoder>(size);
 
                     for (int i = 0; i < size; i++)
                     {
-                        StructureByIndex[(int)source.ReadVInt()] = new VersionedDecoder(source);
+                        StructureByIndex[(int)bitReader.ReadVInt()] = new VersionedDecoder(ref bitReader);
                     }
 
                     break;
                 case 0x06: // u8
-                    _value = new byte[] { source.ReadAlignedByte() };
+                    _value = new byte[] { bitReader.ReadAlignedByte() };
                     break;
                 case 0x07: // u32
-                    _value = source.ReadAlignedBytes(4).ToArray();
+                    _value = bitReader.ReadAlignedBytes(4).ToArray();
                     break;
                 case 0x08: // u64
-                    _value = source.ReadAlignedBytes(8).ToArray();
+                    _value = bitReader.ReadAlignedBytes(8).ToArray();
                     break;
                 case 0x09: // vint
-                    _value = source.ReadBytesForVInt().ToArray();
+                    _value = bitReader.ReadBytesForVInt().ToArray();
                     break;
                 default:
                     throw new NotImplementedException();
