@@ -132,7 +132,7 @@ namespace Heroes.StormReplayParser.Player
         internal int? WorkingSetSlotId { get; set; }
 
         /// <inheritdoc/>
-        public override string? ToString()
+        public override string ToString()
         {
             return $"{Name}-{PlayerType}-{ToonHandle}";
         }

@@ -1,4 +1,7 @@
-﻿namespace Heroes.StormReplayParser.Player
+﻿using System;
+using System.Text;
+
+namespace Heroes.StormReplayParser.Player
 {
     /// <summary>
     /// Contains the properties for a player's toon handle.
@@ -26,9 +29,12 @@
         public long Id { get; set; }
 
         /// <inheritdoc/>
-        public override string? ToString()
+        public override string ToString()
         {
-            return $"{Region}-Hero-{Realm}-{Id}";
+            Span<char> buffer = stackalloc char[8];
+            Encoding.UTF8.GetChars(BitConverter.GetBytes(ProgramId), buffer);
+
+            return $"{Region}-{buffer.Trim('\0').ToString()}-{Realm}-{Id}";
         }
     }
 }
