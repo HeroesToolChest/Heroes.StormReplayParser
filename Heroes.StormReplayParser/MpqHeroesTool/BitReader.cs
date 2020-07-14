@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Heroes.StormReplayParser.MpqHeroesTool
 {
+    /// <summary>
+    /// A reader that provides methods to read bits or bytes from the buffer.
+    /// </summary>
     public ref struct BitReader
     {
         private readonly ReadOnlySpan<byte> _buffer;
@@ -11,6 +14,11 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         private int _bitIndex;
         private byte _currentByte;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BitReader"/> struct.
+        /// </summary>
+        /// <param name="buffer">A read-only span of bytes.</param>
+        /// <param name="endianType">Sets the endian type.</param>
         public BitReader(ReadOnlySpan<byte> buffer, EndianType endianType)
         {
             Index = 0;
@@ -20,8 +28,14 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             _endianType = endianType;
         }
 
+        /// <summary>
+        /// Gets the number of items in the buffer.
+        /// </summary>
         public readonly int Length => _buffer.Length;
 
+        /// <summary>
+        /// Gets or sets the current index in the buffer.
+        /// </summary>
         public int Index { get; set; }
 
         /// <summary>
@@ -122,16 +136,10 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>An unsigned short.</returns>
         public ushort ReadUInt16Aligned()
         {
-            ushort value;
-
             if (_endianType == EndianType.LittleEndian)
-                value = BinaryPrimitives.ReadUInt16LittleEndian(_buffer.Slice(Index, 2));
+                return BinaryPrimitives.ReadUInt16LittleEndian(_buffer[Index..(Index += 2)]);
             else
-                value = BinaryPrimitives.ReadUInt16BigEndian(_buffer.Slice(Index, 2));
-
-            Index += 2;
-
-            return value;
+                return BinaryPrimitives.ReadUInt16BigEndian(_buffer[Index..(Index += 2)]);
         }
 
         /// <summary>
@@ -140,26 +148,17 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>A short.</returns>
         public short ReadInt16Aligned()
         {
-            short value;
-
             if (_endianType == EndianType.LittleEndian)
-                value = BinaryPrimitives.ReadInt16LittleEndian(_buffer.Slice(Index, 2));
+                return BinaryPrimitives.ReadInt16LittleEndian(_buffer[Index..(Index += 2)]);
             else
-                value = BinaryPrimitives.ReadInt16BigEndian(_buffer.Slice(Index, 2));
-
-            Index += 2;
-
-            return value;
+                return BinaryPrimitives.ReadInt16BigEndian(_buffer[Index..(Index += 2)]);
         }
 
         /// <summary>
         /// Reads 2 unaligned bytes from the buffer as a short.
         /// </summary>
         /// <returns>A short.</returns>
-        public short ReadInt16Unaligned()
-        {
-            return (short)ReadBits(16);
-        }
+        public short ReadInt16Unaligned() => (short)ReadBits(16);
 
         /// <summary>
         /// Reads 4 aligned bytes from the buffer as an uint.
@@ -167,16 +166,10 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>An unsigned interger.</returns>
         public uint ReadUInt32Aligned()
         {
-            uint value;
-
             if (_endianType == EndianType.LittleEndian)
-                value = BinaryPrimitives.ReadUInt32LittleEndian(_buffer.Slice(Index, 4));
+                return BinaryPrimitives.ReadUInt32LittleEndian(_buffer[Index..(Index += 4)]);
             else
-                value = BinaryPrimitives.ReadUInt32BigEndian(_buffer.Slice(Index, 4));
-
-            Index += 4;
-
-            return value;
+                return BinaryPrimitives.ReadUInt32BigEndian(_buffer[Index..(Index += 4)]);
         }
 
         /// <summary>
@@ -185,35 +178,23 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>An integer.</returns>
         public int ReadInt32Aligned()
         {
-            int value;
-
             if (_endianType == EndianType.LittleEndian)
-                value = BinaryPrimitives.ReadInt32LittleEndian(_buffer.Slice(Index, 4));
+                return BinaryPrimitives.ReadInt32LittleEndian(_buffer[Index..(Index += 4)]);
             else
-                value = BinaryPrimitives.ReadInt32BigEndian(_buffer.Slice(Index, 4));
-
-            Index += 4;
-
-            return value;
+                return BinaryPrimitives.ReadInt32BigEndian(_buffer[Index..(Index += 4)]);
         }
 
         /// <summary>
         /// Reads 4 unaligned bytes from the buffer as an uint.
         /// </summary>
         /// <returns>An unsigned integer.</returns>
-        public uint ReadUInt32Unaligned()
-        {
-            return ReadBits(32);
-        }
+        public uint ReadUInt32Unaligned() => ReadBits(32);
 
         /// <summary>
         /// Reads 4 unaligned bytes from the buffer as an int.
         /// </summary>
         /// <returns>An integer.</returns>
-        public int ReadInt32Unaligned()
-        {
-            return (int)ReadBits(32);
-        }
+        public int ReadInt32Unaligned() => (int)ReadBits(32);
 
         /// <summary>
         /// Reads 8 aligned bytes from the buffer as a ulong.
@@ -221,16 +202,10 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>An unsigned long.</returns>
         public ulong ReadUInt64Aligned()
         {
-            ulong value;
-
             if (_endianType == EndianType.LittleEndian)
-                value = BinaryPrimitives.ReadUInt64LittleEndian(_buffer.Slice(Index, 8));
+                return BinaryPrimitives.ReadUInt64LittleEndian(_buffer[Index..(Index += 8)]);
             else
-                value = BinaryPrimitives.ReadUInt64BigEndian(_buffer.Slice(Index, 8));
-
-            Index += 8;
-
-            return value;
+                return BinaryPrimitives.ReadUInt64BigEndian(_buffer[Index..(Index += 8)]);
         }
 
         /// <summary>
@@ -239,35 +214,23 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>A long.</returns>
         public long ReadInt64Aligned()
         {
-            long value;
-
             if (_endianType == EndianType.LittleEndian)
-                value = BinaryPrimitives.ReadInt64LittleEndian(_buffer.Slice(Index, 8));
+                return BinaryPrimitives.ReadInt64LittleEndian(_buffer[Index..(Index += 8)]);
             else
-                value = BinaryPrimitives.ReadInt64BigEndian(_buffer.Slice(Index, 8));
-
-            Index += 8;
-
-            return value;
+                return BinaryPrimitives.ReadInt64BigEndian(_buffer[Index..(Index += 8)]);
         }
 
         /// <summary>
         /// Reads 8 unaligned bytes from the buffer as an ulong.
         /// </summary>
         /// <returns>An unsigned long.</returns>
-        public ulong ReadUInt64Unaligned()
-        {
-            return ReadULongBits(64);
-        }
+        public ulong ReadUInt64Unaligned() => ReadULongBits(64);
 
         /// <summary>
         /// Reads 8 unaligned bytes from the buffer as a long.
         /// </summary>
         /// <returns>A long.</returns>
-        public long ReadInt64Unaligned()
-        {
-            return ReadLongBits(64);
-        }
+        public long ReadInt64Unaligned() => ReadLongBits(64);
 
         /// <summary>
         /// Reads a signed integer of variable length.
@@ -275,7 +238,6 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>A long.</returns>
         public long ReadVInt()
         {
-
             byte dataByte = ReadAlignedByte();
             int negative = dataByte & 1;
             long result = (dataByte >> 1) & 0x3f;
@@ -320,22 +282,13 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// Reads one byte.
         /// </summary>
         /// <returns>The byte at the current index.</returns>
-        public byte ReadAlignedByte()
-        {
-            byte currentByte = _buffer[Index];
-            Index++;
-
-            return currentByte;
-        }
+        public byte ReadAlignedByte() => _buffer[Index++];
 
         /// <summary>
         /// Reads one byte.
         /// </summary>
         /// <returns>A byte.</returns>
-        public byte ReadUnalignedByte()
-        {
-            return (byte)ReadBits(8);
-        }
+        public byte ReadUnalignedByte() => (byte)ReadBits(8);
 
         /// <summary>
         /// Reads a number of bytes.
@@ -346,10 +299,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         {
             AlignToByte();
 
-            ReadOnlySpan<byte> value = _buffer.Slice(Index, count);
-            Index += count;
-
-            return value;
+            return _buffer[Index..(Index += count)];
         }
 
         /// <summary>
@@ -445,13 +395,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// </summary>
         /// <param name="count">The number of bytes to read.</param>
         /// <returns>A byte.</returns>
-        public ReadOnlySpan<byte> ReadBytes(int count)
-        {
-            ReadOnlySpan<byte> value = _buffer.Slice(Index, count);
-            Index += count;
-
-            return value;
-        }
+        public ReadOnlySpan<byte> ReadBytes(int count) => _buffer[Index..(Index += count)];
 
         /// <summary>
         /// If in the middle of a byte, moves to the start of the next byte.

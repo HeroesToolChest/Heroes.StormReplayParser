@@ -111,7 +111,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                                 case Span<char> _ when upperValue.SequenceEqual("PRIV"):
                                     replay.GameMode = GameMode.Custom;
                                     break;
-                                case Span<char> _ when upperValue.Slice(1, 3).SequenceEqual("AMM"):
+                                case Span<char> _ when upperValue[1..4].SequenceEqual("AMM"):
                                     if (replay.ReplayBuild < 33684)
                                         replay.GameMode = GameMode.QuickMatch;
                                     break;
