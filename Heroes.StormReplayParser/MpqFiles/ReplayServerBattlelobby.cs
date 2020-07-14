@@ -264,7 +264,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                 bitReader.ReadBits(32); // m_realm
 
                 int idLength = (int)bitReader.ReadBits(7) + 2;
-                replay.ClientListByUserID[i].BattleTID = bitReader.ReadStringFromBytes(idLength);
+                replay.ClientListByUserID[i].BattleTagId = bitReader.ReadStringFromBytes(idLength);
 
                 bitReader.ReadBits(6);
 
@@ -277,7 +277,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                     bitReader.ReadBits(32); // m_realm
 
                     idLength = (int)bitReader.ReadBits(7) + 2;
-                    if (replay.ClientListByUserID[i].BattleTID != bitReader.ReadStringFromBytes(idLength))
+                    if (replay.ClientListByUserID[i].BattleTagId != bitReader.ReadStringFromBytes(idLength))
                         throw new StormParseException($"{_exceptionHeader}: Duplicate internal id does not match");
 
                     bitReader.ReadBits(6);
@@ -328,9 +328,9 @@ namespace Heroes.StormReplayParser.MpqFiles
                     replay.ClientListByUserID[i].PartyValue = bitReader.ReadLongBits(64); // players in same party will have the same exact 8 bytes of data
 
                 bitReader.ReadBoolean();
-                replay.ClientListByUserID[i].BattleTag = bitReader.ReadBlobAsString(7);
+                replay.ClientListByUserID[i].BattleTagName = bitReader.ReadBlobAsString(7);
 
-                if (!string.IsNullOrEmpty(replay.ClientListByUserID[i].BattleTag) && (!replay.ClientListByUserID[i].BattleTag.Contains('#')))
+                if (!string.IsNullOrEmpty(replay.ClientListByUserID[i].BattleTagName) && (!replay.ClientListByUserID[i].BattleTagName.Contains('#')))
                     throw new StormParseException($"{_exceptionHeader}: Invalid battletag");
 
                 if (replay.ReplayBuild >= 52860 || (replay.ReplayVersion.Major == 2 && replay.ReplayBuild >= 51978))

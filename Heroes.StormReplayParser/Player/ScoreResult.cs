@@ -205,7 +205,7 @@ namespace Heroes.StormReplayParser.Player
         public TimeSpan TimeSilencingEnemyHeroes { get; set; } = TimeSpan.Zero;
 
         /// <summary>
-        /// Gets or sets the maount of time rooting enemey heroes.
+        /// Gets or sets the amount of time rooting enemey heroes.
         /// </summary>
         public TimeSpan TimeRootingEnemyHeroes { get; set; } = TimeSpan.Zero;
 
@@ -225,7 +225,7 @@ namespace Heroes.StormReplayParser.Player
         public int EscapesPerformed { get; set; } = 0;
 
         /// <summary>
-        /// Gets or sets the amount of times a vergence was performed.
+        /// Gets or sets the amount of times a vengeance was performed.
         /// </summary>
         public int VengeancesPerformed { get; set; } = 0;
 

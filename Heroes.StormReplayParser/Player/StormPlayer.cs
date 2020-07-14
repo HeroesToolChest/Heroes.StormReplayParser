@@ -90,12 +90,13 @@ namespace Heroes.StormReplayParser.Player
         /// <summary>
         /// Gets or sets the player's battletag which serves as the players display name.
         /// </summary>
-        public string BattleTag { get; set; } = string.Empty;
+        public string BattleTagName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the player's TID that serves as a unique identifier that is associated with the <see cref="BattleTag"/>. May not always start with T:.
+        /// Gets or sets the player's TID that serves as a non-unique identifier that is associated with the <see cref="BattleTagName"/>. May not always start with T:.
         /// </summary>
-        public string BattleTID { get; set; } = string.Empty;
+        /// <remarks>Non-unique as this value may not change even if their battle tag changes.</remarks>
+        public string BattleTagId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the player's account level.
