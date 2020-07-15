@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Heroes.StormReplayParser.MpqHeroesTool
@@ -95,7 +96,9 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         {
             bool[] bitArray = new bool[numberOfBits];
 
-            return SetBitArray(bitArray);
+            SetBitArray(bitArray);
+
+            return bitArray;
         }
 
         /// <summary>
@@ -107,7 +110,9 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         {
             bool[] bitArray = new bool[numberOfBits];
 
-            return SetBitArray(bitArray);
+            SetBitArray(bitArray);
+
+            return bitArray;
         }
 
         /// <summary>
@@ -492,12 +497,11 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             return value;
         }
 
-        private bool[] SetBitArray(bool[] bitArray)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void SetBitArray(bool[] bitArray)
         {
             for (int i = 0; i < bitArray.Length; i++)
                 bitArray[i] = ReadBoolean();
-
-            return bitArray;
         }
     }
 }
