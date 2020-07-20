@@ -1,38 +1,24 @@
 ﻿using Heroes.StormReplayParser.Decoders;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Heroes.StormReplayParser
 {
     /// <summary>
     /// Contains the properties for a tracker event.
     /// </summary>
-    [SuppressMessage("Performance", "CA1815:Override equals and operator equals on value types", Justification = "No can do.")]
-    public struct TrackerEvent
+    public struct TrackerEvent : IEquatable<TrackerEvent>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TrackerEvent"/> struct.
         /// </summary>
         /// <param name="trackerEventType">The event type of the tracker.</param>
-        /// <param name="timeSpan">The time the event took place.</param>
+        /// <param name="timestamp">The time the event took place.</param>
         /// <param name="versionedDecoder">Data associated with the event.</param>
-        public TrackerEvent(TrackerEventType trackerEventType, TimeSpan timeSpan, VersionedDecoder versionedDecoder)
+        public TrackerEvent(TrackerEventType trackerEventType, TimeSpan timestamp, VersionedDecoder? versionedDecoder = null)
         {
             TrackerEventType = trackerEventType;
-            TimeSpan = timeSpan;
+            Timestamp = timestamp;
             VersionedDecoder = versionedDecoder;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TrackerEvent"/> struct.
-        /// </summary>
-        /// <param name="trackerEventType">The event type of the tracker.</param>
-        /// <param name="timeSpan">The time the event took place.</param>
-        public TrackerEvent(TrackerEventType trackerEventType, TimeSpan timeSpan)
-        {
-            TrackerEventType = trackerEventType;
-            TimeSpan = timeSpan;
-            VersionedDecoder = null;
         }
 
         /// <summary>
@@ -43,11 +29,64 @@ namespace Heroes.StormReplayParser
         /// <summary>
         /// Gets the time that the event took place.
         /// </summary>
-        public TimeSpan TimeSpan { get; }
+        public TimeSpan Timestamp { get; }
 
         /// <summary>
         /// Gets the version decoder to obtain the data.
         /// </summary>
         public VersionedDecoder? VersionedDecoder { get; }
+
+        /// <summary>
+        /// Compares the <paramref name="left"/> value to the <paramref name="right"/> value and determines if they are equal.
+        /// </summary>
+        /// <param name="left">The left hand side of the operator.</param>
+        /// <param name="right">The right hand side of the operator.</param>
+        /// <returns><see langword="true"/> if the <paramref name="left"/> value is equal to the <paramref name="right"/> value; otherwise <see langword="false"/>.</returns>
+        public static bool operator ==(TrackerEvent? left, TrackerEvent? right)
+        {
+            if (left is null)
+                return right is null;
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// Compares the <paramref name="left"/> value to the <paramref name="right"/> value and determines if they are not equal.
+        /// </summary>
+        /// <param name="left">The left hand side of the operator.</param>
+        /// <param name="right">The right hand side of the operator.</param>
+        /// <returns><see langword="true"/> if the <paramref name="left"/> value is not equal to the <paramref name="right"/> value; otherwise <see langword="false"/>.</returns>
+        public static bool operator !=(TrackerEvent? left, TrackerEvent? right)
+        {
+            return !(left == right);
+        }
+
+        /// <inheritdoc/>
+        public override string ToString() => $"[{Timestamp}] {TrackerEventType}: {VersionedDecoder}";
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            if (obj is null)
+                return false;
+
+            if (!(obj is TrackerEvent trackerEvent))
+                return false;
+            else
+                return Equals(trackerEvent);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Timestamp, TrackerEventType, VersionedDecoder?.ToString());
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(TrackerEvent other)
+        {
+            return Timestamp == other.Timestamp &&
+                TrackerEventType == other.TrackerEventType &&
+                VersionedDecoder?.ToString() == other.VersionedDecoder?.ToString();
+        }
     }
 }

@@ -103,6 +103,7 @@ namespace Heroes.StormReplayParser
             ParseReplayAttributeEvents(stormReplay, pool);
             ParseReplayTrackerEvents(stormReplay, pool);
             ParseReplayMessageEvents(stormReplay, pool);
+            ParseReplayGameEvents(stormReplay, pool);
 
             if (_parseBattleLobby)
                 ParseReplayServerBattlelobby(stormReplay, pool);
@@ -170,6 +171,18 @@ namespace Heroes.StormReplayParser
             Span<byte> buffer = new Span<byte>(poolBuffer).Slice(0, size);
             _stormMpqArchive.DecompressEntry(entry, buffer);
             ReplayMessageEvents.Parse(stormReplay, buffer);
+
+            pool.Return(poolBuffer);
+        }
+
+        private void ParseReplayGameEvents(StormReplay stormReplay, ArrayPool<byte> pool)
+        {
+            MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayGameEvents.FileName);
+            int size = (int)entry.FileSize;
+            byte[] poolBuffer = pool.Rent(size);
+            Span<byte> buffer = new Span<byte>(poolBuffer).Slice(0, size);
+            _stormMpqArchive.DecompressEntry(entry, buffer);
+            ReplayGameEvents.Parse(stormReplay, buffer);
 
             pool.Return(poolBuffer);
         }

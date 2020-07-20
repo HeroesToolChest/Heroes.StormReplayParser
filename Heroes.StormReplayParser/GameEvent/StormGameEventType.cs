@@ -6,6 +6,16 @@
     public enum StormGameEventType
     {
         /// <summary>
+        /// Indicates the start game event.
+        /// </summary>
+        SStartGameEvent = 2,
+
+        /// <summary>
+        /// Indicates the drop our selves event.
+        /// </summary>
+        SDropOurselvesEvent = 3,
+
+        /// <summary>
         /// Indicates a user finished loading sync event.
         /// </summary>
         SUserFinishedLoadingSyncEvent = 5,

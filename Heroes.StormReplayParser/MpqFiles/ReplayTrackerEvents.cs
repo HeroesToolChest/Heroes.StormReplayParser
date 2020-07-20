@@ -22,7 +22,6 @@ namespace Heroes.StormReplayParser.MpqFiles
                 TrackerEventType type = (TrackerEventType)new VersionedDecoder(ref bitReader).GetValueAsUInt32();
                 VersionedDecoder decoder = new VersionedDecoder(ref bitReader);
 
-
                 replay.TrackerEventsInternal.Add(new TrackerEvent(type, timeSpan, decoder));
             }
         }

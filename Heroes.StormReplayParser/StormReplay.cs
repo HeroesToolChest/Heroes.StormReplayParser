@@ -1,4 +1,5 @@
-﻿using Heroes.StormReplayParser.MessageEvent;
+﻿using Heroes.StormReplayParser.GameEvent;
+using Heroes.StormReplayParser.MessageEvent;
 using Heroes.StormReplayParser.Player;
 using Heroes.StormReplayParser.Replay;
 using System;
@@ -151,6 +152,7 @@ namespace Heroes.StormReplayParser
 
         internal string?[][] TeamHeroAttributeIdBans { get; private set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
 
+        internal List<StormGameEvent> GameEventsInternal { get; private set; } = new List<StormGameEvent>();
         internal List<TrackerEvent> TrackerEventsInternal { get; private set; } = new List<TrackerEvent>();
 
         internal List<StormMessage> MessagesInternal { get; private set; } = new List<StormMessage>();
@@ -264,7 +266,7 @@ namespace Heroes.StormReplayParser
                         TeamLevel teamLevel = new TeamLevel()
                         {
                             Level = (int)trackerEvent.VersionedDecoder!.StructureByIndex![2].OptionalData!.ArrayData![1].StructureByIndex![1].GetValueAsUInt32(),
-                            Time = trackerEvent.TimeSpan,
+                            Time = trackerEvent.Timestamp,
                         };
 
                         if (team == StormTeam.Blue)
@@ -311,7 +313,7 @@ namespace Heroes.StormReplayParser
                         teamXPBreakdown = new TeamXPBreakdown()
                         {
                             Level = (int)trackerEvent.VersionedDecoder!.StructureByIndex![2].OptionalData!.ArrayData![1].StructureByIndex![1].GetValueAsUInt32(),
-                            Time = trackerEvent.TimeSpan,
+                            Time = trackerEvent.Timestamp,
                             MinionXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![2].StructureByIndex![1].GetValueAsInt64() / 4096),
                             CreepXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![3].StructureByIndex![1].GetValueAsInt64() / 4096),
                             StructureXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![4].StructureByIndex![1].GetValueAsInt64() / 4096),
@@ -327,7 +329,7 @@ namespace Heroes.StormReplayParser
                     int playerId = (int)trackerEvent.VersionedDecoder!.StructureByIndex![2].OptionalData!.ArrayData![0].StructureByIndex![1].GetValueAsUInt32();
 
                     if (PlayersWithOpenSlots[playerId - 1].Team == team &&
-                        teamXPBreakdown.Time != trackerEvent.TimeSpan &&
+                        teamXPBreakdown.Time != trackerEvent.Timestamp &&
                         trackerEvent.VersionedDecoder?.StructureByIndex?[2].OptionalData?.ArrayData?[0].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "PlayerID" &&
                         trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[0].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "MinionXP" &&
                         trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[1].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "CreepXP" &&
@@ -338,7 +340,7 @@ namespace Heroes.StormReplayParser
                         teamXPBreakdown = new TeamXPBreakdown()
                         {
                             Level = GetTeamFinalLevel(team),
-                            Time = trackerEvent.TimeSpan,
+                            Time = trackerEvent.Timestamp,
                             MinionXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![0].StructureByIndex![1].GetValueAsInt64() / 4096),
                             CreepXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![1].StructureByIndex![1].GetValueAsInt64() / 4096),
                             StructureXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![2].StructureByIndex![1].GetValueAsInt64() / 4096),

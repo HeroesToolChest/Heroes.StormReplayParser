@@ -91,7 +91,7 @@ namespace Heroes.StormReplayParser.Decoders
         public VersionedDecoder[]? ArrayData { get; private set; } = null;
 
         /// <summary>
-        /// Gets the value in the current structure as a signed 32-bit unsigned integer.
+        /// Gets the value in the current structure as a 32-bit unsigned integer.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="ArithmeticException"></exception>
@@ -116,7 +116,7 @@ namespace Heroes.StormReplayParser.Decoders
         }
 
         /// <summary>
-        /// Gets the value in the current structure as a signed 64-bit integer.
+        /// Gets the value in the current structure as a 64-bit signed integer.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="ArithmeticException"></exception>
