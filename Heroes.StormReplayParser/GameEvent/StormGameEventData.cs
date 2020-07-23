@@ -1,140 +1,150 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace Heroes.StormReplayParser.GameEvent
 {
+    /// <summary>
+    /// Contains the information for a storm game event.
+    /// </summary>
     public class StormGameEventData
     {
-        private readonly bool? _boolean = null;
-        private readonly string? _blob = null;
-        private readonly int? _int32 = null;
-        private readonly uint? _uInt32 = null;
-        private readonly ulong? _uInt64 = null;
-        private readonly StormGameEventData[]? _array = null;
-        private readonly bool[]? _bitArray = null;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StormGameEventData"/> class.
+        /// </summary>
+        /// <param name="value">Sets a boolean value.</param>
         public StormGameEventData(bool value)
         {
             DataType = StormGameEventDataType.Bool;
-            _boolean = value;
+            Boolean = value;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StormGameEventData"/> class.
+        /// </summary>
+        /// <param name="value">Sets an integer.</param>
         public StormGameEventData(int value)
         {
-            DataType = StormGameEventDataType.Int32;
-            _int32 = value;
+            DataType = StormGameEventDataType.Integer32;
+            Integer32 = value;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StormGameEventData"/> class.
+        /// </summary>
+        /// <param name="value">Sets an unsigned integer.</param>
         public StormGameEventData(uint value)
         {
-            DataType = StormGameEventDataType.UInt32;
-            _uInt32 = value;
+            DataType = StormGameEventDataType.UnsignedInteger32;
+            UnsignedInteger32 = value;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StormGameEventData"/> class.
+        /// </summary>
+        /// <param name="value">Sets a 64-bit unsigned integer.</param>
         public StormGameEventData(ulong value)
         {
-            DataType = StormGameEventDataType.UInt64;
-            _uInt64 = value;
+            DataType = StormGameEventDataType.UnsignedInteger64;
+            UnsignedInteger64 = value;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StormGameEventData"/> class.
+        /// </summary>
+        /// <param name="value">Sets a string.</param>
         public StormGameEventData(string? value)
         {
             DataType = StormGameEventDataType.Blob;
-            _blob = value;
+            Blob = value;
         }
 
-        public StormGameEventData(Dictionary<int, StormGameEventData>? structureByIndex)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StormGameEventData"/> class.
+        /// </summary>
+        /// <param name="structure">Sets a structure.</param>
+        public StormGameEventData(StormDataStructure<StormGameEventData>? structure)
         {
             DataType = StormGameEventDataType.Structure;
-            StructureByIndex = structureByIndex;
+            Structure = structure;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StormGameEventData"/> class.
+        /// </summary>
+        /// <param name="array">Sets an array.</param>
         public StormGameEventData(StormGameEventData[]? array)
         {
             DataType = StormGameEventDataType.Array;
-            _array = array;
+            Array = array;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StormGameEventData"/> class.
+        /// </summary>
+        /// <param name="bitArray">Sets an array of booleans.</param>
         public StormGameEventData(bool[] bitArray)
         {
             DataType = StormGameEventDataType.BitArray;
-            _bitArray = bitArray;
+            BitArray = bitArray;
         }
 
+        /// <summary>
+        /// Gets the data type.
+        /// </summary>
         public StormGameEventDataType DataType { get; }
 
-        public Dictionary<int, StormGameEventData>? StructureByIndex { get; } = null;
+        /// <summary>
+        /// Gets the structure.
+        /// </summary>
+        public StormDataStructure<StormGameEventData>? Structure { get; } = null;
 
-        public bool? GetBoolean()
-        {
-            if (DataType != StormGameEventDataType.Bool)
-                throw new InvalidOperationException($"Invalid call, current data type is {DataType}");
+        /// <summary>
+        /// Gets the boolean value.
+        /// </summary>
+        public bool? Boolean { get; } = null;
 
-            return _boolean;
-        }
+        /// <summary>
+        /// Gets the string value.
+        /// </summary>
+        public string? Blob { get; } = null;
 
-        public int? GetInt32()
-        {
-            if (DataType != StormGameEventDataType.Int32)
-                throw new InvalidOperationException($"Invalid call, current data type is {DataType}");
+        /// <summary>
+        /// Gets the 32-bit signed integer.
+        /// </summary>
+        public int? Integer32 { get; } = null;
 
-            return _int32;
-        }
+        /// <summary>
+        /// Gets the 32-bit unsigned integer.
+        /// </summary>
+        public uint? UnsignedInteger32 { get; } = null;
 
-        public uint? GetUInt32()
-        {
-            if (DataType != StormGameEventDataType.UInt32)
-                throw new InvalidOperationException($"Invalid call, current data type is {DataType}");
+        /// <summary>
+        /// Gets the 64-bit unsigned integer.
+        /// </summary>
+        public ulong? UnsignedInteger64 { get; } = null;
 
-            return _uInt32;
-        }
+        /// <summary>
+        /// Gets the array.
+        /// </summary>
+        public StormGameEventData[]? Array { get; } = null;
 
-        public ulong? GetUInt64()
-        {
-            if (DataType != StormGameEventDataType.UInt64)
-                throw new InvalidOperationException($"Invalid call, current data type is {DataType}");
-
-            return _uInt64;
-        }
-
-        public string? GetString()
-        {
-            if (DataType != StormGameEventDataType.Blob)
-                throw new InvalidOperationException($"Invalid call, current data type is {DataType}");
-
-            return _blob;
-        }
-
-        public StormGameEventData[]? GetArrary()
-        {
-            if (DataType != StormGameEventDataType.Array)
-                throw new InvalidOperationException($"Invalid call, current data type is {DataType}");
-
-            return _array;
-        }
-
-        public bool[] GetBitArray()
-        {
-            if (DataType != StormGameEventDataType.BitArray)
-                throw new InvalidOperationException($"Invalid call, current data type is {DataType}");
-
-            return _bitArray;
-        }
+        /// <summary>
+        /// Gets the array of boooleans.
+        /// </summary>
+        public bool[]? BitArray { get; } = null;
 
         /// <inheritdoc/>
         public override string? ToString()
         {
             return DataType switch
             {
-                StormGameEventDataType.Bool => _boolean?.ToString(),
-                StormGameEventDataType.Int32 => _int32?.ToString(),
-                StormGameEventDataType.UInt32 => _uInt32?.ToString(),
-                StormGameEventDataType.UInt64 => _uInt64?.ToString(),
-                StormGameEventDataType.Blob => _blob != null ? @$"""{_blob}""" : null,
-                StormGameEventDataType.Array => _array != null ? $"[{string.Join(", ", _array.Select(i => i?.ToString()))}]" : null,
-                StormGameEventDataType.Structure => StructureByIndex != null ? $"{{{string.Join(", ", StructureByIndex.Values.Select(i => i?.ToString()))}}}" : null,
-                StormGameEventDataType.BitArray => _bitArray != null ? $"[{string.Join(", ", _bitArray.Select(i => i.ToString()))}]" : null,
+                StormGameEventDataType.Bool => Boolean?.ToString(),
+                StormGameEventDataType.Integer32 => Integer32?.ToString(),
+                StormGameEventDataType.UnsignedInteger32 => UnsignedInteger32?.ToString(),
+                StormGameEventDataType.UnsignedInteger64 => UnsignedInteger64?.ToString(),
+                StormGameEventDataType.Blob => Blob != null ? @$"""{Blob}""" : null,
+                StormGameEventDataType.Array => Array != null ? $"[{string.Join(", ", Array.Select(i => i?.ToString()))}]" : null,
+                StormGameEventDataType.Structure => Structure != null ? $"{{{string.Join(", ", Structure.Select(i => i?.ToString()))}}}" : null,
+                StormGameEventDataType.BitArray => BitArray != null ? $"[{string.Join(", ", BitArray.Select(i => i.ToString()))}]" : null,
 
                 _ => string.Empty,
             };

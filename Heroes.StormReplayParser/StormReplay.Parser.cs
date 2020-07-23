@@ -3,9 +3,7 @@ using Heroes.StormReplayParser.MpqHeroesTool;
 using Heroes.StormReplayParser.Replay;
 using System;
 using System.Buffers;
-using System.Collections;
 using System.Linq;
-using System.Security.Principal;
 
 namespace Heroes.StormReplayParser
 {

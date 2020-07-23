@@ -2,7 +2,6 @@
 using Heroes.StormReplayParser.MpqHeroesTool;
 using Heroes.StormReplayParser.Player;
 using System;
-using System.Collections.Generic;
 
 namespace Heroes.StormReplayParser.MpqFiles
 {
@@ -35,7 +34,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                 // type
                 StormGameEventType gameEventType = (StormGameEventType)bitReader.ReadBits(7);
 
-                StormGameEvent? gameEvent = null;
+                StormGameEvent? gameEvent;
 
                 switch (gameEventType)
                 {
@@ -51,10 +50,10 @@ namespace Heroes.StormReplayParser.MpqFiles
                     case StormGameEventType.STriggerMovieFinishedEvent:
                     case StormGameEventType.STriggerGameCreditsFinishedEvent:
                     case StormGameEventType.STriggerProfilerLoggingFinishedEvent:
-                        gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(new Dictionary<int, StormGameEventData>(0)));
+                        gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(new StormDataStructure<StormGameEventData>(0)));
                         break;
                     case StormGameEventType.SUserOptionsEvent:
-                        Dictionary<int, StormGameEventData> structure = new Dictionary<int, StormGameEventData>(14)
+                        StormDataStructure<StormGameEventData> structure = new StormDataStructure<StormGameEventData>(14)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBoolean()), // m_gameFullyDownloaded
                             [1] = new StormGameEventData(bitReader.ReadBoolean()), // m_developmentCheatsEnabled
@@ -75,7 +74,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SBankFileEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBlobAsString(7)), // m_name
                         };
@@ -83,7 +82,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SBankSectionEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBlobAsString(6)), // m_name
                         };
@@ -91,7 +90,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SBankKeyEvent:
-                        structure = new Dictionary<int, StormGameEventData>(3)
+                        structure = new StormDataStructure<StormGameEventData>(3)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBlobAsString(6)), // m_name
                             [1] = new StormGameEventData(bitReader.ReadBits(32)), // m_type
@@ -101,7 +100,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SBankValueEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_type
                             [1] = new StormGameEventData(bitReader.ReadBlobAsString(6)), // m_name
@@ -117,7 +116,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                             signatureArray[i] = new StormGameEventData(bitReader.ReadBits(8));
                         }
 
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData(signatureArray), // m_signature
                             [1] = new StormGameEventData(bitReader.ReadBlobAsString(7)), // m_toonHandle
@@ -126,10 +125,10 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SCameraSaveEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(3)), // m_which
-                            [1] = new StormGameEventData(new Dictionary<int, StormGameEventData>(2) // m_target
+                            [1] = new StormGameEventData(new StormDataStructure<StormGameEventData>(2) // m_target
                             {
                                 [0] = new StormGameEventData(bitReader.ReadBits(16)), // x
                                 [1] = new StormGameEventData(bitReader.ReadBits(16)), // y
@@ -139,7 +138,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SSaveGameEvent:
-                        structure = new Dictionary<int, StormGameEventData>(5)
+                        structure = new StormDataStructure<StormGameEventData>(5)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBlobAsString(11)), // m_fileName
                             [1] = new StormGameEventData(bitReader.ReadBoolean()), // m_automatic
@@ -151,7 +150,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SCommandManagerResetEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_sequence
                         };
@@ -159,7 +158,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SGameCheatEvent:
-                        Dictionary<int, StormGameEventData>? targetChoice = null;
+                        StormDataStructure<StormGameEventData>? targetChoice = null;
 
                         switch (bitReader.ReadBits(2))
                         {
@@ -170,7 +169,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                                 break;
                             case 2: // TargetUnit
-                                targetChoice = new Dictionary<int, StormGameEventData>(7)
+                                targetChoice = new StormDataStructure<StormGameEventData>(7)
                                 {
                                     [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_targetUnitFlags
                                     [1] = new StormGameEventData(bitReader.ReadBits(8)), // m_timer
@@ -191,9 +190,9 @@ namespace Heroes.StormReplayParser.MpqFiles
                                 throw new NotImplementedException();
                         }
 
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
-                            [0] = new StormGameEventData(new Dictionary<int, StormGameEventData>(4) // m_data
+                            [0] = new StormGameEventData(new StormDataStructure<StormGameEventData>(4) // m_data
                             {
                                 [0] = new StormGameEventData(targetChoice), // m_target
                                 [1] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_time
@@ -206,11 +205,11 @@ namespace Heroes.StormReplayParser.MpqFiles
                         break;
                     case StormGameEventType.SCmdEvent:
                         if (replay.ReplayBuild < 33684)
-                            structure = new Dictionary<int, StormGameEventData>(5);
+                            structure = new StormDataStructure<StormGameEventData>(5);
                         else if (replay.ReplayBuild < 44256)
-                            structure = new Dictionary<int, StormGameEventData>(6);
+                            structure = new StormDataStructure<StormGameEventData>(6);
                         else
-                            structure = new Dictionary<int, StormGameEventData>(7);
+                            structure = new StormDataStructure<StormGameEventData>(7);
 
                         // m_cmdFlags
                         if (replay.ReplayBuild < 33684)
@@ -231,7 +230,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         // m_abil
                         if (bitReader.ReadBoolean())
                         {
-                            Dictionary<int, StormGameEventData> abilStructure = new Dictionary<int, StormGameEventData>(3)
+                            StormDataStructure<StormGameEventData> abilStructure = new StormDataStructure<StormGameEventData>(3)
                             {
                                 [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_abilLink
                                 [1] = new StormGameEventData(bitReader.ReadBits(5)), // m_abilCmdIndex
@@ -245,7 +244,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         }
 
                         // m_data
-                        Dictionary<int, StormGameEventData>? dataChoice;
+                        StormDataStructure<StormGameEventData>? dataChoice;
 
                         switch (bitReader.ReadBits(2))
                         {
@@ -259,7 +258,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                                 break;
                             case 2: // TargetUnit
-                                dataChoice = new Dictionary<int, StormGameEventData>(7)
+                                dataChoice = new StormDataStructure<StormGameEventData>(7)
                                 {
                                     [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_targetUnitFlags
                                     [1] = new StormGameEventData(bitReader.ReadBits(8)), // m_timer
@@ -320,46 +319,67 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SSelectionDeltaEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(4)), // m_controlGroupId
-                            [1] = new StormGameEventData(new Dictionary<int, StormGameEventData>(4) // m_delta
-                            {
-                                [0] = new StormGameEventData(bitReader.ReadBits(5)), // m_subgroupIndex
-                                [1] = MaskChoice(replay, ref bitReader), // m_removeMask
-                            }),
+                            [1] = new StormGameEventData(new StormDataStructure<StormGameEventData>(4)), // m_delta
                         };
 
+                        // m_subgroupIndex
+                        if (replay.ReplayVersion.Major < 2)
+                            structure[1].Structure![0] = new StormGameEventData(bitReader.ReadBits(9));
+                        else
+                            structure[1].Structure![0] = new StormGameEventData(bitReader.ReadBits(5));
+
+                        structure[1].Structure![1] = MaskChoice(replay, ref bitReader); // m_removeMask
+
                         // m_addSubgroups
-                        StormGameEventData[] addSubgroupsArray = new StormGameEventData[bitReader.ReadBits(6)];
+                        StormGameEventData[] addSubgroupsArray;
+
+                        if (replay.ReplayVersion.Major < 2)
+                            addSubgroupsArray = new StormGameEventData[bitReader.ReadBits(9)];
+                        else
+                            addSubgroupsArray = new StormGameEventData[bitReader.ReadBits(6)];
+
                         for (int i = 0; i < addSubgroupsArray.Length; i++)
                         {
-                            Dictionary<int, StormGameEventData> subGroupStructure = new Dictionary<int, StormGameEventData>(4)
+                            StormDataStructure<StormGameEventData> subGroupStructure = new StormDataStructure<StormGameEventData>(4)
                             {
                                 [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_unitLink
                                 [1] = new StormGameEventData(bitReader.ReadBits(8)), // m_subgroupPriority
                                 [2] = new StormGameEventData(bitReader.ReadBits(8)), // m_intraSubgroupPriority
-                                [3] = new StormGameEventData(bitReader.ReadBits(replay.ReplayVersion.Major < 2 ? 9 : 6)), // m_count
                             };
+
+                            // m_count
+                            if (replay.ReplayVersion.Major < 2)
+                                subGroupStructure[3] = new StormGameEventData(bitReader.ReadBits(9));
+                            else
+                                subGroupStructure[3] = new StormGameEventData(bitReader.ReadBits(6));
 
                             addSubgroupsArray[i] = new StormGameEventData(subGroupStructure);
                         }
 
-                        structure[1].StructureByIndex![2] = new StormGameEventData(addSubgroupsArray);
+                        structure[1].Structure![2] = new StormGameEventData(addSubgroupsArray);
 
                         // m_addUnitTags
-                        StormGameEventData[] addUnitTagsArray = new StormGameEventData[bitReader.ReadBits(6)];
+                        StormGameEventData[] addUnitTagsArray;
+
+                        if (replay.ReplayVersion.Major < 2)
+                            addUnitTagsArray = new StormGameEventData[bitReader.ReadBits(9)];
+                        else
+                            addUnitTagsArray = new StormGameEventData[bitReader.ReadBits(6)];
+
                         for (int i = 0; i < addUnitTagsArray.Length; i++)
                         {
                             addUnitTagsArray[i] = new StormGameEventData(bitReader.ReadBits(32));
                         }
 
-                        structure[1].StructureByIndex![3] = new StormGameEventData(addUnitTagsArray);
+                        structure[1].Structure![3] = new StormGameEventData(addUnitTagsArray);
 
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SControlGroupUpdateEvent:
-                        structure = new Dictionary<int, StormGameEventData>(3)
+                        structure = new StormDataStructure<StormGameEventData>(3)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(4)), // m_controlGroupIndex
                         };
@@ -375,12 +395,12 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SSelectionSyncCheckEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(4)), // m_controlGroupId
                         };
 
-                        Dictionary<int, StormGameEventData> selectionSyncDataStructure = new Dictionary<int, StormGameEventData>(6); // m_selectionSyncData
+                        StormDataStructure<StormGameEventData> selectionSyncDataStructure = new StormDataStructure<StormGameEventData>(6); // m_selectionSyncData
 
                         if (replay.ReplayVersion.Major < 2)
                         {
@@ -404,7 +424,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerChatMessageEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBlobAsString(10)), // m_chatMessage
                         };
@@ -412,7 +432,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SDynamicButtonSwapEvent:
-                        structure = new Dictionary<int, StormGameEventData>(3)
+                        structure = new StormDataStructure<StormGameEventData>(3)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_unitTag
                             [1] = new StormGameEventData(bitReader.ReadBits(8)), // m_buttonSlotA
@@ -422,7 +442,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SSetAbsoluteGameSpeedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(3)), // m_speed
                         };
@@ -430,7 +450,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SAddAbsoluteGameSpeedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(8) - 128)), // m_delta
                         };
@@ -438,9 +458,9 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerPingEvent:
-                        structure = new Dictionary<int, StormGameEventData>(4)
+                        structure = new StormDataStructure<StormGameEventData>(4)
                         {
-                            [0] = new StormGameEventData(new Dictionary<int, StormGameEventData>(2) // m_point
+                            [0] = new StormGameEventData(new StormDataStructure<StormGameEventData>(2) // m_point
                             {
                                 [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // x
                                 [1] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // y
@@ -453,7 +473,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SBroadcastCheatEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBlobAsString(10)), // m_verb
                             [1] = new StormGameEventData(bitReader.ReadBlobAsString(10)), // m_arguments
@@ -462,7 +482,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SAllianceEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_alliance
                             [1] = new StormGameEventData(bitReader.ReadBits(32)), // m_control
@@ -471,7 +491,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SUnitClickEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_unitTag
                         };
@@ -479,7 +499,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SUnitHighlightEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_unitTag
                             [1] = new StormGameEventData(bitReader.ReadBits(8)), // m_flags
@@ -488,7 +508,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerReplySelectedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_conversationId
                             [1] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_replyId
@@ -497,13 +517,13 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SHijackReplayGameEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2);
+                        structure = new StormDataStructure<StormGameEventData>(2);
 
                         // m_userInfos
                         StormGameEventData[] userInfosArray = new StormGameEventData[bitReader.ReadBits(5)];
                         for (int i = 0; i < userInfosArray.Length; i++)
                         {
-                            userInfosArray[i] = new StormGameEventData(new Dictionary<int, StormGameEventData>(6)
+                            userInfosArray[i] = new StormGameEventData(new StormDataStructure<StormGameEventData>(6)
                             {
                                 [0] = new StormGameEventData(bitReader.ReadBits(4)), // m_gameUserId
                                 [1] = new StormGameEventData(bitReader.ReadBits(2)), // m_observe
@@ -513,19 +533,19 @@ namespace Heroes.StormReplayParser.MpqFiles
                             // m_toonHandle
                             if (bitReader.ReadBoolean())
                             {
-                                userInfosArray[i].StructureByIndex![3] = new StormGameEventData(bitReader.ReadBlobAsString(7));
+                                userInfosArray[i].Structure![3] = new StormGameEventData(bitReader.ReadBlobAsString(7));
                             }
 
                             // m_clanTag
                             if (bitReader.ReadBoolean())
                             {
-                                userInfosArray[i].StructureByIndex![4] = new StormGameEventData(bitReader.ReadBlobAsString(8));
+                                userInfosArray[i].Structure![4] = new StormGameEventData(bitReader.ReadBlobAsString(8));
                             }
 
                             // m_clanLogo
                             if (bitReader.ReadBoolean())
                             {
-                                userInfosArray[i].StructureByIndex![5] = new StormGameEventData(bitReader.ReadStringFromBytes(40));
+                                userInfosArray[i].Structure![5] = new StormGameEventData(bitReader.ReadStringFromBytes(40));
                             }
                         }
 
@@ -535,7 +555,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerSoundLengthQueryEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_soundHash
                             [1] = new StormGameEventData(bitReader.ReadBits(32)), // m_length
@@ -544,7 +564,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerSoundOffsetEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_sound
                         };
@@ -552,7 +572,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerTransmissionOffsetEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_transmissionId
                             [1] = new StormGameEventData(bitReader.ReadBits(32)), // m_thread
@@ -561,7 +581,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerTransmissionCompleteEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_transmissionId
                         };
@@ -569,12 +589,12 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SCameraUpdateEvent:
-                        structure = new Dictionary<int, StormGameEventData>(6);
+                        structure = new StormDataStructure<StormGameEventData>(6);
 
                         // m_target
                         if (bitReader.ReadBoolean())
                         {
-                            structure[0] = new StormGameEventData(new Dictionary<int, StormGameEventData>(2)
+                            structure[0] = new StormGameEventData(new StormDataStructure<StormGameEventData>(2)
                             {
                                 [0] = new StormGameEventData(bitReader.ReadBits(16)), // x
                                 [1] = new StormGameEventData(bitReader.ReadBits(16)), // y
@@ -610,7 +630,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerDialogControlEvent:
-                        structure = new Dictionary<int, StormGameEventData>(3)
+                        structure = new StormDataStructure<StormGameEventData>(3)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_controlId
                             [1] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_eventType
@@ -620,7 +640,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         switch (bitReader.ReadBits(3))
                         {
                             case 0: // None
-                                structure[2] = new StormGameEventData(structureByIndex: null);
+                                structure[2] = new StormGameEventData(structure: null);
                                 break;
                             case 1: // Checked
                                 structure[2] = new StormGameEventData(bitReader.ReadBoolean());
@@ -637,7 +657,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                             case 5: // MouseButton (old), MouseEvent
                                 if (replay.ReplayBuild == 57547 || replay.ReplayBuild > 57589)
                                 {
-                                    structure[2] = new StormGameEventData(new Dictionary<int, StormGameEventData>(2) // MouseEvent
+                                    structure[2] = new StormGameEventData(new StormDataStructure<StormGameEventData>(2) // MouseEvent
                                     {
                                         [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_button
                                         [1] = new StormGameEventData(bitReader.ReadBits(16)), // m_metaKeyFlags
@@ -665,9 +685,9 @@ namespace Heroes.StormReplayParser.MpqFiles
                         for (int i = 0; i < mlengthArray.Length; i++)
                             mlengthArray[i] = new StormGameEventData(bitReader.ReadBits(32));
 
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
-                            [0] = new StormGameEventData(new Dictionary<int, StormGameEventData>(2) // m_syncInfo
+                            [0] = new StormGameEventData(new StormDataStructure<StormGameEventData>(2) // m_syncInfo
                             {
                                 [0] = new StormGameEventData(soundHashArray), // m_soundHash
                                 [1] = new StormGameEventData(mlengthArray), // m_length
@@ -677,7 +697,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerConversationSkippedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(1)), // m_skipType
                         };
@@ -685,16 +705,16 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerMouseClickedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(5)
+                        structure = new StormDataStructure<StormGameEventData>(5)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_button
                             [1] = new StormGameEventData(bitReader.ReadBoolean()), // m_down
-                            [2] = new StormGameEventData(new Dictionary<int, StormGameEventData>(2) // m_posUI
+                            [2] = new StormGameEventData(new StormDataStructure<StormGameEventData>(2) // m_posUI
                             {
                                 [0] = new StormGameEventData(bitReader.ReadBits(11)), // x
                                 [1] = new StormGameEventData(bitReader.ReadBits(11)), // y
                             }),
-                            [3] = new StormGameEventData(new Dictionary<int, StormGameEventData>(2) // m_posWorld
+                            [3] = new StormGameEventData(new StormDataStructure<StormGameEventData>(3) // m_posWorld
                             {
                                 [0] = new StormGameEventData(bitReader.ReadBits(20)), // x
                                 [1] = new StormGameEventData(bitReader.ReadBits(20)), // y
@@ -706,14 +726,14 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerMouseMovedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(3)
+                        structure = new StormDataStructure<StormGameEventData>(3)
                         {
-                            [0] = new StormGameEventData(new Dictionary<int, StormGameEventData>(2) // m_posUI
+                            [0] = new StormGameEventData(new StormDataStructure<StormGameEventData>(2) // m_posUI
                             {
                                 [0] = new StormGameEventData(bitReader.ReadBits(11)), // x
                                 [1] = new StormGameEventData(bitReader.ReadBits(11)), // y
                             }),
-                            [1] = new StormGameEventData(new Dictionary<int, StormGameEventData>(2) // m_posWorld
+                            [1] = new StormGameEventData(new StormDataStructure<StormGameEventData>(3) // m_posWorld
                             {
                                 [0] = new StormGameEventData(bitReader.ReadBits(20)), // x
                                 [1] = new StormGameEventData(bitReader.ReadBits(20)), // y
@@ -725,7 +745,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SAchievementAwardedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_achievementLink
                         };
@@ -733,7 +753,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerHotkeyPressedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_hotkey
                             [1] = new StormGameEventData(bitReader.ReadBoolean()), // m_down
@@ -742,7 +762,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerTargetModeUpdateEvent:
-                        structure = new Dictionary<int, StormGameEventData>(3)
+                        structure = new StormDataStructure<StormGameEventData>(3)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_abilLink
                             [1] = new StormGameEventData(bitReader.ReadBits(5)), // m_abilCmdIndex
@@ -752,7 +772,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerSoundtrackDoneEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_soundtrack
                         };
@@ -760,7 +780,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerKeyPressedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(8) - 128)), // m_key
                             [1] = new StormGameEventData((int)(bitReader.ReadBits(8) - 128)), // m_flags
@@ -769,7 +789,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerMovieFunctionEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBlobAsString(7)), // m_functionName
                         };
@@ -777,7 +797,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerCommandErrorEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_error
                         };
@@ -785,7 +805,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         // m_abil
                         if (bitReader.ReadBoolean())
                         {
-                            structure[1] = new StormGameEventData(new Dictionary<int, StormGameEventData>(3)
+                            structure[1] = new StormGameEventData(new StormDataStructure<StormGameEventData>(3)
                             {
                                 [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_abilLink
                                 [1] = new StormGameEventData(bitReader.ReadBits(5)), // m_abilCmdIndex
@@ -794,14 +814,14 @@ namespace Heroes.StormReplayParser.MpqFiles
                             // m_abilCmdData
                             if (bitReader.ReadBoolean())
                             {
-                                structure[1].StructureByIndex![2] = new StormGameEventData(bitReader.ReadBits(8));
+                                structure[1].Structure![2] = new StormGameEventData(bitReader.ReadBits(8));
                             }
                         }
 
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SDecrementGameTimeRemainingEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(19)), // m_decrementMs
                         };
@@ -809,7 +829,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerPortraitLoadedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_portraitId
                         };
@@ -817,7 +837,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerCustomDialogDismissedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_result
                         };
@@ -825,7 +845,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerGameMenuItemSelectedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_gameMenuItemIndex
                         };
@@ -833,7 +853,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerMouseWheelEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(16) - 32768)), // m_wheelSpin
                             [1] = new StormGameEventData((int)(bitReader.ReadBits(8) - 128)), // m_flags
@@ -842,7 +862,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerButtonPressedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_button
                         };
@@ -850,7 +870,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerCutsceneBookmarkFiredEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_cutsceneId
                             [1] = new StormGameEventData(bitReader.ReadBlobAsString(7)), // m_bookmarkName
@@ -859,7 +879,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerCutsceneEndSceneFiredEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_cutsceneId
                         };
@@ -867,7 +887,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerCutsceneConversationLineEvent:
-                        structure = new Dictionary<int, StormGameEventData>(3)
+                        structure = new StormDataStructure<StormGameEventData>(3)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_cutsceneId
                             [1] = new StormGameEventData(bitReader.ReadBlobAsString(7)), // m_conversationLine
@@ -877,7 +897,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerCutsceneConversationLineMissingEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // m_cutsceneId
                             [1] = new StormGameEventData(bitReader.ReadBlobAsString(7)), // m_conversationLine
@@ -886,10 +906,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SGameUserLeaveEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
-                        {
-                            [0] = new StormGameEventData(bitReader.ReadBits(5)),
-                        };
+                        structure = new StormDataStructure<StormGameEventData>(1);
 
                         // m_leaveReason
                         if (replay.ReplayBuild < 55929)
@@ -900,7 +917,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SGameUserJoinEvent:
-                        structure = new Dictionary<int, StormGameEventData>(7)
+                        structure = new StormDataStructure<StormGameEventData>(7)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(2)), // m_observe
                             [1] = new StormGameEventData(bitReader.ReadBlobAsString(8)), // m_name
@@ -935,7 +952,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SCommandManagerStateEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(2)), // m_state
                         };
@@ -952,7 +969,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SCmdUpdateTargetPointEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2);
+                        structure = new StormDataStructure<StormGameEventData>(2);
 
                         if (replay.ReplayBuild >= 40336)
                         {
@@ -971,9 +988,9 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SCmdUpdateTargetUnitEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2);
+                        structure = new StormDataStructure<StormGameEventData>(2);
 
-                        if (replay.ReplayBuild >= 33684)
+                        if (replay.ReplayBuild >= 40336)
                         {
                             // m_sequence
                             if (bitReader.ReadBoolean())
@@ -983,11 +1000,13 @@ namespace Heroes.StormReplayParser.MpqFiles
                         }
 
                         // m_target
-                        Dictionary<int, StormGameEventData> targetStructure = new Dictionary<int, StormGameEventData>(7);
-                        targetStructure[0] = new StormGameEventData(bitReader.ReadBits(16)); // m_targetUnitFlags
-                        targetStructure[1] = new StormGameEventData(bitReader.ReadBits(8)); // m_timer
-                        targetStructure[2] = new StormGameEventData(bitReader.ReadBits(32)); // m_tag
-                        targetStructure[3] = new StormGameEventData(bitReader.ReadBits(16)); // m_snapshotUnitLink
+                        StormDataStructure<StormGameEventData> targetStructure = new StormDataStructure<StormGameEventData>(7)
+                        {
+                            [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_targetUnitFlags
+                            [1] = new StormGameEventData(bitReader.ReadBits(8)), // m_timer
+                            [2] = new StormGameEventData(bitReader.ReadBits(32)), // m_tag
+                            [3] = new StormGameEventData(bitReader.ReadBits(16)), // m_snapshotUnitLink
+                        };
 
                         if (bitReader.ReadBoolean())
                             targetStructure[4] = new StormGameEventData(bitReader.ReadBits(4)); // m_snapshotControlPlayerId
@@ -1002,7 +1021,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerAnimLengthQueryByNameEvent:
-                        structure = new Dictionary<int, StormGameEventData>(3)
+                        structure = new StormDataStructure<StormGameEventData>(3)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_queryId
                             [1] = new StormGameEventData(bitReader.ReadBits(32)), // m_lengthMs
@@ -1012,7 +1031,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerAnimLengthQueryByPropsEvent:
-                        structure = new Dictionary<int, StormGameEventData>(2)
+                        structure = new StormDataStructure<StormGameEventData>(2)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_queryId
                             [1] = new StormGameEventData(bitReader.ReadBits(32)), // m_lengthMs
@@ -1021,7 +1040,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.STriggerAnimOffsetEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_animWaitQueryId
                         };
@@ -1029,7 +1048,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SCatalogModifyEvent:
-                        structure = new Dictionary<int, StormGameEventData>(4)
+                        structure = new StormDataStructure<StormGameEventData>(4)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(8)), // m_catalog
                             [1] = new StormGameEventData(bitReader.ReadBits(16)), // m_entry
@@ -1040,7 +1059,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SHeroTalentTreeSelectedEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(32)), // m_index
                         };
@@ -1048,7 +1067,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
                         break;
                     case StormGameEventType.SHeroTalentTreeSelectionPanelToggledEvent:
-                        structure = new Dictionary<int, StormGameEventData>(1)
+                        structure = new StormDataStructure<StormGameEventData>(1)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBoolean()), // m_shown
                         };
@@ -1073,17 +1092,28 @@ namespace Heroes.StormReplayParser.MpqFiles
             switch (bitReader.ReadBits(2))
             {
                 case 0: // None
-                    return new StormGameEventData(structureByIndex: null);
+                    return new StormGameEventData(structure: null);
                 case 1: // Mask
                     if (replay.ReplayVersion.Major < 2)
-                        return new StormGameEventData(bitReader.ReadBitArray(9));
+                        return new StormGameEventData(bitReader.ReadBitArray(bitReader.ReadBits(9)));
                     else
-                        return new StormGameEventData(bitReader.ReadBitArray(6));
+                        return new StormGameEventData(bitReader.ReadBitArray(bitReader.ReadBits(6)));
                 case 2: // OneIndices
                 case 3: // ZeroIndices
-                    StormGameEventData[] indicesArray = new StormGameEventData[bitReader.ReadBits(6)];
+                    StormGameEventData[] indicesArray;
+
+                    if (replay.ReplayVersion.Major < 2)
+                        indicesArray = new StormGameEventData[bitReader.ReadBits(9)];
+                    else
+                        indicesArray = new StormGameEventData[bitReader.ReadBits(6)];
+
                     for (int i = 0; i < indicesArray.Length; i++)
-                        indicesArray[i] = new StormGameEventData(bitReader.ReadBits(5));
+                    {
+                        if (replay.ReplayVersion.Major < 2)
+                            indicesArray[i] = new StormGameEventData(bitReader.ReadBits(9));
+                        else
+                            indicesArray[i] = new StormGameEventData(bitReader.ReadBits(5));
+                    }
 
                     return new StormGameEventData(indicesArray);
                 default:
@@ -1092,9 +1122,9 @@ namespace Heroes.StormReplayParser.MpqFiles
         }
 
         // ('_struct',[[('x',87,-3),('y',87,-2),('z',88,-1)]])
-        private static Dictionary<int, StormGameEventData> PointXYZStucture(ref BitReader bitReader)
+        private static StormDataStructure<StormGameEventData> PointXYZStucture(ref BitReader bitReader)
         {
-            return new Dictionary<int, StormGameEventData>(3)
+            return new StormDataStructure<StormGameEventData>(3)
             {
                 [0] = new StormGameEventData(bitReader.ReadBits(20)), // x
                 [1] = new StormGameEventData(bitReader.ReadBits(20)), // y

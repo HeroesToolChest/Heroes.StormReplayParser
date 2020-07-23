@@ -1,5 +1,8 @@
 ﻿namespace Heroes.StormReplayParser.MpqHeroesTool
 {
+    /// <summary>
+    /// Specifies the endian type.
+    /// </summary>
     public enum EndianType
     {
         /// <summary>

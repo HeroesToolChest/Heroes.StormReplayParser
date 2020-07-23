@@ -45,11 +45,21 @@ namespace Heroes.StormReplayParser.Decoders
                     break;
                 case 0x05: // struct
                     int size = (int)bitReader.ReadVInt();
-                    StructureByIndex = new Dictionary<int, VersionedDecoder>(size);
+                    Structure = new List<VersionedDecoder>(size);
 
                     for (int i = 0; i < size; i++)
                     {
-                        StructureByIndex[(int)bitReader.ReadVInt()] = new VersionedDecoder(ref bitReader);
+                        int index = (int)bitReader.ReadVInt();
+
+                        if (index != i)
+                        {
+                            for (int j = i; j < index; j++)
+                            {
+                                Structure.Add(null!);
+                            }
+                        }
+
+                        Structure.Add(new VersionedDecoder(ref bitReader));
                     }
 
                     break;
@@ -73,7 +83,7 @@ namespace Heroes.StormReplayParser.Decoders
         /// <summary>
         /// Gets the dictionary containing another version decoder.
         /// </summary>
-        public Dictionary<int, VersionedDecoder>? StructureByIndex { get; private set; } = null;
+        public List<VersionedDecoder>? Structure { get; private set; } = null;
 
         /// <summary>
         /// Gets the optional data.
@@ -155,7 +165,7 @@ namespace Heroes.StormReplayParser.Decoders
                 0x02 => _value != null ? @$"""{Encoding.UTF8.GetString(_value)}""" : null,
                 0x03 => $"Choice: Flag: {BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value)} , Data: {ChoiceData}",
                 0x04 => OptionalData?.ToString(),
-                0x05 => StructureByIndex != null ? $"{{{string.Join(", ", StructureByIndex.Values.Select(i => i?.ToString()))}}}" : null,
+                0x05 => Structure != null ? $"{{{string.Join(", ", Structure.Select(i => i?.ToString()))}}}" : null,
                 0x06 => _value?[0].ToString(),
                 0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value).ToString(),
                 0x08 => BinaryPrimitives.ReadUInt64LittleEndian(_value).ToString(),

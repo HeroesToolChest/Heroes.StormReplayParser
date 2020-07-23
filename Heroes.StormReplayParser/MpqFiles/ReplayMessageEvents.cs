@@ -23,6 +23,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                 TimeSpan timeStamp = TimeSpan.FromSeconds(ticksElapsed / 16.0);
 
                 int playerIndex = (int)bitReader.ReadBits(5);
+
                 StormMessageEventType messageEventType = (StormMessageEventType)bitReader.ReadBits(4);
 
                 StormMessage? message = null;

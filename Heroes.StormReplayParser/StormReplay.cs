@@ -186,8 +186,8 @@ namespace Heroes.StormReplayParser
                     case TrackerEventType.HeroBannedEvent:
                         yield return new DraftPick()
                         {
-                            HeroSelected = trackerEvent.VersionedDecoder!.StructureByIndex![0].GetValueAsString(),
-                            SelectedPlayerSlotId = (int)trackerEvent.VersionedDecoder.StructureByIndex[1].GetValueAsUInt32(),
+                            HeroSelected = trackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
+                            SelectedPlayerSlotId = (int)trackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32(),
                             PickType = DraftPickType.Banned,
                         };
                         break;
@@ -195,8 +195,8 @@ namespace Heroes.StormReplayParser
                     case TrackerEventType.HeroPickedEvent:
                         yield return new DraftPick()
                         {
-                            HeroSelected = trackerEvent.VersionedDecoder!.StructureByIndex![0].GetValueAsString(),
-                            SelectedPlayerSlotId = (int)trackerEvent.VersionedDecoder.StructureByIndex[1].GetValueAsUInt32(),
+                            HeroSelected = trackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
+                            SelectedPlayerSlotId = (int)trackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32(),
                             PickType = DraftPickType.Picked,
                         };
                         break;
@@ -204,8 +204,8 @@ namespace Heroes.StormReplayParser
                     case TrackerEventType.HeroSwappedEvent:
                         yield return new DraftPick()
                         {
-                            HeroSelected = trackerEvent.VersionedDecoder!.StructureByIndex![0].GetValueAsString(),
-                            SelectedPlayerSlotId = (int)trackerEvent.VersionedDecoder.StructureByIndex[1].GetValueAsUInt32(),
+                            HeroSelected = trackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
+                            SelectedPlayerSlotId = (int)trackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32(),
                             PickType = DraftPickType.Swapped,
                         };
                         break;
@@ -254,18 +254,18 @@ namespace Heroes.StormReplayParser
             else if (team == StormTeam.Red && _teamRedLevels.IsValueCreated)
                 return _teamRedLevels.Value.Values;
 
-            foreach (TrackerEvent trackerEvent in TrackerEventsInternal.Where(x => x.TrackerEventType == TrackerEventType.StatGameEvent && x.VersionedDecoder?.StructureByIndex?[0].GetValueAsString() == "LevelUp"))
+            foreach (TrackerEvent trackerEvent in TrackerEventsInternal.Where(x => x.TrackerEventType == TrackerEventType.StatGameEvent && x.VersionedDecoder?.Structure?[0].GetValueAsString() == "LevelUp"))
             {
-                if (trackerEvent.VersionedDecoder?.StructureByIndex?[2].OptionalData?.ArrayData?[0].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "PlayerID" &&
-                    trackerEvent.VersionedDecoder?.StructureByIndex?[2].OptionalData?.ArrayData?[1].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "Level")
+                if (trackerEvent.VersionedDecoder?.Structure?[2].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].GetValueAsString() == "PlayerID" &&
+                    trackerEvent.VersionedDecoder?.Structure?[2].OptionalData?.ArrayData?[1].Structure?[0].Structure?[0].GetValueAsString() == "Level")
                 {
-                    int playerId = (int)trackerEvent.VersionedDecoder!.StructureByIndex![2].OptionalData!.ArrayData![0].StructureByIndex![1].GetValueAsUInt32();
+                    int playerId = (int)trackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32();
 
                     if (PlayersWithOpenSlots[playerId - 1].Team == team)
                     {
                         TeamLevel teamLevel = new TeamLevel()
                         {
-                            Level = (int)trackerEvent.VersionedDecoder!.StructureByIndex![2].OptionalData!.ArrayData![1].StructureByIndex![1].GetValueAsUInt32(),
+                            Level = (int)trackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![1].Structure![1].GetValueAsUInt32(),
                             Time = trackerEvent.Timestamp,
                         };
 
@@ -296,29 +296,29 @@ namespace Heroes.StormReplayParser
 
             foreach (TrackerEvent trackerEvent in TrackerEventsInternal.Where(x => x.TrackerEventType == TrackerEventType.StatGameEvent))
             {
-                string value = trackerEvent.VersionedDecoder!.StructureByIndex![0].GetValueAsString();
+                string value = trackerEvent.VersionedDecoder!.Structure![0].GetValueAsString();
 
                 if (value == "PeriodicXPBreakdown")
                 {
-                    if (team == (StormTeam)(trackerEvent.VersionedDecoder!.StructureByIndex![2].OptionalData!.ArrayData![0].StructureByIndex![1].GetValueAsUInt32() - 1) &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[2].OptionalData?.ArrayData?[1].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "TeamLevel" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[0].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "GameTime" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[1].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "PreviousGameTime" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[2].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "MinionXP" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[3].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "CreepXP" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[4].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "StructureXP" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[5].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "HeroXP" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[6].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "TrickleXP")
+                    if (team == (StormTeam)(trackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32() - 1) &&
+                        trackerEvent.VersionedDecoder?.Structure?[2].OptionalData?.ArrayData?[1].Structure?[0].Structure?[0].GetValueAsString() == "TeamLevel" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].GetValueAsString() == "GameTime" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[1].Structure?[0].Structure?[0].GetValueAsString() == "PreviousGameTime" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[2].Structure?[0].Structure?[0].GetValueAsString() == "MinionXP" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[3].Structure?[0].Structure?[0].GetValueAsString() == "CreepXP" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[4].Structure?[0].Structure?[0].GetValueAsString() == "StructureXP" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[5].Structure?[0].Structure?[0].GetValueAsString() == "HeroXP" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[6].Structure?[0].Structure?[0].GetValueAsString() == "TrickleXP")
                     {
                         teamXPBreakdown = new TeamXPBreakdown()
                         {
-                            Level = (int)trackerEvent.VersionedDecoder!.StructureByIndex![2].OptionalData!.ArrayData![1].StructureByIndex![1].GetValueAsUInt32(),
+                            Level = (int)trackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![1].Structure![1].GetValueAsUInt32(),
                             Time = trackerEvent.Timestamp,
-                            MinionXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![2].StructureByIndex![1].GetValueAsInt64() / 4096),
-                            CreepXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![3].StructureByIndex![1].GetValueAsInt64() / 4096),
-                            StructureXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![4].StructureByIndex![1].GetValueAsInt64() / 4096),
-                            HeroXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![5].StructureByIndex![1].GetValueAsInt64() / 4096),
-                            PassiveXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![6].StructureByIndex![1].GetValueAsInt64() / 4096),
+                            MinionXP = (int)(trackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![2].Structure![1].GetValueAsInt64() / 4096),
+                            CreepXP = (int)(trackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![3].Structure![1].GetValueAsInt64() / 4096),
+                            StructureXP = (int)(trackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![4].Structure![1].GetValueAsInt64() / 4096),
+                            HeroXP = (int)(trackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![5].Structure![1].GetValueAsInt64() / 4096),
+                            PassiveXP = (int)(trackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![6].Structure![1].GetValueAsInt64() / 4096),
                         };
 
                         yield return teamXPBreakdown;
@@ -326,26 +326,26 @@ namespace Heroes.StormReplayParser
                 }
                 else if (value == "EndOfGameXPBreakdown")
                 {
-                    int playerId = (int)trackerEvent.VersionedDecoder!.StructureByIndex![2].OptionalData!.ArrayData![0].StructureByIndex![1].GetValueAsUInt32();
+                    int playerId = (int)trackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32();
 
                     if (PlayersWithOpenSlots[playerId - 1].Team == team &&
                         teamXPBreakdown.Time != trackerEvent.Timestamp &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[2].OptionalData?.ArrayData?[0].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "PlayerID" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[0].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "MinionXP" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[1].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "CreepXP" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[2].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "StructureXP" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[3].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "HeroXP" &&
-                        trackerEvent.VersionedDecoder?.StructureByIndex?[3].OptionalData?.ArrayData?[4].StructureByIndex?[0].StructureByIndex?[0].GetValueAsString() == "TrickleXP")
+                        trackerEvent.VersionedDecoder?.Structure?[2].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].GetValueAsString() == "PlayerID" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].GetValueAsString() == "MinionXP" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[1].Structure?[0].Structure?[0].GetValueAsString() == "CreepXP" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[2].Structure?[0].Structure?[0].GetValueAsString() == "StructureXP" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[3].Structure?[0].Structure?[0].GetValueAsString() == "HeroXP" &&
+                        trackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[4].Structure?[0].Structure?[0].GetValueAsString() == "TrickleXP")
                     {
                         teamXPBreakdown = new TeamXPBreakdown()
                         {
                             Level = GetTeamFinalLevel(team),
                             Time = trackerEvent.Timestamp,
-                            MinionXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![0].StructureByIndex![1].GetValueAsInt64() / 4096),
-                            CreepXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![1].StructureByIndex![1].GetValueAsInt64() / 4096),
-                            StructureXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![2].StructureByIndex![1].GetValueAsInt64() / 4096),
-                            HeroXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![3].StructureByIndex![1].GetValueAsInt64() / 4096),
-                            PassiveXP = (int)(trackerEvent.VersionedDecoder!.StructureByIndex![3].OptionalData!.ArrayData![4].StructureByIndex![1].GetValueAsInt64() / 4096),
+                            MinionXP = (int)(trackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![0].Structure![1].GetValueAsInt64() / 4096),
+                            CreepXP = (int)(trackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![1].Structure![1].GetValueAsInt64() / 4096),
+                            StructureXP = (int)(trackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![2].Structure![1].GetValueAsInt64() / 4096),
+                            HeroXP = (int)(trackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![3].Structure![1].GetValueAsInt64() / 4096),
+                            PassiveXP = (int)(trackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![4].Structure![1].GetValueAsInt64() / 4096),
                         };
 
                         yield return teamXPBreakdown;
@@ -360,8 +360,8 @@ namespace Heroes.StormReplayParser
 
             if (trackerEvent.VersionedDecoder != null)
             {
-                Dictionary<string, int?[]> scoreResultsByScoreName = trackerEvent.VersionedDecoder.StructureByIndex![0].ArrayData
-                    .ToDictionary(x => x.StructureByIndex![0].GetValueAsString(), x => x.StructureByIndex![1].ArrayData.Select(i => i.ArrayData?.Length == 1 ? (int)i.ArrayData![0].StructureByIndex![0].GetValueAsInt64() : (int?)null).ToArray());
+                Dictionary<string, int?[]> scoreResultsByScoreName = trackerEvent.VersionedDecoder.Structure![0].ArrayData
+                    .ToDictionary(x => x.Structure![0].GetValueAsString(), x => x.Structure![1].ArrayData.Select(i => i.ArrayData?.Length == 1 ? (int)i.ArrayData![0].Structure![0].GetValueAsInt64() : (int?)null).ToArray());
 
                 for (int i = 0; i < ClientListByWorkingSetSlotID.Length; i++)
                 {
