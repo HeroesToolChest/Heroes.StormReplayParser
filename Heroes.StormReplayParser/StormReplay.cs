@@ -114,12 +114,17 @@ namespace Heroes.StormReplayParser
         /// <summary>
         /// Gets a collection of tracker events.
         /// </summary>
-        public IEnumerable<TrackerEvent> TrackerEvents => TrackerEventsInternal;
+        public IReadOnlyList<StormTrackerEvent> TrackerEvents => TrackerEventsInternal;
+
+        /// <summary>
+        /// Gets a collection of game events.
+        /// </summary>
+        public IReadOnlyList<StormGameEvent> GameEvents => GameEventsInternal;
 
         /// <summary>
         /// Gets a collection of all messages.
         /// </summary>
-        public IEnumerable<StormMessage> Messages => MessagesInternal;
+        public IReadOnlyList<StormMessage> Messages => MessagesInternal;
 
         /// <summary>
         /// Gets a collection of only chat messages.
@@ -153,7 +158,7 @@ namespace Heroes.StormReplayParser
         internal string?[][] TeamHeroAttributeIdBans { get; private set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
 
         internal List<StormGameEvent> GameEventsInternal { get; private set; } = new List<StormGameEvent>();
-        internal List<TrackerEvent> TrackerEventsInternal { get; private set; } = new List<TrackerEvent>();
+        internal List<StormTrackerEvent> TrackerEventsInternal { get; private set; } = new List<StormTrackerEvent>();
 
         internal List<StormMessage> MessagesInternal { get; private set; } = new List<StormMessage>();
 
@@ -176,14 +181,14 @@ namespace Heroes.StormReplayParser
         /// <returns></returns>
         public IEnumerable<DraftPick> GetDraftOrder()
         {
-            foreach (TrackerEvent trackerEvent in TrackerEventsInternal.Where(x =>
-                x.TrackerEventType == TrackerEventType.HeroBannedEvent ||
-                x.TrackerEventType == TrackerEventType.HeroPickedEvent ||
-                x.TrackerEventType == TrackerEventType.HeroSwappedEvent))
+            foreach (StormTrackerEvent trackerEvent in TrackerEventsInternal.Where(x =>
+                x.TrackerEventType == StormTrackerEventType.HeroBannedEvent ||
+                x.TrackerEventType == StormTrackerEventType.HeroPickedEvent ||
+                x.TrackerEventType == StormTrackerEventType.HeroSwappedEvent))
             {
                 switch (trackerEvent.TrackerEventType)
                 {
-                    case TrackerEventType.HeroBannedEvent:
+                    case StormTrackerEventType.HeroBannedEvent:
                         yield return new DraftPick()
                         {
                             HeroSelected = trackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
@@ -192,7 +197,7 @@ namespace Heroes.StormReplayParser
                         };
                         break;
 
-                    case TrackerEventType.HeroPickedEvent:
+                    case StormTrackerEventType.HeroPickedEvent:
                         yield return new DraftPick()
                         {
                             HeroSelected = trackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
@@ -201,7 +206,7 @@ namespace Heroes.StormReplayParser
                         };
                         break;
 
-                    case TrackerEventType.HeroSwappedEvent:
+                    case StormTrackerEventType.HeroSwappedEvent:
                         yield return new DraftPick()
                         {
                             HeroSelected = trackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
@@ -254,7 +259,7 @@ namespace Heroes.StormReplayParser
             else if (team == StormTeam.Red && _teamRedLevels.IsValueCreated)
                 return _teamRedLevels.Value.Values;
 
-            foreach (TrackerEvent trackerEvent in TrackerEventsInternal.Where(x => x.TrackerEventType == TrackerEventType.StatGameEvent && x.VersionedDecoder?.Structure?[0].GetValueAsString() == "LevelUp"))
+            foreach (StormTrackerEvent trackerEvent in TrackerEventsInternal.Where(x => x.TrackerEventType == StormTrackerEventType.StatGameEvent && x.VersionedDecoder?.Structure?[0].GetValueAsString() == "LevelUp"))
             {
                 if (trackerEvent.VersionedDecoder?.Structure?[2].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].GetValueAsString() == "PlayerID" &&
                     trackerEvent.VersionedDecoder?.Structure?[2].OptionalData?.ArrayData?[1].Structure?[0].Structure?[0].GetValueAsString() == "Level")
@@ -294,7 +299,7 @@ namespace Heroes.StormReplayParser
         {
             TeamXPBreakdown teamXPBreakdown = new TeamXPBreakdown();
 
-            foreach (TrackerEvent trackerEvent in TrackerEventsInternal.Where(x => x.TrackerEventType == TrackerEventType.StatGameEvent))
+            foreach (StormTrackerEvent trackerEvent in TrackerEventsInternal.Where(x => x.TrackerEventType == StormTrackerEventType.StatGameEvent))
             {
                 string value = trackerEvent.VersionedDecoder!.Structure![0].GetValueAsString();
 
@@ -356,7 +361,7 @@ namespace Heroes.StormReplayParser
 
         internal void SetStormPlayerData()
         {
-            TrackerEvent trackerEvent = TrackerEventsInternal.DefaultIfEmpty().LastOrDefault(x => x.TrackerEventType == TrackerEventType.ScoreResultEvent);
+            StormTrackerEvent trackerEvent = TrackerEventsInternal.DefaultIfEmpty().LastOrDefault(x => x.TrackerEventType == StormTrackerEventType.ScoreResultEvent);
 
             if (trackerEvent.VersionedDecoder != null)
             {

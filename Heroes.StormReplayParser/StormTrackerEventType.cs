@@ -3,7 +3,7 @@
     /// <summary>
     /// Specifies the event type.
     /// </summary>
-    public enum TrackerEventType
+    public enum StormTrackerEventType
     {
         /// <summary>
         /// Indicates a unit born event.

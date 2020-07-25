@@ -6,15 +6,15 @@ namespace Heroes.StormReplayParser
     /// <summary>
     /// Contains the properties for a tracker event.
     /// </summary>
-    public struct TrackerEvent : IEquatable<TrackerEvent>
+    public struct StormTrackerEvent : IEquatable<StormTrackerEvent>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TrackerEvent"/> struct.
+        /// Initializes a new instance of the <see cref="StormTrackerEvent"/> struct.
         /// </summary>
         /// <param name="trackerEventType">The event type of the tracker.</param>
         /// <param name="timestamp">The time the event took place.</param>
         /// <param name="versionedDecoder">Data associated with the event.</param>
-        public TrackerEvent(TrackerEventType trackerEventType, TimeSpan timestamp, VersionedDecoder? versionedDecoder = null)
+        public StormTrackerEvent(StormTrackerEventType trackerEventType, TimeSpan timestamp, VersionedDecoder? versionedDecoder = null)
         {
             TrackerEventType = trackerEventType;
             Timestamp = timestamp;
@@ -24,7 +24,7 @@ namespace Heroes.StormReplayParser
         /// <summary>
         /// Gets the type of the tracker event.
         /// </summary>
-        public TrackerEventType TrackerEventType { get; }
+        public StormTrackerEventType TrackerEventType { get; }
 
         /// <summary>
         /// Gets the time that the event took place.
@@ -42,7 +42,7 @@ namespace Heroes.StormReplayParser
         /// <param name="left">The left hand side of the operator.</param>
         /// <param name="right">The right hand side of the operator.</param>
         /// <returns><see langword="true"/> if the <paramref name="left"/> value is equal to the <paramref name="right"/> value; otherwise <see langword="false"/>.</returns>
-        public static bool operator ==(TrackerEvent? left, TrackerEvent? right)
+        public static bool operator ==(StormTrackerEvent? left, StormTrackerEvent? right)
         {
             if (left is null)
                 return right is null;
@@ -55,7 +55,7 @@ namespace Heroes.StormReplayParser
         /// <param name="left">The left hand side of the operator.</param>
         /// <param name="right">The right hand side of the operator.</param>
         /// <returns><see langword="true"/> if the <paramref name="left"/> value is not equal to the <paramref name="right"/> value; otherwise <see langword="false"/>.</returns>
-        public static bool operator !=(TrackerEvent? left, TrackerEvent? right)
+        public static bool operator !=(StormTrackerEvent? left, StormTrackerEvent? right)
         {
             return !(left == right);
         }
@@ -69,7 +69,7 @@ namespace Heroes.StormReplayParser
             if (obj is null)
                 return false;
 
-            if (!(obj is TrackerEvent trackerEvent))
+            if (!(obj is StormTrackerEvent trackerEvent))
                 return false;
             else
                 return Equals(trackerEvent);
@@ -82,7 +82,7 @@ namespace Heroes.StormReplayParser
         }
 
         /// <inheritdoc/>
-        public bool Equals(TrackerEvent other)
+        public bool Equals(StormTrackerEvent other)
         {
             return Timestamp == other.Timestamp &&
                 TrackerEventType == other.TrackerEventType &&

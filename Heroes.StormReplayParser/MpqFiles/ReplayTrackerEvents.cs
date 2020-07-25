@@ -19,10 +19,10 @@ namespace Heroes.StormReplayParser.MpqFiles
                 gameLoop += new VersionedDecoder(ref bitReader).ChoiceData!.GetValueAsUInt32();
 
                 TimeSpan timeSpan = TimeSpan.FromSeconds(gameLoop / 16.0);
-                TrackerEventType type = (TrackerEventType)new VersionedDecoder(ref bitReader).GetValueAsUInt32();
+                StormTrackerEventType type = (StormTrackerEventType)new VersionedDecoder(ref bitReader).GetValueAsUInt32();
                 VersionedDecoder decoder = new VersionedDecoder(ref bitReader);
 
-                replay.TrackerEventsInternal.Add(new TrackerEvent(type, timeSpan, decoder));
+                replay.TrackerEventsInternal.Add(new StormTrackerEvent(type, timeSpan, decoder));
             }
         }
     }
