@@ -5,7 +5,7 @@ namespace Heroes.StormReplayParser.Replay
     /// <summary>
     /// Contains the properties for the periodic experience breakdown.
     /// </summary>
-    public class TeamXPBreakdown
+    public class StormTeamXPBreakdown
     {
         /// <summary>
         /// Gets or sets the level of the team.

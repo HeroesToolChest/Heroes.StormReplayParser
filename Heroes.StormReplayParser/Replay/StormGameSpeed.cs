@@ -3,7 +3,7 @@
     /// <summary>
     /// Specifies the game speed.
     /// </summary>
-    public enum GameSpeed
+    public enum StormGameSpeed
     {
         /// <summary>
         /// Indicates an unknown game speed.

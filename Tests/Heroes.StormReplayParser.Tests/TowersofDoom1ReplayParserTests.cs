@@ -45,7 +45,7 @@ namespace Heroes.StormReplayParser.Tests
         public void StormReplayInitDataTest()
         {
             Assert.AreEqual(4013533878, _stormReplay.RandomValue);
-            Assert.AreEqual(GameMode.QuickMatch, _stormReplay.GameMode);
+            Assert.AreEqual(StormGameMode.QuickMatch, _stormReplay.GameMode);
 
             List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
             StormPlayer player0 = players[0];
@@ -69,7 +69,7 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void DraftOrderTest()
         {
-            var draft = _stormReplay.GetDraftOrder().ToList();
+            var draft = _stormReplay.DraftPicks.ToList();
 
             Assert.AreEqual(0, draft.Count);
         }
@@ -78,33 +78,17 @@ namespace Heroes.StormReplayParser.Tests
         public void PlayersScoreResultTest()
         {
             StormPlayer player = _stormReplay.StormPlayers.ToList()[3];
-            ScoreResult scoreResult = player.ScoreResult;
+            ScoreResult? scoreResult = player.ScoreResult;
 
-            Assert.AreEqual(0, scoreResult.Assists);
-            Assert.AreEqual(0, scoreResult.ClutchHealsPerformed);
-            Assert.AreEqual(0, scoreResult.CreepDamage);
-            Assert.AreEqual(0, scoreResult.TownKills);
-            Assert.AreEqual(0, scoreResult.VengeancesPerformed);
-            Assert.AreEqual(0, scoreResult.WatchTowerCaptures);
-            Assert.AreEqual(0, scoreResult.MinionKills);
-            Assert.AreEqual(0, scoreResult.RegenGlobes);
-            Assert.AreEqual(null, scoreResult.PhysicalDamage);
-            Assert.AreEqual(null, scoreResult.SpellDamage);
-            Assert.AreEqual(null, scoreResult.Tier1Talent);
-            Assert.AreEqual(null, scoreResult.Tier4Talent);
-            Assert.AreEqual(null, scoreResult.Tier7Talent);
-            Assert.AreEqual(null, scoreResult.Tier10Talent);
-            Assert.AreEqual(null, scoreResult.Tier13Talent);
-            Assert.AreEqual(null, scoreResult.Tier16Talent);
-            Assert.AreEqual(null, scoreResult.Tier20Talent);
+            Assert.IsNull(scoreResult);
         }
 
         [TestMethod]
         public void PlayersMatchAwardsTest()
         {
-            List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[3].MatchAwards.ToList();
+            List<MatchAwardType>? matchAwards = _stormReplay.StormPlayers.ToList()[3].MatchAwards?.ToList();
 
-            Assert.AreEqual(0, matchAwards.Count);
+            Assert.IsNull(matchAwards);
         }
 
         [TestMethod]

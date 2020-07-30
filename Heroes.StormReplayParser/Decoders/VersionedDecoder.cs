@@ -12,18 +12,15 @@ namespace Heroes.StormReplayParser.Decoders
     /// </summary>
     public class VersionedDecoder
     {
-        private readonly byte _dataType;
-        private readonly byte[]? _value = null;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="VersionedDecoder"/> class.
         /// </summary>
         /// <param name="bitReader">The <see cref="BitReader"/> containg the bytes to read.</param>
         public VersionedDecoder(ref BitReader bitReader)
         {
-            _dataType = bitReader.ReadAlignedByte();
+            DataType = bitReader.ReadAlignedByte();
 
-            switch (_dataType)
+            switch (DataType)
             {
                 case 0x00: // array
                     ArrayData = new VersionedDecoder[bitReader.ReadVInt()];
@@ -33,10 +30,10 @@ namespace Heroes.StormReplayParser.Decoders
                 case 0x01: // bitblob
                     throw new NotImplementedException();
                 case 0x02: // blob
-                    _value = bitReader.ReadAlignedBytes((int)bitReader.ReadVInt()).ToArray();
+                    Value = bitReader.ReadAlignedBytes((int)bitReader.ReadVInt()).ToArray();
                     break;
                 case 0x03: // choice
-                    _value = bitReader.ReadBytesForVInt().ToArray();
+                    Value = bitReader.ReadBytesForVInt().ToArray();
                     ChoiceData = new VersionedDecoder(ref bitReader);
                     break;
                 case 0x04: // optional
@@ -64,16 +61,16 @@ namespace Heroes.StormReplayParser.Decoders
 
                     break;
                 case 0x06: // u8
-                    _value = new byte[] { bitReader.ReadAlignedByte() };
+                    Value = new byte[] { bitReader.ReadAlignedByte() };
                     break;
                 case 0x07: // u32
-                    _value = bitReader.ReadAlignedBytes(4).ToArray();
+                    Value = bitReader.ReadAlignedBytes(4).ToArray();
                     break;
                 case 0x08: // u64
-                    _value = bitReader.ReadAlignedBytes(8).ToArray();
+                    Value = bitReader.ReadAlignedBytes(8).ToArray();
                     break;
                 case 0x09: // vint
-                    _value = bitReader.ReadBytesForVInt().ToArray();
+                    Value = bitReader.ReadBytesForVInt().ToArray();
                     break;
                 default:
                     throw new NotImplementedException();
@@ -101,6 +98,16 @@ namespace Heroes.StormReplayParser.Decoders
         public VersionedDecoder[]? ArrayData { get; private set; } = null;
 
         /// <summary>
+        /// Gets the current byte value.
+        /// </summary>
+        public byte[]? Value { get; } = null;
+
+        /// <summary>
+        /// Gets the current data type.
+        /// </summary>
+        public byte DataType { get; }
+
+        /// <summary>
         /// Gets the value in the current structure as a 32-bit unsigned integer.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
@@ -108,7 +115,7 @@ namespace Heroes.StormReplayParser.Decoders
         /// <returns></returns>
         public uint GetValueAsUInt32()
         {
-            return _dataType switch
+            return DataType switch
             {
                 0x00 => throw new InvalidOperationException("Invalid call, use ArrayData"),
                 0x01 => throw new NotImplementedException(),
@@ -116,8 +123,8 @@ namespace Heroes.StormReplayParser.Decoders
                 0x03 => Get32UIntFromVInt(),
                 0x04 => throw new InvalidOperationException("Invalid call, use OptionalData"),
                 0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
-                0x06 => _value != null ? _value[0] : throw new InvalidOperationException("No value available"),
-                0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value),
+                0x06 => Value != null ? Value[0] : throw new InvalidOperationException("No value available"),
+                0x07 => BinaryPrimitives.ReadUInt32LittleEndian(Value),
                 0x08 => throw new ArithmeticException("Incorrect conversion. Use Int64 method instead."),
                 0x09 => Get32UIntFromVInt(),
 
@@ -133,7 +140,7 @@ namespace Heroes.StormReplayParser.Decoders
         /// <returns></returns>
         public long GetValueAsInt64()
         {
-            return _dataType switch
+            return DataType switch
             {
                 0x00 => throw new InvalidOperationException("Invalid call, use ArrayData"),
                 0x01 => throw new NotImplementedException(),
@@ -143,7 +150,7 @@ namespace Heroes.StormReplayParser.Decoders
                 0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
                 0x06 => throw new ArithmeticException("Incorrect conversion. Use Int32 method instead."),
                 0x07 => throw new ArithmeticException("Incorrect conversion. Use Int32 method instead."),
-                0x08 => (long)BinaryPrimitives.ReadUInt64LittleEndian(_value),
+                0x08 => (long)BinaryPrimitives.ReadUInt64LittleEndian(Value),
                 0x09 => Get64IntFromVInt(),
 
                 _ => throw new NotImplementedException(),
@@ -154,22 +161,22 @@ namespace Heroes.StormReplayParser.Decoders
         /// Gets the value in the current structure as a string.
         /// </summary>
         /// <returns></returns>
-        public string GetValueAsString() => _value != null ? Encoding.UTF8.GetString(_value) : string.Empty;
+        public string GetValueAsString() => Value != null ? Encoding.UTF8.GetString(Value) : string.Empty;
 
         /// <inheritdoc/>
         public override string? ToString()
         {
-            return _dataType switch
+            return DataType switch
             {
                 0x00 => ArrayData != null ? $"[{string.Join(", ", ArrayData.Select(i => i?.ToString()))}]" : null,
-                0x02 => _value != null ? @$"""{Encoding.UTF8.GetString(_value)}""" : null,
-                0x03 => $"Choice: Flag: {BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value)} , Data: {ChoiceData}",
+                0x02 => Value != null ? @$"""{Encoding.UTF8.GetString(Value)}""" : null,
+                0x03 => $"Choice: Flag: {BinaryPrimitivesExtensions.ReadVIntLittleEndian(Value)} , Data: {ChoiceData}",
                 0x04 => OptionalData?.ToString(),
                 0x05 => Structure != null ? $"{{{string.Join(", ", Structure.Select(i => i?.ToString()))}}}" : null,
-                0x06 => _value?[0].ToString(),
-                0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value).ToString(),
-                0x08 => BinaryPrimitives.ReadUInt64LittleEndian(_value).ToString(),
-                0x09 => BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value).ToString(),
+                0x06 => Value?[0].ToString(),
+                0x07 => BinaryPrimitives.ReadUInt32LittleEndian(Value).ToString(),
+                0x08 => BinaryPrimitives.ReadUInt64LittleEndian(Value).ToString(),
+                0x09 => BinaryPrimitivesExtensions.ReadVIntLittleEndian(Value).ToString(),
 
                 _ => string.Empty,
             };
@@ -177,7 +184,7 @@ namespace Heroes.StormReplayParser.Decoders
 
         private uint Get32UIntFromVInt()
         {
-            uint value = (uint)BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value, out int size);
+            uint value = (uint)BinaryPrimitivesExtensions.ReadVIntLittleEndian(Value, out int size);
             if (size > 4)
                 throw new ArithmeticException($"Incorrect conversion for VInt (has byte size of {size}. Use Int64 method instead.");
 
@@ -186,7 +193,7 @@ namespace Heroes.StormReplayParser.Decoders
 
         private long Get64IntFromVInt()
         {
-            long value = BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value, out int _);
+            long value = BinaryPrimitivesExtensions.ReadVIntLittleEndian(Value, out int _);
 
             return value;
         }

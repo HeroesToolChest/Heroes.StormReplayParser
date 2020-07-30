@@ -288,7 +288,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                 bitReader.ReadBits(24);
 
                 // ai games have 8 more bytes somewhere around here
-                if (replay.GameMode == GameMode.Cooperative)
+                if (replay.GameMode == StormGameMode.Cooperative)
                     bitReader.ReadUnalignedBytes(8);
 
                 bitReader.ReadBits(7);

@@ -5,7 +5,7 @@ namespace Heroes.StormReplayParser.Replay
     /// <summary>
     /// Contains the properties for a team level.
     /// </summary>
-    public class TeamLevel
+    public class StormTeamLevel
     {
         /// <summary>
         /// Gets or sets the level of the team.

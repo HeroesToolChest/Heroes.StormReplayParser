@@ -93,12 +93,12 @@ namespace Heroes.StormReplayParser.MpqFiles
                         {
                             replay.GameSpeed = upperValue switch
                             {
-                                Span<char> _ when upperValue.SequenceEqual("SLOR") => GameSpeed.Slower,
-                                Span<char> _ when upperValue.SequenceEqual("SLOW") => GameSpeed.Slow,
-                                Span<char> _ when upperValue.SequenceEqual("NORM") => GameSpeed.Normal,
-                                Span<char> _ when upperValue.SequenceEqual("FAST") => GameSpeed.Fast,
-                                Span<char> _ when upperValue.SequenceEqual("FASR") => GameSpeed.Faster,
-                                _ => GameSpeed.Unknown,
+                                Span<char> _ when upperValue.SequenceEqual("SLOR") => StormGameSpeed.Slower,
+                                Span<char> _ when upperValue.SequenceEqual("SLOW") => StormGameSpeed.Slow,
+                                Span<char> _ when upperValue.SequenceEqual("NORM") => StormGameSpeed.Normal,
+                                Span<char> _ when upperValue.SequenceEqual("FAST") => StormGameSpeed.Fast,
+                                Span<char> _ when upperValue.SequenceEqual("FASR") => StormGameSpeed.Faster,
+                                _ => StormGameSpeed.Unknown,
                             };
 
                             break;
@@ -109,11 +109,11 @@ namespace Heroes.StormReplayParser.MpqFiles
                             switch (upperValue)
                             {
                                 case Span<char> _ when upperValue.SequenceEqual("PRIV"):
-                                    replay.GameMode = GameMode.Custom;
+                                    replay.GameMode = StormGameMode.Custom;
                                     break;
                                 case Span<char> _ when upperValue[1..4].SequenceEqual("AMM"):
                                     if (replay.ReplayBuild < 33684)
-                                        replay.GameMode = GameMode.QuickMatch;
+                                        replay.GameMode = StormGameMode.QuickMatch;
                                     break;
                                 default:
                                     throw new StormParseException($"Unexpected GameTypeAttribute: {value.ToString()}");
@@ -225,15 +225,15 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                     case ReplayAttributeEventType.LobbyMode:
                         {
-                            if (replay.ReplayBuild < 43905 && replay.GameMode != GameMode.Custom)
+                            if (replay.ReplayBuild < 43905 && replay.GameMode != StormGameMode.Custom)
                             {
                                 switch (value)
                                 {
                                     case Span<char> _ when upperValue.SequenceEqual("STAN"):
-                                        replay.GameMode = GameMode.QuickMatch;
+                                        replay.GameMode = StormGameMode.QuickMatch;
                                         break;
                                     case Span<char> _ when upperValue.SequenceEqual("DRFT"):
-                                        replay.GameMode = GameMode.HeroLeague;
+                                        replay.GameMode = StormGameMode.HeroLeague;
                                         break;
                                     default:
                                         break;
@@ -245,8 +245,8 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                     case ReplayAttributeEventType.ReadyMode:
                         {
-                            if (replay.ReplayBuild < 43905 && replay.GameMode == GameMode.HeroLeague && upperValue.SequenceEqual("FCFS"))
-                                replay.GameMode = GameMode.TeamLeague;
+                            if (replay.ReplayBuild < 43905 && replay.GameMode == StormGameMode.HeroLeague && upperValue.SequenceEqual("FCFS"))
+                                replay.GameMode = StormGameMode.TeamLeague;
                             break;
                         }
 

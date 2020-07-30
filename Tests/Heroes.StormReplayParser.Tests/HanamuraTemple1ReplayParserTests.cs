@@ -62,7 +62,7 @@ namespace Heroes.StormReplayParser.Tests
         public void StormReplayInitDataTest()
         {
             Assert.AreEqual(2143281452, _stormReplay.RandomValue);
-            Assert.AreEqual(GameMode.QuickMatch, _stormReplay.GameMode);
+            Assert.AreEqual(StormGameMode.QuickMatch, _stormReplay.GameMode);
 
             List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
             StormPlayer player0 = players[0];
@@ -90,8 +90,8 @@ namespace Heroes.StormReplayParser.Tests
 
             Assert.AreEqual("5v5", _stormReplay.TeamSize);
             Assert.AreEqual(PlayerDifficulty.Elite, player.PlayerDifficulty);
-            Assert.AreEqual(GameSpeed.Faster, _stormReplay.GameSpeed);
-            Assert.AreEqual(GameMode.QuickMatch, _stormReplay.GameMode);
+            Assert.AreEqual(StormGameSpeed.Faster, _stormReplay.GameSpeed);
+            Assert.AreEqual(StormGameMode.QuickMatch, _stormReplay.GameMode);
             Assert.AreEqual("Hanz", player.PlayerHero.HeroAttributeId);
             Assert.AreEqual("Han2", player.PlayerLoadout.SkinAndSkinTintAttributeId);
             Assert.AreEqual("Arm2", player.PlayerLoadout.MountAndMountTintAttributeId);
@@ -111,7 +111,7 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void DraftOrderTest()
         {
-            var draft = _stormReplay.GetDraftOrder().ToList();
+            var draft = _stormReplay.DraftPicks.ToList();
 
             Assert.AreEqual(0, draft.Count);
         }

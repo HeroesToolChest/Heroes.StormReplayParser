@@ -1,6 +1,8 @@
 ﻿using Heroes.StormReplayParser.Replay;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Heroes.StormReplayParser.Player
 {
@@ -40,7 +42,7 @@ namespace Heroes.StormReplayParser.Player
         /// <summary>
         /// Gets the player's hero's mastery tier levels.
         /// </summary>
-        public IEnumerable<HeroMasteryTier> HeroMasteryTiers => HeroMasteryTiersInternal;
+        public IReadOnlyList<HeroMasteryTier> HeroMasteryTiers => HeroMasteryTiersInternal;
 
         /// <summary>
         /// Gets the amount of hero mastery tiers.
@@ -116,19 +118,28 @@ namespace Heroes.StormReplayParser.Player
         /// <summary>
         /// Gets the player's score result.
         /// </summary>
-        public ScoreResult ScoreResult => _scoreResult?.Invoke(_player!.Value) ?? new ScoreResult();
+        public ScoreResult? ScoreResult => _scoreResult?.Invoke(_player!.Value) ?? null;
 
         /// <summary>
         /// Gets the match awards earned.
         /// </summary>
-        public IEnumerable<MatchAwardType> MatchAwards => ScoreResult.MatchAwards;
+        public IReadOnlyList<MatchAwardType>? MatchAwards => ScoreResult?.MatchAwards.ToList();
+
+        /// <summary>
+        /// Gets the player's selected talents.
+        /// </summary>
+        public IReadOnlyList<HeroTalent> Talents => TalentsInternal;
 
         /// <summary>
         /// Gets the amount of match awards.
         /// </summary>
-        public int MatchAwardsCount => ScoreResult.MatchAwards.Count;
+        public int? MatchAwardsCount => ScoreResult?.MatchAwards.Count;
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal List<HeroMasteryTier> HeroMasteryTiersInternal { get; set; } = new List<HeroMasteryTier>();
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal List<HeroTalent> TalentsInternal { get; set; } = new List<HeroTalent>(10);
 
         internal int? WorkingSetSlotId { get; set; }
 

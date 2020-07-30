@@ -3,7 +3,7 @@
     /// <summary>
     /// Specifies the game mode type.
     /// </summary>
-    public enum GameMode
+    public enum StormGameMode
     {
         /// <summary>
         /// Indicates an unknown game mode.

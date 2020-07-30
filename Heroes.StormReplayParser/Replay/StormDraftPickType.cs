@@ -3,7 +3,7 @@
     /// <summary>
     /// Specifies the type of draft pick.
     /// </summary>
-    public enum DraftPickType
+    public enum StormDraftPickType
     {
         /// <summary>
         /// Indicates a banned type.

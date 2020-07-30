@@ -93,7 +93,7 @@ namespace Heroes.StormReplayParser.Tests
         public void StormReplayInitDataTest()
         {
             Assert.AreEqual(1102687070, _stormReplay.RandomValue);
-            Assert.AreEqual(GameMode.StormLeague, _stormReplay.GameMode);
+            Assert.AreEqual(StormGameMode.StormLeague, _stormReplay.GameMode);
 
             List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
             StormPlayer player0 = players[0];
@@ -121,8 +121,8 @@ namespace Heroes.StormReplayParser.Tests
 
             Assert.AreEqual("5v5", _stormReplay.TeamSize);
             Assert.AreEqual(PlayerDifficulty.Elite, player.PlayerDifficulty);
-            Assert.AreEqual(GameSpeed.Faster, _stormReplay.GameSpeed);
-            Assert.AreEqual(GameMode.StormLeague, _stormReplay.GameMode);
+            Assert.AreEqual(StormGameSpeed.Faster, _stormReplay.GameSpeed);
+            Assert.AreEqual(StormGameMode.StormLeague, _stormReplay.GameMode);
             Assert.AreEqual("Rehg", player.PlayerHero.HeroAttributeId);
             Assert.AreEqual("Reh8", player.PlayerLoadout.SkinAndSkinTintAttributeId);
             Assert.AreEqual(string.Empty, player.PlayerLoadout.MountAndMountTintAttributeId);
@@ -142,33 +142,33 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void DraftOrderTest()
         {
-            var draft = _stormReplay.GetDraftOrder().ToList();
+            var draft = _stormReplay.DraftPicks.ToList();
 
             Assert.AreEqual(16, draft.Count);
 
             Assert.AreEqual("Crusader", draft[0].HeroSelected);
-            Assert.AreEqual(DraftPickType.Banned, draft[0].PickType);
+            Assert.AreEqual(StormDraftPickType.Banned, draft[0].PickType);
             Assert.AreEqual(2, draft[0].SelectedPlayerSlotId);
 
             Assert.AreEqual("Auriel", draft[15].HeroSelected);
-            Assert.AreEqual(DraftPickType.Picked, draft[15].PickType);
+            Assert.AreEqual(StormDraftPickType.Picked, draft[15].PickType);
             Assert.AreEqual(2, draft[15].SelectedPlayerSlotId);
         }
 
         [TestMethod]
         public void TeamLevelsTest()
         {
-            List<TeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue).ToList();
-            List<TeamLevel> levelsBlue2 = _stormReplay.GetTeamLevels(StormTeam.Blue).ToList();
-            List<TeamLevel> levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red).ToList();
-            List<TeamLevel> levelsRed2 = _stormReplay.GetTeamLevels(StormTeam.Red).ToList();
-            List<TeamLevel> levelsOther = _stormReplay.GetTeamLevels(StormTeam.Observer).ToList();
+            List<StormTeamLevel>? levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue)?.ToList();
+            List<StormTeamLevel>? levelsBlue2 = _stormReplay.GetTeamLevels(StormTeam.Blue)?.ToList();
+            List<StormTeamLevel>? levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red)?.ToList();
+            List<StormTeamLevel>? levelsRed2 = _stormReplay.GetTeamLevels(StormTeam.Red)?.ToList();
+            List<StormTeamLevel>? levelsOther = _stormReplay.GetTeamLevels(StormTeam.Observer)?.ToList();
 
-            Assert.AreEqual(19, levelsBlue.Count);
-            Assert.AreEqual(19, levelsBlue2.Count);
-            Assert.AreEqual(21, levelsRed.Count);
-            Assert.AreEqual(21, levelsRed2.Count);
-            Assert.AreEqual(0, levelsOther.Count);
+            Assert.AreEqual(19, levelsBlue!.Count);
+            Assert.AreEqual(19, levelsBlue2!.Count);
+            Assert.AreEqual(21, levelsRed!.Count);
+            Assert.AreEqual(21, levelsRed2!.Count);
+            Assert.IsNull(levelsOther);
 
             Assert.AreEqual(1, levelsBlue[0].Level);
             Assert.AreEqual(new TimeSpan(32500000), levelsBlue[0].Time);
@@ -194,21 +194,21 @@ namespace Heroes.StormReplayParser.Tests
         {
             Assert.AreEqual(19, _stormReplay.GetTeamFinalLevel(StormTeam.Blue));
             Assert.AreEqual(21, _stormReplay.GetTeamFinalLevel(StormTeam.Red));
-            Assert.AreEqual(0, _stormReplay.GetTeamFinalLevel(StormTeam.Observer));
+            Assert.IsNull(_stormReplay.GetTeamFinalLevel(StormTeam.Observer));
         }
 
         [TestMethod]
         public void TeamXpBreakdownTest()
         {
-            List<TeamXPBreakdown> xpBlue = _stormReplay.GetTeamXPBreakdown(StormTeam.Blue).ToList();
-            List<TeamXPBreakdown> xpRed = _stormReplay.GetTeamXPBreakdown(StormTeam.Red).ToList();
-            List<TeamXPBreakdown> xpOther = _stormReplay.GetTeamXPBreakdown(StormTeam.Observer).ToList();
+            List<StormTeamXPBreakdown>? xpBlue = _stormReplay.GetTeamXPBreakdown(StormTeam.Blue)?.ToList();
+            List<StormTeamXPBreakdown>? xpRed = _stormReplay.GetTeamXPBreakdown(StormTeam.Red)?.ToList();
+            List<StormTeamXPBreakdown>? xpOther = _stormReplay.GetTeamXPBreakdown(StormTeam.Observer)?.ToList();
 
-            Assert.AreEqual(18, xpBlue.Count);
-            Assert.AreEqual(18, xpRed.Count);
-            Assert.AreEqual(0, xpOther.Count);
+            Assert.AreEqual(18, xpBlue!.Count);
+            Assert.AreEqual(18, xpRed!.Count);
+            Assert.IsNull(xpOther);
 
-            TeamXPBreakdown blue = xpBlue[0];
+            StormTeamXPBreakdown blue = xpBlue[0];
 
             Assert.AreEqual(0, blue.HeroXP);
             Assert.AreEqual(1, blue.Level);
@@ -239,7 +239,7 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(new TimeSpan(11078750000), blue.Time);
             Assert.AreEqual(70313, blue.TotalXP);
 
-            TeamXPBreakdown red = xpRed[0];
+            StormTeamXPBreakdown red = xpRed[0];
 
             Assert.AreEqual(592, red.HeroXP);
             Assert.AreEqual(2, red.Level);
@@ -274,9 +274,9 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void PlayersScoreResultTest()
         {
-            ScoreResult scoreResult = _stormReplay.StormPlayers.ToList()[0].ScoreResult;
+            ScoreResult? scoreResult = _stormReplay.StormPlayers.ToList()[0].ScoreResult;
 
-            Assert.AreEqual(3, scoreResult.Assists);
+            Assert.AreEqual(3, scoreResult!.Assists);
             Assert.AreEqual(0, scoreResult.ClutchHealsPerformed);
             Assert.AreEqual(33369, scoreResult.CreepDamage);
             Assert.AreEqual(28369, scoreResult.DamageSoaked);

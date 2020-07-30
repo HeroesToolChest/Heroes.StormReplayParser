@@ -108,8 +108,6 @@ namespace Heroes.StormReplayParser
 
             ValidateResult(stormReplay);
 
-            stormReplay.SetStormPlayerData();
-
             _stormMpqArchive.Dispose();
         }
 
@@ -209,7 +207,7 @@ namespace Heroes.StormReplayParser
                 _stormReplayParseResult = StormReplayParseStatus.PreAlphaWipe;
             else if (!_allowPTRRegion && stormReplay.Players.Any(x => x.ToonHandle.Region >= 90))
                 _stormReplayParseResult = StormReplayParseStatus.PTRRegion;
-            else if (stormReplay.Players.Count(x => x.IsWinner) != 5 || stormReplay.PlayersCount != 10 || !GameMode.AllGameModes.HasFlag(stormReplay.GameMode))
+            else if (stormReplay.Players.Count(x => x.IsWinner) != 5 || stormReplay.PlayersCount != 10 || !StormGameMode.AllGameModes.HasFlag(stormReplay.GameMode))
                 _stormReplayParseResult = StormReplayParseStatus.UnexpectedResult;
             else
                 _stormReplayParseResult = StormReplayParseStatus.Success;

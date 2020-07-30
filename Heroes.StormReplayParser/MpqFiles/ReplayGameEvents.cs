@@ -1065,6 +1065,9 @@ namespace Heroes.StormReplayParser.MpqFiles
                         };
 
                         gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
+
+                        SetPlayerTalent(player!, gameEvent.Value);
+
                         break;
                     case StormGameEventType.SHeroTalentTreeSelectionPanelToggledEvent:
                         structure = new StormDataStructure<StormGameEventData>(1)
@@ -1130,6 +1133,15 @@ namespace Heroes.StormReplayParser.MpqFiles
                 [1] = new StormGameEventData(bitReader.ReadBits(20)), // y
                 [2] = new StormGameEventData((int)(bitReader.ReadBits(32) - 2147483648)), // z
             };
+        }
+
+        private static void SetPlayerTalent(StormPlayer player, StormGameEvent gameEvent)
+        {
+            player.TalentsInternal.Add(new HeroTalent()
+            {
+                TalentSlotId = (int?)gameEvent.Data!.Structure![0]!.UnsignedInteger32,
+                Timestamp = gameEvent.Timestamp,
+            });
         }
     }
 }

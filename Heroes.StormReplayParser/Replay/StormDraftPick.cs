@@ -3,7 +3,7 @@
     /// <summary>
     /// Contains the properties for the draft pick.
     /// </summary>
-    public class DraftPick
+    public class StormDraftPick
     {
         /// <summary>
         /// Gets or sets the player slot id of the player who is performing the selection.
@@ -18,7 +18,7 @@
         /// <summary>
         /// Gets or sets the type of pick.
         /// </summary>
-        public DraftPickType PickType { get; set; }
+        public StormDraftPickType PickType { get; set; }
 
         /// <inheritdoc/>
         public override string ToString()

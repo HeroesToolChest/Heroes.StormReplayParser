@@ -94,24 +94,24 @@ namespace Heroes.StormReplayParser.MpqFiles
             {
                 replay.GameMode = bitReader.ReadInt32Unaligned() switch // m_ammId
                 {
-                    50001 => GameMode.QuickMatch,
-                    50021 => GameMode.Cooperative,
-                    50031 => GameMode.Brawl,
-                    50041 => GameMode.Practice,
-                    50051 => GameMode.UnrankedDraft,
-                    50061 => GameMode.HeroLeague,
-                    50071 => GameMode.TeamLeague,
-                    50091 => GameMode.StormLeague,
+                    50001 => StormGameMode.QuickMatch,
+                    50021 => StormGameMode.Cooperative,
+                    50031 => StormGameMode.Brawl,
+                    50041 => StormGameMode.Practice,
+                    50051 => StormGameMode.UnrankedDraft,
+                    50061 => StormGameMode.HeroLeague,
+                    50071 => StormGameMode.TeamLeague,
+                    50091 => StormGameMode.StormLeague,
 
-                    _ => GameMode.Unknown,
+                    _ => StormGameMode.Unknown,
                 };
             }
 
             bitReader.ReadBits(3); // m_gameSpeed
             bitReader.ReadBits(3); // m_gameType
 
-            if (bitReader.ReadBits(5) < 10 && replay.GameMode != GameMode.Brawl) // m_maxUsers
-                replay.GameMode = GameMode.TryMe; // or it could be a custom
+            if (bitReader.ReadBits(5) < 10 && replay.GameMode != StormGameMode.Brawl) // m_maxUsers
+                replay.GameMode = StormGameMode.TryMe; // or it could be a custom
 
             bitReader.ReadBits(5); // m_maxObservers
             bitReader.ReadBits(5); // m_maxPlayers

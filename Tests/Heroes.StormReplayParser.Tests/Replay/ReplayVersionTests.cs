@@ -106,7 +106,7 @@ namespace Heroes.StormReplayParser.Replay.Tests
                 BaseBuild = 33444,
             };
 
-            Assert.AreNotEqual(replayVersion1, new MapInfo());
+            Assert.AreNotEqual(replayVersion1, new StormMapInfo());
         }
     }
 }
