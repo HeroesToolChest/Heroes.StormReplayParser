@@ -1,3 +1,4 @@
+using Heroes.StormReplayParser.GameEvent;
 using Heroes.StormReplayParser.MessageEvent;
 using Heroes.StormReplayParser.Player;
 using Heroes.StormReplayParser.Replay;
@@ -387,6 +388,56 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(null, players[1].PartyValue);
             Assert.AreEqual(1201, players[9].AccountLevel);
             Assert.AreEqual(null, players[9].PartyValue);
+        }
+
+        [TestMethod]
+        public void TrackerEventsTest()
+        {
+            Assert.AreEqual(8319, _stormReplay.TrackerEvents.Count);
+
+            StormTrackerEvent unitBornEvent = _stormReplay.TrackerEvents[8145];
+
+            Assert.AreEqual(StormTrackerEventType.UnitBornEvent, unitBornEvent.TrackerEventType);
+            Assert.AreEqual(18, unitBornEvent.Timestamp.Minutes);
+
+            Assert.AreEqual(23U, unitBornEvent.VersionedDecoder!.Structure![0].GetValueAsUInt32());
+            Assert.AreEqual(19U, unitBornEvent.VersionedDecoder!.Structure![1].GetValueAsUInt32());
+            Assert.AreEqual("ExperienceGlobeMinion", unitBornEvent.VersionedDecoder!.Structure![2].GetValueAsString());
+            Assert.AreEqual(12U, unitBornEvent.VersionedDecoder!.Structure![3].GetValueAsUInt32());
+            Assert.AreEqual(12U, unitBornEvent.VersionedDecoder!.Structure![4].GetValueAsUInt32());
+            Assert.AreEqual(90U, unitBornEvent.VersionedDecoder!.Structure![5].GetValueAsUInt32());
+            Assert.AreEqual(96U, unitBornEvent.VersionedDecoder!.Structure![6].GetValueAsUInt32());
+        }
+
+        [TestMethod]
+        public void GameEventsTest()
+        {
+            Assert.AreEqual(122839, _stormReplay.GameEvents.Count);
+
+            StormGameEvent updateTargetPointEvent = _stormReplay.GameEvents[100741];
+
+            Assert.AreEqual(StormGameEventType.SCmdUpdateTargetPointEvent, updateTargetPointEvent.GameEventType);
+            Assert.AreEqual(14, updateTargetPointEvent.Timestamp.Minutes);
+            Assert.AreEqual("Li-Ming", updateTargetPointEvent!.MessageSender!.PlayerHero.HeroName);
+
+            Assert.AreEqual(2479U, updateTargetPointEvent.Data!.Structure![0].UnsignedInteger32);
+            Assert.AreEqual(506409U, updateTargetPointEvent.Data!.Structure![1].Structure![0].UnsignedInteger32);
+            Assert.AreEqual(149373U, updateTargetPointEvent.Data!.Structure![1].Structure![1].UnsignedInteger32);
+            Assert.AreEqual(33550, updateTargetPointEvent.Data!.Structure![1].Structure![2].Integer32);
+
+            StormGameEvent selectionDeltaEvent = _stormReplay.GameEvents[74221];
+
+            Assert.AreEqual(StormGameEventType.SSelectionDeltaEvent, selectionDeltaEvent.GameEventType);
+            Assert.AreEqual(11, selectionDeltaEvent.Timestamp.Minutes);
+            Assert.AreEqual("Arthas", selectionDeltaEvent!.MessageSender!.PlayerHero.HeroName);
+
+            Assert.AreEqual(10U, selectionDeltaEvent.Data!.Structure![0].UnsignedInteger32);
+            Assert.AreEqual(0U, selectionDeltaEvent.Data!.Structure![1].Structure![0].UnsignedInteger32);
+            Assert.AreEqual(30U, selectionDeltaEvent.Data!.Structure![1].Structure![2].Array![0].Structure![0].UnsignedInteger32);
+            Assert.AreEqual(15U, selectionDeltaEvent.Data!.Structure![1].Structure![2].Array![0].Structure![1].UnsignedInteger32);
+            Assert.AreEqual(1U, selectionDeltaEvent.Data!.Structure![1].Structure![2].Array![0].Structure![2].UnsignedInteger32);
+            Assert.AreEqual(1U, selectionDeltaEvent.Data!.Structure![1].Structure![2].Array![0].Structure![3].UnsignedInteger32);
+            Assert.AreEqual(1195376641U, selectionDeltaEvent.Data!.Structure![1].Structure![3].Array![0].UnsignedInteger32);
         }
     }
 }
