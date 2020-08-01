@@ -114,10 +114,6 @@ namespace Heroes.StormReplayParser.MpqFiles
                 {
                     StatEndOfGameTalentChoices(replay, stormTrackerEvent);
                 }
-                else if (valueSpan.SequenceEqual("TalentChosen"))
-                {
-                    StatTalentChosen(replay, stormTrackerEvent);
-                }
                 else if (valueSpan.SequenceEqual("EndOfGameTalentChoices"))
                 {
                     StatEndOfGameTalentChoices(replay, stormTrackerEvent);
