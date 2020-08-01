@@ -19,5 +19,11 @@
         /// Gets or sets the map size.
         /// </summary>
         public Point MapSize { get; set; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{MapId} - {MapName} {MapSize}";
+        }
     }
 }

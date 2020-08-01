@@ -107,5 +107,12 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(26, messages.Count);
             Assert.IsTrue(messages.All(x => x.ChatMessage != null && !string.IsNullOrEmpty(x.ChatMessage.Message)));
         }
+
+        [TestMethod]
+        public void GameEventsTest()
+        {
+            Assert.AreEqual(120572, _stormReplay.GameEvents.Count);
+            Assert.AreEqual("Rexxar", _stormReplay.Owner!.PlayerHero.HeroName);
+        }
     }
 }

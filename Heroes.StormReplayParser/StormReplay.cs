@@ -80,6 +80,11 @@ namespace Heroes.StormReplayParser
         public StormGameSpeed GameSpeed { get; set; } = StormGameSpeed.Unknown;
 
         /// <summary>
+        /// Gets or sets the owner of this replay.
+        /// </summary>
+        public StormPlayer? Owner { get; set; } = null;
+
+        /// <summary>
         /// Gets a collection of playing players (no observers, has AI).
         /// </summary>
         public IEnumerable<StormPlayer> StormPlayers => Players.Where(x => x != null);

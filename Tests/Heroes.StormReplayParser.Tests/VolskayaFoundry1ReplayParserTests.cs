@@ -487,6 +487,7 @@ namespace Heroes.StormReplayParser.Tests
         public void GameEventsTest()
         {
             Assert.AreEqual(122839, _stormReplay.GameEvents.Count);
+            Assert.AreEqual("Malthael", _stormReplay.Owner!.PlayerHero.HeroName);
 
             StormGameEvent updateTargetPointEvent = _stormReplay.GameEvents[100741];
 
@@ -642,6 +643,7 @@ namespace Heroes.StormReplayParser.Tests
             StormReplay replay = result.Replay!;
 
             Assert.AreEqual(0, replay.GameEvents.Count);
+            Assert.IsNull(replay.Owner?.PlayerHero.HeroName);
         }
 
         private static void NoMessageEvents(StormReplayResult result)

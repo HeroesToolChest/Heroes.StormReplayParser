@@ -286,6 +286,7 @@ namespace Heroes.StormReplayParser.Tests
         public void GameEventsTest()
         {
             Assert.AreEqual(7046, _stormReplay.GameEvents.Count);
+            Assert.AreEqual("Qhira", _stormReplay.Owner!.PlayerHero.HeroName);
         }
 
         [TestMethod]
@@ -427,6 +428,7 @@ namespace Heroes.StormReplayParser.Tests
             StormReplay replay = result.Replay!;
 
             Assert.AreEqual(0, replay.GameEvents.Count);
+            Assert.IsNull(replay.Owner?.PlayerHero.HeroName);
         }
     }
 }

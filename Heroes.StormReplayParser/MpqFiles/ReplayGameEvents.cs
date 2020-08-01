@@ -1087,6 +1087,9 @@ namespace Heroes.StormReplayParser.MpqFiles
                 if (gameEvent != null)
                     replay.GameEventsInternal.Add(gameEvent.Value);
             }
+
+            if (replay.GameEventsInternal[^1].GameEventType == StormGameEventType.SGameUserLeaveEvent)
+                replay.Owner = replay.GameEventsInternal[^1].MessageSender;
         }
 
         // ('_choice',[(0,2),{0:('None',86),1:('Mask',52),2:('OneIndices',100),3:('ZeroIndices',100)}]),  #101
