@@ -21,5 +21,11 @@ namespace Heroes.StormReplayParser.Player
         /// Gets or sets the time that this talent was selected.
         /// </summary>
         public TimeSpan? Timestamp { get; set; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"[{Timestamp}] {TalentNameId} - {TalentSlotId}";
+        }
     }
 }

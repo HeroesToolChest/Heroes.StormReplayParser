@@ -5,6 +5,7 @@ using Heroes.StormReplayParser.Replay;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Heroes.StormReplayParser.MpqFiles
@@ -108,6 +109,18 @@ namespace Heroes.StormReplayParser.MpqFiles
                 else if (valueSpan.SequenceEqual("EndOfGameXPBreakdown"))
                 {
                     StatEndOfGameXPBreakdown(replay, stormTrackerEvent);
+                }
+                else if (valueSpan.SequenceEqual("StatEndOfGameTalentChoices"))
+                {
+                    StatEndOfGameTalentChoices(replay, stormTrackerEvent);
+                }
+                else if (valueSpan.SequenceEqual("TalentChosen"))
+                {
+                    StatTalentChosen(replay, stormTrackerEvent);
+                }
+                else if (valueSpan.SequenceEqual("EndOfGameTalentChoices"))
+                {
+                    StatEndOfGameTalentChoices(replay, stormTrackerEvent);
                 }
             }
         }
@@ -267,6 +280,84 @@ namespace Heroes.StormReplayParser.MpqFiles
                             HeroXP = (int)(stormTrackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![3].Structure![1].GetValueAsInt64() / 4096),
                             PassiveXP = (int)(stormTrackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![4].Structure![1].GetValueAsInt64() / 4096),
                         });
+                    }
+                }
+            }
+        }
+
+        private static void StatEndOfGameTalentChoices(StormReplay replay, StormTrackerEvent stormTrackerEvent)
+        {
+            if (!string.IsNullOrEmpty(replay.MapInfo.MapName) && stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData!.Length > 2)
+            {
+                replay.MapInfo.MapId = stormTrackerEvent.VersionedDecoder!.Structure[1]!.OptionalData!.ArrayData![2]!.Structure![1].GetValueAsString();
+            }
+
+            byte[]? playerIdValue = stormTrackerEvent.VersionedDecoder?.Structure?[2].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
+            byte[]? heroValue = stormTrackerEvent.VersionedDecoder?.Structure?[1].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
+
+            if (playerIdValue != null && heroValue != null)
+            {
+                Span<char> playerIdValueSpan = stackalloc char[playerIdValue.Length];
+                Encoding.UTF8.GetChars(playerIdValue, playerIdValueSpan);
+
+                Span<char> heroValueSpan = stackalloc char[heroValue.Length];
+                Encoding.UTF8.GetChars(heroValue, heroValueSpan);
+
+                if (playerIdValueSpan.SequenceEqual("PlayerID") && heroValueSpan.SequenceEqual("Hero"))
+                {
+                    StormPlayer player = replay.PlayersWithOpenSlots[stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32() - 1];
+
+                    player.PlayerHero.HeroUnitId = stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData![0].Structure![1].GetValueAsString();
+
+                    int arrayLength = stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData!.Length;
+
+                    if (arrayLength >= 4)
+                        AddTalentInfo(stormTrackerEvent, player, 3, "Tier 1 Choice", 3, 0);
+
+                    if (arrayLength >= 5)
+                        AddTalentInfo(stormTrackerEvent, player, 4, "Tier 2 Choice", 4, 1);
+
+                    if (arrayLength >= 6)
+                        AddTalentInfo(stormTrackerEvent, player, 5, "Tier 3 Choice", 5, 2);
+
+                    if (arrayLength >= 7)
+                        AddTalentInfo(stormTrackerEvent, player, 6, "Tier 4 Choice", 6, 3);
+
+                    if (arrayLength >= 8)
+                        AddTalentInfo(stormTrackerEvent, player, 7, "Tier 5 Choice", 7, 4);
+
+                    if (arrayLength >= 9)
+                        AddTalentInfo(stormTrackerEvent, player, 8, "Tier 6 Choice", 8, 5);
+
+                    if (arrayLength >= 10)
+                        AddTalentInfo(stormTrackerEvent, player, 9, "Tier 7 Choice", 9, 6);
+                }
+            }
+        }
+
+        private static void StatTalentChosen(StormReplay replay, StormTrackerEvent stormTrackerEvent)
+        {
+            byte[]? playerIdValue = stormTrackerEvent.VersionedDecoder?.Structure?[2].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
+            byte[]? purchaseNameValue = stormTrackerEvent.VersionedDecoder?.Structure?[1].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
+
+            if (playerIdValue != null && purchaseNameValue != null)
+            {
+                Span<char> playerIdValueSpan = stackalloc char[playerIdValue.Length];
+                Encoding.UTF8.GetChars(playerIdValue, playerIdValueSpan);
+
+                Span<char> purchaseNameValueSpan = stackalloc char[purchaseNameValue.Length];
+                Encoding.UTF8.GetChars(purchaseNameValue, purchaseNameValueSpan);
+
+                if (playerIdValueSpan.SequenceEqual("PlayerID") && purchaseNameValueSpan.SequenceEqual("PurchaseName"))
+                {
+                    uint playerId = stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32();
+
+                    StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
+
+                    if (player.TalentsInternal.Count > player.TalentSetCount)
+                    {
+                        player.TalentsInternal[player.TalentSetCount].TalentNameId = stormTrackerEvent.VersionedDecoder.Structure[1].OptionalData!.ArrayData![0].Structure![1].GetValueAsString();
+                        player.TalentSetCount++;
                     }
                 }
             }
@@ -682,6 +773,22 @@ namespace Heroes.StormReplayParser.MpqFiles
             }
 
             return scoreResult;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void AddTalentInfo(StormTrackerEvent stormTrackerEvent, StormPlayer player, int tierStringIndex, string value, int talentNameIndex, int heroTalentIndex)
+        {
+            byte[] tierChoiceValue = stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData![tierStringIndex].Structure![0].Structure![0].Value!;
+            Span<char> tierChoiceValueSpan = stackalloc char[tierChoiceValue.Length];
+            Encoding.UTF8.GetChars(tierChoiceValue, tierChoiceValueSpan);
+
+            if (tierChoiceValueSpan.SequenceEqual(value))
+            {
+                if (player.TalentsInternal.Count <= heroTalentIndex)
+                    player.TalentsInternal.Add(new HeroTalent());
+
+                player.Talents[heroTalentIndex].TalentNameId = stormTrackerEvent.VersionedDecoder.Structure![1].OptionalData!.ArrayData![talentNameIndex].Structure![1].GetValueAsString();
+            }
         }
     }
 }

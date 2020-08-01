@@ -13,12 +13,13 @@ namespace Heroes.StormReplayParser.Tests
     public class AIDragonShire1ReplayParserTests
     {
         private readonly string _replaysFolder = "Replays";
+        private readonly string _replayFile = "AIDragonShire1_75589.StormR";
         private readonly StormReplay _stormReplay;
         private readonly StormReplayParseStatus _result;
 
         public AIDragonShire1ReplayParserTests()
         {
-            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, "AIDragonShire1_75589.StormR"));
+            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile));
             _stormReplay = result.Replay;
             _result = result.Status;
         }
@@ -272,6 +273,160 @@ namespace Heroes.StormReplayParser.Tests
 
             Assert.AreEqual(2331, players[0].AccountLevel);
             Assert.AreEqual(null, players[0].PartyValue);
+        }
+
+        [TestMethod]
+        public void TrackerEventsTest()
+        {
+            Assert.AreEqual(4437, _stormReplay.TrackerEvents.Count);
+            Assert.AreEqual("DragonShire", _stormReplay.MapInfo.MapId);
+        }
+
+        [TestMethod]
+        public void GameEventsTest()
+        {
+            Assert.AreEqual(7046, _stormReplay.GameEvents.Count);
+        }
+
+        [TestMethod]
+        public void PlayerTalentsTest()
+        {
+            List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+
+            Assert.AreEqual(5, players[0].Talents.Count);
+
+            // valla
+            Assert.AreEqual(2, players[0].Talents[0].TalentSlotId);
+            Assert.AreEqual("NexusHunterFinishingTouch", players[0].Talents[0].TalentNameId);
+            Assert.AreEqual(38, players[0].Talents[0].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(3, players[0].Talents[1].TalentSlotId);
+            Assert.AreEqual("NexusHunterUpstage", players[0].Talents[1].TalentNameId);
+            Assert.AreEqual(3, players[0].Talents[1].Timestamp!.Value.Minutes);
+            Assert.AreEqual(5, players[0].Talents[1].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(7, players[0].Talents[2].TalentSlotId);
+            Assert.AreEqual("NexusHunterBloodRageHealmonger", players[0].Talents[2].TalentNameId);
+            Assert.AreEqual(5, players[0].Talents[2].Timestamp!.Value.Minutes);
+            Assert.AreEqual(33, players[0].Talents[2].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(9, players[0].Talents[3].TalentSlotId);
+            Assert.AreEqual("NexusHunterUnrelentingStrikes", players[0].Talents[3].TalentNameId);
+            Assert.AreEqual(7, players[0].Talents[3].Timestamp!.Value.Minutes);
+            Assert.AreEqual(25, players[0].Talents[3].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(13, players[0].Talents[4].TalentSlotId);
+            Assert.AreEqual("NexusHunterTheHunted", players[0].Talents[4].TalentNameId);
+            Assert.AreEqual(10, players[0].Talents[4].Timestamp!.Value.Minutes);
+            Assert.AreEqual(51, players[0].Talents[4].Timestamp!.Value.Seconds);
+
+            // arthas
+            Assert.AreEqual(5, players[6].Talents.Count);
+
+            Assert.AreEqual("ArthasMasteryEternalHungerFrostmourneHungers", players[6].Talents[0].TalentNameId);
+            Assert.IsNull(players[6].Talents[0].TalentSlotId);
+            Assert.IsNull(players[6].Talents[0].Timestamp);
+
+            Assert.AreEqual("ArthasIcyTalons", players[6].Talents[1].TalentNameId);
+            Assert.IsNull(players[6].Talents[1].TalentSlotId);
+            Assert.IsNull(players[6].Talents[1].Timestamp);
+
+            Assert.AreEqual("ArthasIceboundFortitude", players[6].Talents[2].TalentNameId);
+            Assert.IsNull(players[6].Talents[2].TalentSlotId);
+            Assert.IsNull(players[6].Talents[2].Timestamp);
+
+            Assert.AreEqual("ArthasHeroicAbilitySummonSindragosa", players[6].Talents[3].TalentNameId);
+            Assert.IsNull(players[6].Talents[3].TalentSlotId);
+            Assert.IsNull(players[6].Talents[3].Timestamp);
+
+            Assert.AreEqual("ArthasMasteryFrostStrikeFrostmourneHungers", players[6].Talents[4].TalentNameId);
+            Assert.IsNull(players[6].Talents[4].TalentSlotId);
+            Assert.IsNull(players[6].Talents[4].Timestamp);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing Options")]
+        public void NoTrackerEventsParsingTests()
+        {
+            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
+            {
+                AllowPTR = false,
+                ShouldGameEvents = true,
+                ShouldParseMessageEvents = true,
+                ShouldTrackerEvents = false,
+            });
+
+            Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+
+            NoTrackerEvents(result);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing Options")]
+        public void NoGameEventsParsingTests()
+        {
+            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
+            {
+                AllowPTR = false,
+                ShouldGameEvents = false,
+                ShouldParseMessageEvents = true,
+                ShouldTrackerEvents = true,
+            });
+
+            Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+            NoGameEvents(result);
+
+            List<StormPlayer> players = result.Replay.StormPlayers.ToList();
+
+            // arthas
+            Assert.AreEqual(5, players[6].Talents.Count);
+
+            Assert.AreEqual("ArthasMasteryEternalHungerFrostmourneHungers", players[6].Talents[0].TalentNameId);
+            Assert.IsNull(players[6].Talents[0].TalentSlotId);
+            Assert.IsNull(players[6].Talents[0].Timestamp);
+
+            Assert.AreEqual("ArthasIcyTalons", players[6].Talents[1].TalentNameId);
+            Assert.IsNull(players[6].Talents[1].TalentSlotId);
+            Assert.IsNull(players[6].Talents[1].Timestamp);
+
+            Assert.AreEqual("ArthasIceboundFortitude", players[6].Talents[2].TalentNameId);
+            Assert.IsNull(players[6].Talents[2].TalentSlotId);
+            Assert.IsNull(players[6].Talents[2].Timestamp);
+
+            Assert.AreEqual("ArthasHeroicAbilitySummonSindragosa", players[6].Talents[3].TalentNameId);
+            Assert.IsNull(players[6].Talents[3].TalentSlotId);
+            Assert.IsNull(players[6].Talents[3].Timestamp);
+
+            Assert.AreEqual("ArthasMasteryFrostStrikeFrostmourneHungers", players[6].Talents[4].TalentNameId);
+            Assert.IsNull(players[6].Talents[4].TalentSlotId);
+            Assert.IsNull(players[6].Talents[4].Timestamp);
+        }
+
+        private static void NoTrackerEvents(StormReplayResult result)
+        {
+            StormReplay replay = result.Replay!;
+
+            Assert.IsNull(result.Replay.MapInfo.MapId);
+
+            Assert.AreEqual(0, replay.TrackerEvents.Count);
+            Assert.IsNull(replay.GetTeamLevels(StormTeam.Blue));
+            Assert.IsNull(replay.GetTeamLevels(StormTeam.Red));
+            Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Blue));
+            Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Red));
+            Assert.AreEqual(0, replay.DraftPicks.Count);
+
+            List<StormPlayer> players = replay.StormPlayers.ToList();
+            Assert.IsNull(players[0].Talents[0].TalentNameId);
+            Assert.IsNull(players[0].ScoreResult);
+            Assert.IsNull(players[0].MatchAwards);
+            Assert.IsNull(players[0].MatchAwardsCount);
+        }
+
+        private static void NoGameEvents(StormReplayResult result)
+        {
+            StormReplay replay = result.Replay!;
+
+            Assert.AreEqual(0, replay.GameEvents.Count);
         }
     }
 }

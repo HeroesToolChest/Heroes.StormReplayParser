@@ -141,12 +141,15 @@ namespace Heroes.StormReplayParser.Player
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal List<HeroTalent> TalentsInternal { get; set; } = new List<HeroTalent>(10);
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal int TalentSetCount { get; set; } = 0;
+
         internal int? WorkingSetSlotId { get; set; }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{Name}-{PlayerType}-{ToonHandle}";
+            return $"[{Name}-{PlayerHero.HeroId}]-{PlayerType}-{ToonHandle}";
         }
 
         internal void SetScoreResult(int player, Func<int, ScoreResult> scoreResult)

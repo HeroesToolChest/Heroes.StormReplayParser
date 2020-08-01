@@ -381,6 +381,78 @@ namespace Heroes.StormReplayParser.Tests
         }
 
         [TestMethod]
+        public void PlayerTalentsTest()
+        {
+            List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+
+            // jaina
+            Assert.AreEqual(2, players[1].Talents[0].TalentSlotId);
+            Assert.AreEqual("JainaFingersOfFrost", players[1].Talents[0].TalentNameId);
+            Assert.AreEqual(12, players[1].Talents[0].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(3, players[1].Talents[1].TalentSlotId);
+            Assert.AreEqual("JainaFrostboltFrostShards", players[1].Talents[1].TalentNameId);
+            Assert.AreEqual(2, players[1].Talents[1].Timestamp!.Value.Minutes);
+            Assert.AreEqual(45, players[1].Talents[1].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(6, players[1].Talents[2].TalentSlotId);
+            Assert.AreEqual("JainaFrostboltIceLance", players[1].Talents[2].TalentNameId);
+            Assert.AreEqual(4, players[1].Talents[2].Timestamp!.Value.Minutes);
+            Assert.AreEqual(21, players[1].Talents[2].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(10, players[1].Talents[3].TalentSlotId);
+            Assert.AreEqual("JainaHeroicSummonWaterElemental", players[1].Talents[3].TalentNameId);
+            Assert.AreEqual(7, players[1].Talents[3].Timestamp!.Value.Minutes);
+            Assert.AreEqual(17, players[1].Talents[3].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(13, players[1].Talents[4].TalentSlotId);
+            Assert.AreEqual("JainaIcyVeins", players[1].Talents[4].TalentNameId);
+            Assert.AreEqual(11, players[1].Talents[4].Timestamp!.Value.Minutes);
+            Assert.AreEqual(1, players[1].Talents[4].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(16, players[1].Talents[5].TalentSlotId);
+            Assert.AreEqual("JainaConeOfColdNumbingBlast", players[1].Talents[5].TalentNameId);
+            Assert.AreEqual(13, players[1].Talents[5].Timestamp!.Value.Minutes);
+            Assert.AreEqual(17, players[1].Talents[5].Timestamp!.Value.Seconds);
+
+            // arthas
+            Assert.AreEqual(2, players[7].Talents[0].TalentSlotId);
+            Assert.AreEqual("ArthasRime", players[7].Talents[0].TalentNameId);
+            Assert.AreEqual(0, players[7].Talents[0].Timestamp!.Value.Minutes);
+            Assert.AreEqual(39, players[7].Talents[0].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(3, players[7].Talents[1].TalentSlotId);
+            Assert.AreEqual("ArthasDeathlord", players[7].Talents[1].TalentNameId);
+            Assert.AreEqual(2, players[7].Talents[1].Timestamp!.Value.Minutes);
+            Assert.AreEqual(29, players[7].Talents[1].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(6, players[7].Talents[2].TalentSlotId);
+            Assert.AreEqual("ArthasMasteryImmortalCoilDeathCoil", players[7].Talents[2].TalentNameId);
+            Assert.AreEqual(4, players[7].Talents[2].Timestamp!.Value.Minutes);
+            Assert.AreEqual(10, players[7].Talents[2].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(9, players[7].Talents[3].TalentSlotId);
+            Assert.AreEqual("ArthasHeroicAbilityArmyoftheDead", players[7].Talents[3].TalentNameId);
+            Assert.AreEqual(6, players[7].Talents[3].Timestamp!.Value.Minutes);
+            Assert.AreEqual(11, players[7].Talents[3].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(13, players[7].Talents[4].TalentSlotId);
+            Assert.AreEqual("ArthasMasteryFrostStrikeFrostmourneHungers", players[7].Talents[4].TalentNameId);
+            Assert.AreEqual(8, players[7].Talents[4].Timestamp!.Value.Minutes);
+            Assert.AreEqual(23, players[7].Talents[4].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(15, players[7].Talents[5].TalentSlotId);
+            Assert.AreEqual("ArthasMasteryRemorselessWinterFrozenTempest", players[7].Talents[5].TalentNameId);
+            Assert.AreEqual(10, players[7].Talents[5].Timestamp!.Value.Minutes);
+            Assert.AreEqual(44, players[7].Talents[5].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(17, players[7].Talents[6].TalentSlotId);
+            Assert.AreEqual("ArthasMasteryLegionOfNorthrendArmyoftheDead", players[7].Talents[6].TalentNameId);
+            Assert.AreEqual(16, players[7].Talents[6].Timestamp!.Value.Minutes);
+            Assert.AreEqual(35, players[7].Talents[6].Timestamp!.Value.Seconds);
+        }
+
+        [TestMethod]
         public void BattleLobbyDataTest()
         {
             List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
@@ -395,6 +467,7 @@ namespace Heroes.StormReplayParser.Tests
         public void TrackerEventsTest()
         {
             Assert.AreEqual(8319, _stormReplay.TrackerEvents.Count);
+            Assert.AreEqual("Volskaya", _stormReplay.MapInfo.MapId);
 
             StormTrackerEvent unitBornEvent = _stormReplay.TrackerEvents[8145];
 
@@ -472,6 +545,33 @@ namespace Heroes.StormReplayParser.Tests
 
             Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
             NoGameEvents(result);
+
+            List<StormPlayer> players = result.Replay.StormPlayers.ToList();
+            Assert.AreEqual(6, players[0].Talents.Count);
+
+            Assert.AreEqual("GreymaneInnerBeastViciousness", players[0].Talents[0].TalentNameId);
+            Assert.IsNull(players[0].Talents[0].TalentSlotId);
+            Assert.IsNull(players[0].Talents[0].Timestamp);
+
+            Assert.AreEqual("GreymaneDisengageEyesInTheDark", players[0].Talents[1].TalentNameId);
+            Assert.IsNull(players[0].Talents[1].TalentSlotId);
+            Assert.IsNull(players[0].Talents[1].Timestamp);
+
+            Assert.AreEqual("GreymaneWizenedDuelist", players[0].Talents[2].TalentNameId);
+            Assert.IsNull(players[0].Talents[2].TalentSlotId);
+            Assert.IsNull(players[0].Talents[2].Timestamp);
+
+            Assert.AreEqual("GreymaneHeroicAbilityGoForTheThroat", players[0].Talents[3].TalentNameId);
+            Assert.IsNull(players[0].Talents[3].TalentSlotId);
+            Assert.IsNull(players[0].Talents[3].Timestamp);
+
+            Assert.AreEqual("GreymaneDarkflightDisengageRunningWild", players[0].Talents[4].TalentNameId);
+            Assert.IsNull(players[0].Talents[4].TalentSlotId);
+            Assert.IsNull(players[0].Talents[4].Timestamp);
+
+            Assert.AreEqual("GreymaneWorgenFormAlphaKiller", players[0].Talents[5].TalentNameId);
+            Assert.IsNull(players[0].Talents[5].TalentSlotId);
+            Assert.IsNull(players[0].Talents[5].Timestamp);
         }
 
         [TestMethod]
@@ -521,6 +621,8 @@ namespace Heroes.StormReplayParser.Tests
         {
             StormReplay replay = result.Replay!;
 
+            Assert.IsNull(result.Replay.MapInfo.MapId);
+
             Assert.AreEqual(0, replay.TrackerEvents.Count);
             Assert.IsNull(replay.GetTeamLevels(StormTeam.Blue));
             Assert.IsNull(replay.GetTeamLevels(StormTeam.Red));
@@ -540,9 +642,6 @@ namespace Heroes.StormReplayParser.Tests
             StormReplay replay = result.Replay!;
 
             Assert.AreEqual(0, replay.GameEvents.Count);
-
-            List<StormPlayer> players = replay.StormPlayers.ToList();
-            Assert.AreEqual(0, players[0].Talents.Count);
         }
 
         private static void NoMessageEvents(StormReplayResult result)

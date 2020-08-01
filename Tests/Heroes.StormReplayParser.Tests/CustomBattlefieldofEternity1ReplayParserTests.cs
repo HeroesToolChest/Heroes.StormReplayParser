@@ -13,11 +13,12 @@ namespace Heroes.StormReplayParser.Tests
     public class CustomBattlefieldofEternity1ReplayParserTests
     {
         private readonly string _replaysFolder = "Replays";
+        private readonly string _replayFile = "CustomBattlefieldofEternity1_65006.StormR";
         private readonly StormReplay _stormReplay;
 
         public CustomBattlefieldofEternity1ReplayParserTests()
         {
-            _stormReplay = StormReplay.Parse(Path.Combine(_replaysFolder, "CustomBattlefieldofEternity1_65006.StormR")).Replay;
+            _stormReplay = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile)).Replay;
         }
 
         [TestMethod]
@@ -350,6 +351,147 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(null, players[1].PartyValue);
             Assert.AreEqual(0, players[9].AccountLevel);
             Assert.AreEqual(null, players[9].PartyValue);
+        }
+
+        [TestMethod]
+        public void TrackerEventsTest()
+        {
+            Assert.AreEqual(5239, _stormReplay.TrackerEvents.Count);
+            Assert.AreEqual("BattlefieldOfEternity", _stormReplay.MapInfo.MapId);
+        }
+
+        [TestMethod]
+        public void GameEventsTest()
+        {
+            Assert.AreEqual(347248, _stormReplay.GameEvents.Count);
+        }
+
+        [TestMethod]
+        public void PlayerTalentsTest()
+        {
+            List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+
+            // sonya
+            Assert.AreEqual(2, players[1].Talents[0].TalentSlotId);
+            Assert.AreEqual("BarbarianToughAsNails", players[1].Talents[0].TalentNameId);
+            Assert.AreEqual(20, players[1].Talents[0].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(5, players[1].Talents[1].TalentSlotId);
+            Assert.AreEqual("BarbarianShotOfFury", players[1].Talents[1].TalentNameId);
+            Assert.AreEqual(3, players[1].Talents[1].Timestamp!.Value.Minutes);
+            Assert.AreEqual(16, players[1].Talents[1].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(8, players[1].Talents[2].TalentSlotId);
+            Assert.AreEqual("BarbarianBattleRage", players[1].Talents[2].TalentNameId);
+            Assert.AreEqual(6, players[1].Talents[2].Timestamp!.Value.Minutes);
+            Assert.AreEqual(23, players[1].Talents[2].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(10, players[1].Talents[3].TalentSlotId);
+            Assert.AreEqual("BarbarianHeroicAbilityWrathoftheBerserker", players[1].Talents[3].TalentNameId);
+            Assert.AreEqual(8, players[1].Talents[3].Timestamp!.Value.Minutes);
+            Assert.AreEqual(37, players[1].Talents[3].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(11, players[1].Talents[4].TalentSlotId);
+            Assert.AreEqual("BarbarianMysticalSpear", players[1].Talents[4].TalentNameId);
+            Assert.AreEqual(11, players[1].Talents[4].Timestamp!.Value.Minutes);
+            Assert.AreEqual(20, players[1].Talents[4].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(15, players[1].Talents[5].TalentSlotId);
+            Assert.AreEqual("BarbarianRampage", players[1].Talents[5].TalentNameId);
+            Assert.AreEqual(15, players[1].Talents[5].Timestamp!.Value.Minutes);
+            Assert.AreEqual(30, players[1].Talents[5].Timestamp!.Value.Seconds);
+
+            Assert.AreEqual(19, players[1].Talents[6].TalentSlotId);
+            Assert.AreEqual("BarbarianCompositeSpear", players[1].Talents[6].TalentNameId);
+            Assert.AreEqual(19, players[1].Talents[6].Timestamp!.Value.Minutes);
+            Assert.AreEqual(52, players[1].Talents[6].Timestamp!.Value.Seconds);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing Options")]
+        public void NoTrackerEventsParsingTests()
+        {
+            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
+            {
+                AllowPTR = false,
+                ShouldGameEvents = true,
+                ShouldParseMessageEvents = true,
+                ShouldTrackerEvents = false,
+            });
+
+            Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+
+            NoTrackerEvents(result);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing Options")]
+        public void NoGameEventsParsingTests()
+        {
+            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
+            {
+                AllowPTR = false,
+                ShouldGameEvents = false,
+                ShouldParseMessageEvents = true,
+                ShouldTrackerEvents = true,
+            });
+
+            Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+            NoGameEvents(result);
+
+            List<StormPlayer> players = result.Replay.StormPlayers.ToList();
+            Assert.AreEqual(6, players[0].Talents.Count);
+
+            Assert.AreEqual("GreymaneInnerBeastViciousness", players[0].Talents[0].TalentNameId);
+            Assert.IsNull(players[0].Talents[0].TalentSlotId);
+            Assert.IsNull(players[0].Talents[0].Timestamp);
+
+            Assert.AreEqual("GreymaneInnerBeastInsatiable", players[0].Talents[1].TalentNameId);
+            Assert.IsNull(players[0].Talents[1].TalentSlotId);
+            Assert.IsNull(players[0].Talents[1].Timestamp);
+
+            Assert.AreEqual("GreymaneWorgenFormQuicksilverBullets", players[0].Talents[2].TalentNameId);
+            Assert.IsNull(players[0].Talents[2].TalentSlotId);
+            Assert.IsNull(players[0].Talents[2].Timestamp);
+
+            Assert.AreEqual("GreymaneHeroicAbilityGoForTheThroat", players[0].Talents[3].TalentNameId);
+            Assert.IsNull(players[0].Talents[3].TalentSlotId);
+            Assert.IsNull(players[0].Talents[3].Timestamp);
+
+            Assert.AreEqual("GreymaneInnerBeastOnTheProwl", players[0].Talents[4].TalentNameId);
+            Assert.IsNull(players[0].Talents[4].TalentSlotId);
+            Assert.IsNull(players[0].Talents[4].Timestamp);
+
+            Assert.AreEqual("HeroGenericExecutionerPassive", players[0].Talents[5].TalentNameId);
+            Assert.IsNull(players[0].Talents[5].TalentSlotId);
+            Assert.IsNull(players[0].Talents[5].Timestamp);
+        }
+
+        private static void NoTrackerEvents(StormReplayResult result)
+        {
+            StormReplay replay = result.Replay!;
+
+            Assert.IsNull(result.Replay.MapInfo.MapId);
+
+            Assert.AreEqual(0, replay.TrackerEvents.Count);
+            Assert.IsNull(replay.GetTeamLevels(StormTeam.Blue));
+            Assert.IsNull(replay.GetTeamLevels(StormTeam.Red));
+            Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Blue));
+            Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Red));
+            Assert.AreEqual(0, replay.DraftPicks.Count);
+
+            List<StormPlayer> players = replay.StormPlayers.ToList();
+            Assert.IsNull(players[0].Talents[0].TalentNameId);
+            Assert.IsNull(players[0].ScoreResult);
+            Assert.IsNull(players[0].MatchAwards);
+            Assert.IsNull(players[0].MatchAwardsCount);
+        }
+
+        private static void NoGameEvents(StormReplayResult result)
+        {
+            StormReplay replay = result.Replay!;
+
+            Assert.AreEqual(0, replay.GameEvents.Count);
         }
     }
 }
