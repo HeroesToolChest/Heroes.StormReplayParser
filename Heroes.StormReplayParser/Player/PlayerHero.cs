@@ -11,7 +11,7 @@
         public string HeroId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the hero name.
+        /// Gets or sets the hero name (this is a localized name).
         /// </summary>
         public string HeroName { get; set; } = string.Empty;
 

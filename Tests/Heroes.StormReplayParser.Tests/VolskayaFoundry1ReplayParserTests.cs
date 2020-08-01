@@ -14,12 +14,13 @@ namespace Heroes.StormReplayParser.Tests
     public class VolskayaFoundry1ReplayParserTests
     {
         private readonly string _replaysFolder = "Replays";
+        private readonly string _replayFile = "VolskayaFoundry1_77548.StormR";
         private readonly StormReplay _stormReplay;
         private readonly StormReplayParseStatus _result;
 
         public VolskayaFoundry1ReplayParserTests()
         {
-            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, "VolskayaFoundry1_77548.StormR"));
+            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile));
             _stormReplay = result.Replay;
             _result = result.Status;
         }
@@ -438,6 +439,118 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(1U, selectionDeltaEvent.Data!.Structure![1].Structure![2].Array![0].Structure![2].UnsignedInteger32);
             Assert.AreEqual(1U, selectionDeltaEvent.Data!.Structure![1].Structure![2].Array![0].Structure![3].UnsignedInteger32);
             Assert.AreEqual(1195376641U, selectionDeltaEvent.Data!.Structure![1].Structure![3].Array![0].UnsignedInteger32);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing Options")]
+        public void NoTrackerEventsParsingTests()
+        {
+            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
+            {
+                AllowPTR = false,
+                ShouldGameEvents = true,
+                ShouldParseMessageEvents = true,
+                ShouldTrackerEvents = false,
+            });
+
+            Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+
+            NoTrackerEvents(result);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing Options")]
+        public void NoGameEventsParsingTests()
+        {
+            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
+            {
+                AllowPTR = false,
+                ShouldGameEvents = false,
+                ShouldParseMessageEvents = true,
+                ShouldTrackerEvents = true,
+            });
+
+            Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+            NoGameEvents(result);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing Options")]
+        public void NoMessageEventsParsingTests()
+        {
+            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
+            {
+                AllowPTR = false,
+                ShouldGameEvents = true,
+                ShouldParseMessageEvents = false,
+                ShouldTrackerEvents = true,
+            });
+
+            Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+            NoMessageEvents(result);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing Options")]
+        public void MinimalParsingTests()
+        {
+            StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), ParseOptions.MinimalParsing);
+
+            StormReplay replay = result.Replay!;
+
+            Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+
+            Assert.AreEqual(0, replay.TrackerEvents.Count);
+            Assert.IsNull(replay.GetTeamLevels(StormTeam.Blue));
+            Assert.IsNull(replay.GetTeamLevels(StormTeam.Red));
+            Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Blue));
+            Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Red));
+            Assert.AreEqual(0, replay.DraftPicks.Count);
+
+            List<StormPlayer> players = replay.StormPlayers.ToList();
+            Assert.AreEqual(0, players[0].Talents.Count);
+            Assert.IsNull(players[0].ScoreResult);
+            Assert.IsNull(players[0].MatchAwards);
+            Assert.IsNull(players[0].MatchAwardsCount);
+
+            NoGameEvents(result);
+            NoMessageEvents(result);
+        }
+
+        private static void NoTrackerEvents(StormReplayResult result)
+        {
+            StormReplay replay = result.Replay!;
+
+            Assert.AreEqual(0, replay.TrackerEvents.Count);
+            Assert.IsNull(replay.GetTeamLevels(StormTeam.Blue));
+            Assert.IsNull(replay.GetTeamLevels(StormTeam.Red));
+            Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Blue));
+            Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Red));
+            Assert.AreEqual(0, replay.DraftPicks.Count);
+
+            List<StormPlayer> players = replay.StormPlayers.ToList();
+            Assert.IsNull(players[0].Talents[0].TalentNameId);
+            Assert.IsNull(players[0].ScoreResult);
+            Assert.IsNull(players[0].MatchAwards);
+            Assert.IsNull(players[0].MatchAwardsCount);
+        }
+
+        private static void NoGameEvents(StormReplayResult result)
+        {
+            StormReplay replay = result.Replay!;
+
+            Assert.AreEqual(0, replay.GameEvents.Count);
+
+            List<StormPlayer> players = replay.StormPlayers.ToList();
+            Assert.AreEqual(0, players[0].Talents.Count);
+        }
+
+        private static void NoMessageEvents(StormReplayResult result)
+        {
+            StormReplay replay = result.Replay!;
+
+            Assert.AreEqual(0, replay.Messages.Count);
+            Assert.AreEqual(0, replay.ChatMessages.ToList().Count);
         }
     }
 }

@@ -16,15 +16,13 @@ namespace Heroes.StormReplayParser
         private static Exception? _failedReplayException = null;
 
         private readonly string _fileName;
-        private readonly bool _allowPTRRegion;
-        private readonly bool _parseBattleLobby;
+        private readonly ParseOptions _parseOptions;
         private readonly MpqHeroesArchive _stormMpqArchive;
 
-        private StormReplay(string fileName, bool allowPTRRegion, bool parseBattleLobby)
+        private StormReplay(string fileName, ParseOptions parseOptions)
         {
             _fileName = fileName;
-            _allowPTRRegion = allowPTRRegion;
-            _parseBattleLobby = parseBattleLobby;
+            _parseOptions = parseOptions;
 
             _stormMpqArchive = MpqHeroesFile.Open(_fileName);
         }
@@ -33,12 +31,18 @@ namespace Heroes.StormReplayParser
         /// Parses a .StormReplay file.
         /// </summary>
         /// <param name="fileName">The file name which may contain the path.</param>
-        /// <param name="allowPTRRegion">If false, the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</param>
-        /// <param name="parseBattleLobby">If enabled, the battle lobby file will be parsed which gives more available data.</param>
+        /// <param name="parseOptions">Sets the parsing options. If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</param>
         /// <returns>A <see cref="StormReplayResult"/>.</returns>
-        public static StormReplayResult Parse(string fileName, bool allowPTRRegion = false, bool parseBattleLobby = true)
+        /// <exception cref="ArgumentNullException"><paramref name="fileName"/> is null.</exception>
+        public static StormReplayResult Parse(string fileName, ParseOptions? parseOptions = null)
         {
-            StormReplay stormReplay = ParseStormReplay(fileName, allowPTRRegion, parseBattleLobby);
+            if (fileName is null)
+                throw new ArgumentNullException(nameof(fileName));
+
+            if (parseOptions is null)
+                parseOptions = ParseOptions.DefaultParsing;
+
+            StormReplay stormReplay = ParseStormReplay(fileName, parseOptions);
 
             if (_failedReplayException != null)
                 return new StormReplayResult(stormReplay, _stormReplayParseResult, _failedReplayException);
@@ -46,9 +50,9 @@ namespace Heroes.StormReplayParser
                 return new StormReplayResult(stormReplay, _stormReplayParseResult);
         }
 
-        private static StormReplay ParseStormReplay(string fileName, bool allowPTRRegion, bool parseBattleLobby)
+        private static StormReplay ParseStormReplay(string fileName, ParseOptions parseOptions)
         {
-            StormReplay stormReplay = new StormReplay(fileName, allowPTRRegion, parseBattleLobby);
+            StormReplay stormReplay = new StormReplay(fileName, parseOptions);
 
             try
             {
@@ -99,12 +103,16 @@ namespace Heroes.StormReplayParser
 
             ParseReplayInit(stormReplay, pool);
             ParseReplayAttributeEvents(stormReplay, pool);
-            ParseReplayTrackerEvents(stormReplay, pool);
-            ParseReplayMessageEvents(stormReplay, pool);
-            ParseReplayGameEvents(stormReplay, pool);
+            ParseReplayServerBattlelobby(stormReplay, pool);
 
-            if (_parseBattleLobby)
-                ParseReplayServerBattlelobby(stormReplay, pool);
+            if (_parseOptions.ShouldTrackerEvents)
+                ParseReplayTrackerEvents(stormReplay, pool);
+
+            if (_parseOptions.ShouldGameEvents)
+                ParseReplayGameEvents(stormReplay, pool);
+
+            if (_parseOptions.ShouldParseMessageEvents)
+                ParseReplayMessageEvents(stormReplay, pool);
 
             ValidateResult(stormReplay);
 
@@ -205,7 +213,7 @@ namespace Heroes.StormReplayParser
                 _stormReplayParseResult = StormReplayParseStatus.UnexpectedResult;
             else if (stormReplay.Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
                 _stormReplayParseResult = StormReplayParseStatus.PreAlphaWipe;
-            else if (!_allowPTRRegion && stormReplay.Players.Any(x => x.ToonHandle.Region >= 90))
+            else if (!_parseOptions.AllowPTR && stormReplay.Players.Any(x => x.ToonHandle.Region >= 90))
                 _stormReplayParseResult = StormReplayParseStatus.PTRRegion;
             else if (stormReplay.Players.Count(x => x.IsWinner) != 5 || stormReplay.PlayersCount != 10 || !StormGameMode.AllGameModes.HasFlag(stormReplay.GameMode))
                 _stormReplayParseResult = StormReplayParseStatus.UnexpectedResult;
