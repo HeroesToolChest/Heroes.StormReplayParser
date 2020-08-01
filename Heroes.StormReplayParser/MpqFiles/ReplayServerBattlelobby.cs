@@ -30,139 +30,141 @@ namespace Heroes.StormReplayParser.MpqFiles
                 bitReader.ReadAlignedBytes(36);
             }
 
-            //source.ReadAlignedBytes(94);
-            //if (source.ReadStringFromBytes(4) != "Clsd")
-            //    throw new StormParseException($"{ExceptionHeader}: Clsd");
+            /*source.ReadAlignedBytes(94);
+            if (source.ReadStringFromBytes(4) != "Clsd")
+               throw new StormParseException($"{ExceptionHeader}: Clsd"); */
 
             // we're just going to skip all the way down to the s2mh
 
             bitReader.AlignToByte();
 
-            //for (; ;)
-            //{
-            //    if (source.ReadStringFromBytes(4) == "s2mh")
-            //    {
-            //        BitReader.Index -= 4;
-            //        break;
-            //    }
-            //    else
-            //    {
-            //        BitReader.Index -= 3;
-            //    }
-            //}
+            /*for (; ;)
+            {
+                if (source.ReadStringFromBytes(4) == "s2mh")
+                {
+                    BitReader.Index -= 4;
+                    break;
+                }
+                else
+                {
+                    BitReader.Index -= 3;
+                }
+            }*/
 
-            /////////
-            //for (; ; )
-            //{
-            //    if (source.ReadStringFromBytes(4) == "s2mv")
-            //    {
-            //        BitReader.Index -= 4;
-            //        break;
-            //    }
-            //    else
-            //    {
-            //        BitReader.Index -= 3;
-            //    }
-            //}
-
-            //// first hit
-            //BitReader.Index -= 1;
-
-            //uint s2mvCacheHandlesLength = source.ReadBits(8);
-
-            //for (int i = 0; i < s2mvCacheHandlesLength; i++)
-            //{
-            //    if (source.ReadStringFromBytes(4) != "s2mv")
-            //        throw new StormParseException($"{ExceptionHeader}: s2mv cache");
-
-            //    source.ReadAlignedBytes(36);
-            //}
-
-            //uint localeCount = source.ReadBits(5);
-
-            //for (int i = 0; i < localeCount; i++)
-            //{
-            //    source.ReadStringFromBits(32); // locale
-
-            //    uint s2mlCacheHandlesLength = source.ReadBits(6);
-
-            //    for (int j = 0; j < s2mlCacheHandlesLength; j++)
-            //    {
-            //        if (source.ReadStringFromBytes(4) != "s2ml")
-            //            throw new StormParseException($"{ExceptionHeader}: s2ml cache");
-
-            //        source.ReadAlignedBytes(36);
-            //    }
-            //}
-
-            //source.ReadAlignedBytes(16);
-            //uint sm2vCacheBlizzLength = source.ReadBits(8);
-
-            //for (int i = 0; i < sm2vCacheBlizzLength; i++)
-            //{
-
-            //}
-
-            //// second s2mv hit
-            //for (; ; )
-            //{
-            //    if (source.ReadStringFromBytes(4) == "s2mv")
-            //    {
-            //        BitReader.Index -= 4;
-            //        break;
-            //    }
-            //    else
-            //    {
-            //        BitReader.Index -= 3;
-            //    }
-            //}
-            //for (int i = 0; i < 2; i++)
-            //{
-            //    if (source.ReadStringFromBytes(4) != "s2mv")
-            //        throw new StormParseException($"{ExceptionHeader}: s2mv cache");
-
-            //    source.ReadAlignedBytes(36);
-            //}
-
-            //source.ReadBits(1);
-
-            //uint region = source.ReadBits(8); // m_region
-            //if (source.ReadStringFromBits(32) != "Hero") // m_programId
-            //    throw new StormParseException($"{ExceptionHeader}: Not Hero");
-            //source.ReadBits(32); // m_realm
-
-            //int blizzIdLength = (int)source.ReadBits(7);
-
-            //if (region >= 90)
-            //{
-            //    if (source.ReadStringFromBytes(2) != "T:")
-            //        throw new StormParseException($"{ExceptionHeader}: Not blizz T:");
-            //    source.ReadStringFromBytes(blizzIdLength);
-            //}
-            //else
-            //{
-            //    source.ReadStringFromBytes(blizzIdLength);
-            //    source.ReadStringFromBytes(2);
-            //}
-
-            //source.ReadBits(8); // m_region
-            //if (source.ReadStringFromBits(32) != "Hero") // m_programId
-            //    throw new StormParseException($"{ExceptionHeader}: Not Hero");
-            //source.ReadBits(32); // m_realm
-            //source.ReadLongBits(64); // m_id
-
-
-            //int klj = (int)source.ReadBits(12);
-
-            //int sdfad = (int)source.ReadBits(12);
-
-
-            //source.ReadBits(1); //temp
-
-            //////////////
-
-
+            /*
             for (; ; )
+            {
+                if (source.ReadStringFromBytes(4) == "s2mv")
+                {
+                    BitReader.Index -= 4;
+                    break;
+                }
+                else
+                {
+                    BitReader.Index -= 3;
+                }
+            }*/
+
+            // first hit
+            /*
+            BitReader.Index -= 1;
+
+            uint s2mvCacheHandlesLength = source.ReadBits(8);
+
+            for (int i = 0; i < s2mvCacheHandlesLength; i++)
+            {
+                if (source.ReadStringFromBytes(4) != "s2mv")
+                    throw new StormParseException($"{ExceptionHeader}: s2mv cache");
+
+                source.ReadAlignedBytes(36);
+            }
+
+            uint localeCount = source.ReadBits(5);
+
+            for (int i = 0; i < localeCount; i++)
+            {
+                source.ReadStringFromBits(32); // locale
+
+                uint s2mlCacheHandlesLength = source.ReadBits(6);
+
+                for (int j = 0; j < s2mlCacheHandlesLength; j++)
+                {
+                    if (source.ReadStringFromBytes(4) != "s2ml")
+                        throw new StormParseException($"{ExceptionHeader}: s2ml cache");
+
+                    source.ReadAlignedBytes(36);
+                }
+            }
+
+            source.ReadAlignedBytes(16);
+            uint sm2vCacheBlizzLength = source.ReadBits(8);
+
+            for (int i = 0; i < sm2vCacheBlizzLength; i++)
+            {
+
+            }
+            */
+
+            // second s2mv hit
+            /*
+            for (; ; )
+            {
+                if (source.ReadStringFromBytes(4) == "s2mv")
+                {
+                    BitReader.Index -= 4;
+                    break;
+                }
+                else
+                {
+                    BitReader.Index -= 3;
+                }
+            }
+            for (int i = 0; i < 2; i++)
+            {
+                if (source.ReadStringFromBytes(4) != "s2mv")
+                    throw new StormParseException($"{ExceptionHeader}: s2mv cache");
+
+                source.ReadAlignedBytes(36);
+            }
+
+            source.ReadBits(1);
+
+            uint region = source.ReadBits(8); // m_region
+            if (source.ReadStringFromBits(32) != "Hero") // m_programId
+                throw new StormParseException($"{ExceptionHeader}: Not Hero");
+            source.ReadBits(32); // m_realm
+
+            int blizzIdLength = (int)source.ReadBits(7);
+
+            if (region >= 90)
+            {
+                if (source.ReadStringFromBytes(2) != "T:")
+                    throw new StormParseException($"{ExceptionHeader}: Not blizz T:");
+                source.ReadStringFromBytes(blizzIdLength);
+            }
+            else
+            {
+                source.ReadStringFromBytes(blizzIdLength);
+                source.ReadStringFromBytes(2);
+            }
+
+            source.ReadBits(8); // m_region
+            if (source.ReadStringFromBits(32) != "Hero") // m_programId
+                throw new StormParseException($"{ExceptionHeader}: Not Hero");
+            source.ReadBits(32); // m_realm
+            source.ReadLongBits(64); // m_id
+
+
+            int klj = (int)source.ReadBits(12);
+
+            int sdfad = (int)source.ReadBits(12);
+
+
+            source.ReadBits(1); //temp
+
+            */
+
+            for (; ;)
             {
                 if (bitReader.ReadStringFromBytes(4) == "s2mh")
                 {
@@ -175,13 +177,12 @@ namespace Heroes.StormReplayParser.MpqFiles
                 }
             }
 
-
             // source.ReadBits(???); // this depends on previous data (not byte aligned)
 
             // s2mh cache handles
             // uint s2mhCacheHandlesLength = source.ReadBits(6);
             // for (int i = 0; i < s2mhCacheHandlesLength; i++)
-            for (int i = 0; i < s2maCacheHandlesLength; i++) // temp
+            for (int i = 0; i < s2maCacheHandlesLength; i++)
             {
                 if (bitReader.ReadStringFromBytes(4) != "s2mh")
                     throw new StormParseException($"{_exceptionHeader}: s2mh cache");
@@ -213,7 +214,8 @@ namespace Heroes.StormReplayParser.MpqFiles
 
             for (int i = 0; i < collectionSize; i++)
             {
-                for (int j = 0; j < 16; j++) // 16 is total player slots
+                // 16 is total player slots
+                for (int j = 0; j < 16; j++)
                 {
                     bitReader.ReadAlignedByte();
                     bitReader.ReadAlignedByte(); // more likely a boolean to get the value
