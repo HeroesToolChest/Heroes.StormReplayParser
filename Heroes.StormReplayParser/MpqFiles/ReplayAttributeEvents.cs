@@ -128,7 +128,9 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                             if (player != null)
                             {
-                                player.IsAutoSelect = upperValue.SequenceEqual("RAND");
+                                if (!player.IsAutoSelect)
+                                    player.IsAutoSelect = upperValue.SequenceEqual("RAND");
+
                                 player.PlayerHero.HeroAttributeId = value.Trim('\0').ToString();
                             }
 
@@ -141,7 +143,9 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                             if (player != null)
                             {
-                                player.IsAutoSelect = upperValue.SequenceEqual("RAND");
+                                if (!player.IsAutoSelect)
+                                    player.IsAutoSelect = upperValue.SequenceEqual("RAND");
+
                                 player.PlayerLoadout.SkinAndSkinTintAttributeId = value.Trim('\0').ToString();
                             }
 

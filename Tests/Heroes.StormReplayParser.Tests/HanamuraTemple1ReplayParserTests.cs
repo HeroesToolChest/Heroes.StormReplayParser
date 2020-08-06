@@ -44,7 +44,7 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(StormTeam.Blue, player0.Team);
             Assert.IsTrue(player0.IsWinner);
             Assert.AreEqual("Brightwing", player0.PlayerHero.HeroName);
-
+            Assert.AreEqual(StormTeam.Blue, _stormReplay.WinningTeam);
             StormPlayer player1 = players[9];
 
             Assert.AreEqual("DumbleBore", player1.Name);

@@ -14,6 +14,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.StormReplayParser.Te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C07BCF88-2E8B-4F7E-A12A-3238FC1C7262}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeroesDecode", "HeroesDecode\HeroesDecode.csproj", "{5B8711A0-9567-4408-AEFC-C0A9EC5770FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{0CC70740-B12C-4736-A5D4-A00DCA533AB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CC70740-B12C-4736-A5D4-A00DCA533AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CC70740-B12C-4736-A5D4-A00DCA533AB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B8711A0-9567-4408-AEFC-C0A9EC5770FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B8711A0-9567-4408-AEFC-C0A9EC5770FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B8711A0-9567-4408-AEFC-C0A9EC5770FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B8711A0-9567-4408-AEFC-C0A9EC5770FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

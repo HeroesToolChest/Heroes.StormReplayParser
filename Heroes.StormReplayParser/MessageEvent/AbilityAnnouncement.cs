@@ -63,7 +63,7 @@ namespace Heroes.StormReplayParser.MessageEvent
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return AbilityIndex ^ AbilityLink ^ ButtonLink;
+            return HashCode.Combine(AbilityIndex, AbilityLink, ButtonLink);
         }
 
         /// <inheritdoc/>

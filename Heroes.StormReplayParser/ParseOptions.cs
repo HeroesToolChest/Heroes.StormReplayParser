@@ -15,8 +15,8 @@
         /// </summary>
         public static ParseOptions MinimalParsing => new ParseOptions()
         {
-            ShouldTrackerEvents = false,
-            ShouldGameEvents = false,
+            ShouldParseTrackerEvents = false,
+            ShouldParseGameEvents = false,
             ShouldParseMessageEvents = false,
         };
 
@@ -28,12 +28,12 @@
         /// <summary>
         /// Gets or sets a value indicating whetherthe tracker events should be parsed.
         /// </summary>
-        public bool ShouldTrackerEvents { get; set; } = true;
+        public bool ShouldParseTrackerEvents { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whetherthe game events should be parsed.
         /// </summary>
-        public bool ShouldGameEvents { get; set; } = true;
+        public bool ShouldParseGameEvents { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether message events should be parsed.

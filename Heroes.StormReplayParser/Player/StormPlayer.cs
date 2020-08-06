@@ -139,7 +139,7 @@ namespace Heroes.StormReplayParser.Player
         internal List<HeroMasteryTier> HeroMasteryTiersInternal { get; set; } = new List<HeroMasteryTier>();
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal List<HeroTalent> TalentsInternal { get; set; } = new List<HeroTalent>(10);
+        internal List<HeroTalent> TalentsInternal { get; set; } = new List<HeroTalent>(7);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal int TalentSetCount { get; set; } = 0;

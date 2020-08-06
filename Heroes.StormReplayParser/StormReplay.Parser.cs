@@ -105,10 +105,10 @@ namespace Heroes.StormReplayParser
             ParseReplayAttributeEvents(stormReplay, pool);
             ParseReplayServerBattlelobby(stormReplay, pool);
 
-            if (_parseOptions.ShouldGameEvents)
+            if (_parseOptions.ShouldParseGameEvents)
                 ParseReplayGameEvents(stormReplay, pool);
 
-            if (_parseOptions.ShouldTrackerEvents)
+            if (_parseOptions.ShouldParseTrackerEvents)
                 ParseReplayTrackerEvents(stormReplay, pool);
 
             if (_parseOptions.ShouldParseMessageEvents)

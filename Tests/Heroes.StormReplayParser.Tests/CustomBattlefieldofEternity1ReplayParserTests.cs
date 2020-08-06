@@ -60,6 +60,8 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(StormTeam.Blue, player0.Team);
             Assert.IsFalse(player0.IsWinner);
             Assert.AreEqual("Greymane", player0.PlayerHero.HeroName);
+            Assert.AreEqual(StormRegion.US, player0.ToonHandle.StormRegion);
+            Assert.AreEqual(StormTeam.Red, _stormReplay.WinningTeam);
 
             StormPlayer player = players[9];
 
@@ -415,9 +417,9 @@ namespace Heroes.StormReplayParser.Tests
             StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
             {
                 AllowPTR = false,
-                ShouldGameEvents = true,
+                ShouldParseGameEvents = true,
                 ShouldParseMessageEvents = true,
-                ShouldTrackerEvents = false,
+                ShouldParseTrackerEvents = false,
             });
 
             Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
@@ -432,9 +434,9 @@ namespace Heroes.StormReplayParser.Tests
             StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
             {
                 AllowPTR = false,
-                ShouldGameEvents = false,
+                ShouldParseGameEvents = false,
                 ShouldParseMessageEvents = true,
-                ShouldTrackerEvents = true,
+                ShouldParseTrackerEvents = true,
             });
 
             Assert.AreEqual(StormReplayParseStatus.Success, result.Status);

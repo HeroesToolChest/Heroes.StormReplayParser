@@ -71,15 +71,17 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(StormTeam.Blue, player0.Team);
             Assert.IsFalse(player0.IsWinner);
             Assert.AreEqual("Greymane", player0.PlayerHero.HeroName);
+            Assert.AreEqual(StormRegion.US, player0.ToonHandle.StormRegion);
+            Assert.AreEqual(StormRegion.US, _stormReplay.Region);
+            StormPlayer player9 = players[9];
 
-            StormPlayer player1 = players[9];
-
-            Assert.AreEqual("Pinzs", player1.Name);
-            Assert.AreEqual(1, player1.ToonHandle.Region);
-            Assert.AreEqual(1, player1.ToonHandle.Realm);
-            Assert.AreEqual(StormTeam.Red, player1.Team);
-            Assert.IsTrue(player1.IsWinner);
-            Assert.AreEqual("Rehgar", player1.PlayerHero.HeroName);
+            Assert.AreEqual("Pinzs", player9.Name);
+            Assert.AreEqual(1, player9.ToonHandle.Region);
+            Assert.AreEqual(1, player9.ToonHandle.Realm);
+            Assert.AreEqual(StormTeam.Red, player9.Team);
+            Assert.IsTrue(player9.IsWinner);
+            Assert.AreEqual("Rehgar", player9.PlayerHero.HeroName);
+            Assert.AreEqual(StormTeam.Red, _stormReplay.WinningTeam);
 
             Assert.AreEqual("Volskaya Foundry", _stormReplay.MapInfo.MapName);
             Assert.AreEqual(637120547862521860, _stormReplay.Timestamp.Ticks);
@@ -110,6 +112,7 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual("SprayStaticComicSweetChromie", player0.PlayerLoadout.Spray);
             Assert.AreEqual("DeckardA", player0.PlayerLoadout.AnnouncerPack);
             Assert.AreEqual("GreymaneBase_VoiceLine04", player0.PlayerLoadout.VoiceLine);
+            Assert.AreEqual("Greymane", player0.PlayerHero.HeroId);
             Assert.AreEqual(24, player0.HeroMasteryTiersCount);
             Assert.AreEqual("Auri", player0.HeroMasteryTiers.ToList()[2].HeroAttributeId);
             Assert.AreEqual(1, player0.HeroMasteryTiers.ToList()[2].TierLevel);
@@ -468,7 +471,7 @@ namespace Heroes.StormReplayParser.Tests
         {
             Assert.AreEqual(8319, _stormReplay.TrackerEvents.Count);
             Assert.AreEqual("Volskaya", _stormReplay.MapInfo.MapId);
-
+            Assert.AreEqual("HeroGreymane", _stormReplay.StormPlayers.ToList()[0].PlayerHero.HeroUnitId);
             StormTrackerEvent unitBornEvent = _stormReplay.TrackerEvents[8145];
 
             Assert.AreEqual(StormTrackerEventType.UnitBornEvent, unitBornEvent.TrackerEventType);
@@ -522,9 +525,9 @@ namespace Heroes.StormReplayParser.Tests
             StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
             {
                 AllowPTR = false,
-                ShouldGameEvents = true,
+                ShouldParseGameEvents = true,
                 ShouldParseMessageEvents = true,
-                ShouldTrackerEvents = false,
+                ShouldParseTrackerEvents = false,
             });
 
             Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
@@ -539,9 +542,9 @@ namespace Heroes.StormReplayParser.Tests
             StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
             {
                 AllowPTR = false,
-                ShouldGameEvents = false,
+                ShouldParseGameEvents = false,
                 ShouldParseMessageEvents = true,
-                ShouldTrackerEvents = true,
+                ShouldParseTrackerEvents = true,
             });
 
             Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
@@ -582,9 +585,9 @@ namespace Heroes.StormReplayParser.Tests
             StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
             {
                 AllowPTR = false,
-                ShouldGameEvents = true,
+                ShouldParseGameEvents = true,
                 ShouldParseMessageEvents = false,
-                ShouldTrackerEvents = true,
+                ShouldParseTrackerEvents = true,
             });
 
             Assert.AreEqual(StormReplayParseStatus.Success, result.Status);

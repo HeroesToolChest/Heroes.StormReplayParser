@@ -115,6 +115,26 @@ namespace Heroes.StormReplayParser
         public int PlayersObserversCount => StormObservers.Count();
 
         /// <summary>
+        /// Gets the region of this replay.
+        /// </summary>
+        public StormRegion Region
+        {
+            get
+            {
+                StormPlayer? player = StormPlayersWithObservers.FirstOrDefault();
+                if (player != null)
+                    return player.ToonHandle.StormRegion;
+                else
+                    return StormRegion.Unknown;
+            }
+        }
+
+        /// <summary>
+        /// Gets the winning team.
+        /// </summary>
+        public StormTeam WinningTeam => Players[0].IsWinner ? StormTeam.Blue : StormTeam.Red;
+
+        /// <summary>
         /// Gets a collection of tracker events.
         /// </summary>
         public IReadOnlyList<StormTrackerEvent> TrackerEvents => TrackerEventsInternal;

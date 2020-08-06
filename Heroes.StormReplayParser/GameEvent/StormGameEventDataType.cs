@@ -26,7 +26,7 @@
         Bool,
 
         /// <summary>
-        /// Indicates a 32-bit signed integer
+        /// Indicates a 32-bit signed integer.
         /// </summary>
         Integer32,
 

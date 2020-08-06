@@ -28,6 +28,28 @@ namespace Heroes.StormReplayParser.Player
         /// </summary>
         public long Id { get; set; }
 
+        /// <summary>
+        /// Gets the region.
+        /// </summary>
+        public StormRegion StormRegion
+        {
+            get
+            {
+                if (Region == 1)
+                    return StormRegion.US;
+                else if (Region == 2)
+                    return StormRegion.EU;
+                else if (Region == 3)
+                    return StormRegion.KR;
+                else if (Region == 5)
+                    return StormRegion.CN;
+                else if (Region >= 90)
+                    return StormRegion.XX;
+                else
+                    return StormRegion.Unknown;
+            }
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {

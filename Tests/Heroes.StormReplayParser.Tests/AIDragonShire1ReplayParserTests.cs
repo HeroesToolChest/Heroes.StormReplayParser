@@ -352,9 +352,9 @@ namespace Heroes.StormReplayParser.Tests
             StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
             {
                 AllowPTR = false,
-                ShouldGameEvents = true,
+                ShouldParseGameEvents = true,
                 ShouldParseMessageEvents = true,
-                ShouldTrackerEvents = false,
+                ShouldParseTrackerEvents = false,
             });
 
             Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
@@ -369,9 +369,9 @@ namespace Heroes.StormReplayParser.Tests
             StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
             {
                 AllowPTR = false,
-                ShouldGameEvents = false,
+                ShouldParseGameEvents = false,
                 ShouldParseMessageEvents = true,
-                ShouldTrackerEvents = true,
+                ShouldParseTrackerEvents = true,
             });
 
             Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
