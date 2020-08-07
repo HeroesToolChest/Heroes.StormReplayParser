@@ -1,13 +1,7 @@
 variables:
-  main_project: HeroesDecode\heroesdecode.csproj
+  main_project: Heroes.StormReplayParser\Heroes.StormReplayParser.csproj
   publish_any_path: .\bin\publish\any\
   nupkg_path: .\bin\nupkg\any\
-  publish_fde_win_path: .\bin\publish\fde\win-x64\
-  publish_fde_osx_path: .\bin\publish\fde\osx-x64\
-  publish_fde_linux_path: .\bin\publish\fde\linux-x64\
-  publish_scd_win_path: .\bin\publish\scd\win-x64\
-  publish_scd_osx_path: .\bin\publish\scd\osx-x64\
-  publish_scd_linux_path: .\bin\publish\scd\linux-x64\
 
 jobs:
 - template: azure-pipelines-template.yml
@@ -27,11 +21,11 @@ jobs:
     name: Windows
     pool:
       vmImage: 'windows-latest'
-    
+
 - job: Artifacts
   dependsOn:
     - Linux
-    - macOS
+    - macOs
     - Windows
   pool:
     vmImage: 'windows-latest'
@@ -54,14 +48,14 @@ jobs:
     - task: NuGetToolInstaller@0
       displayName: nuget installer 5.6.0
       inputs:
-        versionSpec: '5.6.0' 
-   
+        versionSpec: '5.6.0'
+
     - powershell: |
-        $csproj = get-content HeroesDecode\HeroesDecode.csproj
+        $csproj = get-content Heroes.StormReplayParser\Heroes.StormReplayParser.csproj
         $sv = $csproj | select-string -pattern "<Version>"
         $sv -match "<Version>(?<content>.*)</Version>"
         $value = $matches['content']
-        $first_part_version,$build_version = $value.Split("-")
+        $first_part_version,$build_version = $value.Split("-")      
         $version = $first_part_version + "-build.$(Build.BuildNumber)"
         $csproj.replace($sv, "<Version>$version</Version>") | out-file $env:MAIN_PROJECT
         echo "Version - $version"
@@ -76,159 +70,61 @@ jobs:
       displayName: 'Restore'
       
     - powershell: dotnet publish $env:MAIN_PROJECT -c release --no-restore -o $env:PUBLISH_ANY_PATH
-      displayName: Publish release [fdd-any]
+      displayName: Publish release
 
-    - powershell: dotnet pack $env:MAIN_PROJECT -c release --no-build -o $env:NUPKG_PATH       
-      displayName: Nuget pack [fdd-any]
+    - powershell: dotnet pack $env:MAIN_PROJECT -c release --no-build -o $env:NUPKG_PATH -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg     
+      displayName: Nuget pack
 
     - task: NuGetCommand@2
       displayName: Sign nuget pack
       inputs:
         command: 'custom'
-        arguments: 'sign $(nupkg_path)HeroesDecode.*.nupkg -CertificatePath $(Agent.TempDirectory)\certificate -CertificatePassword $(cert_password) -Timestamper http://timestamp.digicert.com'
-           
+        arguments: 'sign $(nupkg_path)Heroes.StormReplayParser.*.nupkg -CertificatePath $(Agent.TempDirectory)\certificate -CertificatePassword $(cert_password) -Timestamper http://timestamp.digicert.com'
+
+    - task: NuGetCommand@2
+      displayName: Sign symbol pack
+      inputs:
+        command: 'custom'
+        arguments: 'sign $(nupkg_path)Heroes.StormReplayParser.*.snupkg -CertificatePath $(Agent.TempDirectory)\certificate -CertificatePassword $(cert_password) -Timestamper http://timestamp.digicert.com'
+        
     - powershell: |
-        (get-content $env:MAIN_PROJECT).Replace('<PublishSingleFile>false</PublishSingleFile>','<PublishSingleFile>true</PublishSingleFile>') | out-file $env:MAIN_PROJECT
         $s = get-content $env:MAIN_PROJECT | select-string -pattern "<Version>"
         $s -match "<Version>(?<content>.*)</Version>"
         $m = $matches['content']        
         echo "##vso[task.setvariable variable=version]$m"
-        echo "Version - $m"
-      displayName: FDE and SCD Prep
-                 
-    - powershell: dotnet publish $env:MAIN_PROJECT -c release --self-contained false -r win-x64 -o $env:PUBLISH_FDE_WIN_PATH
-      displayName: Publish release [fde-win-x64]
+        echo "Package version - $m"
+      displayName: Prep
 
-    - powershell: dotnet publish $env:MAIN_PROJECT -c release --self-contained false -r osx-x64 -o $env:PUBLISH_FDE_OSX_PATH
-      displayName: Publish release [fde-osx-x64]
-
-    - powershell: dotnet publish $env:MAIN_PROJECT -c release --self-contained false -r linux-x64 -o $env:PUBLISH_FDE_LINUX_PATH
-      displayName: Publish release [fde-linux-x64]
-      
-    - powershell: dotnet publish $env:MAIN_PROJECT -c release --self-contained true -r win-x64 -o $env:PUBLISH_SCD_WIN_PATH
-      displayName: Publish release [scd-win-x64]
-
-    - powershell: dotnet publish $env:MAIN_PROJECT -c release --self-contained true -r osx-x64 -o $env:PUBLISH_SCD_OSX_PATH
-      displayName: Publish release [scd-osx-x64]
-
-    - powershell: dotnet publish $env:MAIN_PROJECT -c release --self-contained true -r linux-x64 -o $env:PUBLISH_SCD_LINUX_PATH
-      displayName: Publish release [scd-linux-x64]
- 
     - task: ArchiveFiles@2
-      displayName: Archive [fdd-any] zip
+      displayName: Archive Release Files - Zip
       inputs:
         archiveType: 'zip'
         rootFolderOrFile: '$(publish_any_path)'
         includeRootFolder: false
-        archiveFile: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-fdd-any.zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)\Heroes.StormReplayParser.$(version).zip'
 
     - task: ArchiveFiles@2
-      displayName: Archive [fdd-any] tar
+      displayName: Archive Release Files - Tar
       inputs:
         archiveType: 'zip'
         rootFolderOrFile: '$(publish_any_path)'
         includeRootFolder: false
-        archiveFile: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-fdd-any.tar.gz'
-
-    - task: ArchiveFiles@2
-      displayName: Archive [fde-win-x64]
-      inputs:
-        archiveType: 'zip'
-        rootFolderOrFile: '$(publish_fde_win_path)'
-        includeRootFolder: false
-        archiveFile: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-fde-win-x64.zip'
-
-    - task: ArchiveFiles@2
-      displayName: Archive [fde-osx-x64]
-      inputs:
-        archiveType: 'tar'
-        rootFolderOrFile: '$(publish_fde_osx_path)'
-        includeRootFolder: false
-        archiveFile: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-fde-osx-x64.tar.gz'
-
-    - task: ArchiveFiles@2
-      displayName: Archive [fde-linux-x64]
-      inputs:
-        archiveType: 'tar'
-        rootFolderOrFile: '$(publish_fde_linux_path)'
-        includeRootFolder: false
-        archiveFile: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-fde-linux-x64.tar.gz'
-        
-    - task: ArchiveFiles@2
-      displayName: Archive [scd-win-x64]
-      inputs:
-        archiveType: 'zip'
-        rootFolderOrFile: '$(publish_scd_win_path)'
-        includeRootFolder: false
-        archiveFile: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-scd-win-x64.zip'
-
-    - task: ArchiveFiles@2
-      displayName: Archive [scd-osx-x64]
-      inputs:
-        archiveType: 'tar'
-        rootFolderOrFile: '$(publish_scd_osx_path)'
-        includeRootFolder: false
-        archiveFile: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-scd-osx-x64.tar.gz'
-
-    - task: ArchiveFiles@2
-      displayName: Archive [scd-linux-x64]
-      inputs:
-        archiveType: 'tar'
-        rootFolderOrFile: '$(publish_scd_linux_path)'
-        includeRootFolder: false
-        archiveFile: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-scd-linux-x64.tar.gz'
-
-    - task: PublishBuildArtifacts@1
-      displayName: Publish artifacts [fdd-any] zip
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-fdd-any.zip'
-        artifactName: 'HeroesDecode-fdd-any'
-
-    - task: PublishBuildArtifacts@1
-      displayName: Publish artifacts [fdd-any] tar
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-fdd-any.tar.gz'
-        artifactName: 'HeroesDecode-fdd-any' 
+        archiveFile: '$(Build.ArtifactStagingDirectory)\Heroes.StormReplayParser.$(version).tar.gz'
         
     - task: PublishBuildArtifacts@1
-      displayName: Publish artifacts [fde-win-x64]
+      displayName: Publish Artifacts - Release Files - Zip
       inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-fde-win-x64.zip'
-        artifactName: 'HeroesDecode-fde-win-x64'  
- 
-    - task: PublishBuildArtifacts@1
-      displayName: Publish artifacts [fde-osx-x64]
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-fde-osx-x64.tar.gz'
-        artifactName: 'HeroesDecode-fde-osx-x64'  
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)\Heroes.StormReplayParser.$(version).zip'
+        artifactName: 'Heroes.StormReplayParser'
 
     - task: PublishBuildArtifacts@1
-      displayName: Publish artifacts [fde-linux-x64]
+      displayName: Publish Artifacts - Release Files - Tar
       inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-fde-linux-x64.tar.gz'
-        artifactName: 'HeroesDecode-fde-linux-x64'  
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)\Heroes.StormReplayParser.$(version).tar.gz'
+        artifactName: 'Heroes.StormReplayParser'
         
     - task: PublishBuildArtifacts@1
-      displayName: Publish artifacts [scd-win-x64]
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-scd-win-x64.zip'
-        artifactName: 'HeroesDecode-scd-win-x64'  
- 
-    - task: PublishBuildArtifacts@1
-      displayName: Publish artifacts [scd-osx-x64]
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-scd-osx-x64.tar.gz'
-        artifactName: 'HeroesDecode-scd-osx-x64'  
-
-    - task: PublishBuildArtifacts@1
-      displayName: Publish artifacts [scd-linux-x64]
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)\HeroesDecode.$(version)-scd-linux-x64.tar.gz'
-        artifactName: 'HeroesDecode-scd-linux-x64'  
-        
-    - task: PublishBuildArtifacts@1
-      displayName: Publish artifact [nuget-fdd-any]
+      displayName: Publish Artifact - Nuget
       inputs:
         pathtoPublish: '$(nupkg_path)'
-        artifactName: 'HeroesDecode-nuget-fdd-any'
-  
+        artifactName: 'Heroes.StormReplayParser-Nuget'

@@ -30,11 +30,12 @@ jobs:
       
     - script: dotnet build -c $(configuration)
       displayName: Build
- 
-    - script: dotnet test -c $(configuration) --no-build --collect:"XPlat Code Coverage"
+      
+    - script: dotnet test -c $(configuration) --no-build --logger trx --collect "Code coverage"
       displayName: Run tests
-
-    - task: PublishCodeCoverageResults@1
-      inputs:     
-        codeCoverageTool: 'JaCoCo'
-        summaryFileLocation: '**/**/coverage.cobertura.xml'
+      
+    - task: PublishTestResults@2
+      displayName: Publish tests
+      inputs:
+        testRunner: VSTest
+        testResultsFiles: '**/*.trx'
