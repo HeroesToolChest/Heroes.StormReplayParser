@@ -32,6 +32,6 @@ jobs:
       displayName: Build
       
     - task: DotNetCoreCLI@2
-        inputs: test
+      inputs: test
         publishTestResults: true
         
