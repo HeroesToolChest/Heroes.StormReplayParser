@@ -19,6 +19,8 @@ namespace HeroesDecode
         private static bool _showPlayerTalents = false;
         private static bool _showPlayerStats = false;
 
+        private static bool _failed = false;
+
         public static int Main(string[] args)
         {
             RootCommand rootCommand = new RootCommand()
@@ -107,6 +109,7 @@ namespace HeroesDecode
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(stormReplayResult.Exception.StackTrace);
                     Console.ResetColor();
+                    _failed = true;
                 }
             }
             else
@@ -129,6 +132,9 @@ namespace HeroesDecode
             Console.WriteLine($"{"Version: ",11}{replay.ReplayVersion}");
             Console.WriteLine($"{"Region: ",11}{replay.Region}");
             Console.WriteLine($"{"Game Time: ",11}{replay.ReplayLength}");
+
+            if (_failed)
+                Environment.Exit(1);
 
             IEnumerable<StormPlayer> blueTeam = players.Where(x => x.Team == StormTeam.Blue);
             IEnumerable<StormPlayer> redTeam = players.Where(x => x.Team == StormTeam.Red);

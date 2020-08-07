@@ -3,6 +3,16 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
+    <Version>1.0.0-beta.1</Version>
+    <Authors>Kevin Oliva</Authors>
+    <Copyright>Copyright © 2020 Kevin Oliva</Copyright>
+    <Description>A Heroes of the Storm library that parses the .StormReplay files.</Description>
+    <PackageProjectUrl>https://github.com/HeroesToolChest/Heroes.StormReplayParser</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/HeroesToolChest/Heroes.StormReplayParser</RepositoryUrl>
+    <PackageReleaseNotes>https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases</PackageReleaseNotes>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageTags>C# dotnet core</PackageTags>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -23,6 +33,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
     
 </Project>

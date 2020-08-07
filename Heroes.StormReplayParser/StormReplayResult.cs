@@ -18,7 +18,6 @@ namespace Heroes.StormReplayParser
         /// <exception cref="ArgumentNullException"><paramref name="fileName"/> or <paramref name="stormReplay"/> is <see langword="null"/>.</exception>
         public StormReplayResult(StormReplay stormReplay, StormReplayParseStatus stormReplayParseStatus, string fileName, Exception? exception = null)
         {
-
             Replay = stormReplay ?? throw new ArgumentNullException(nameof(stormReplay));
             Status = stormReplayParseStatus;
             FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));

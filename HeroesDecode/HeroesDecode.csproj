@@ -4,6 +4,19 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
+    <PublishSingleFile>false</PublishSingleFile>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>dotnet-heroes-decode</ToolCommandName>
+    <Version>1.0.0-beta.1</Version>
+    <Copyright>Copyright © 2020 Kevin Oliva</Copyright>
+    <Authors>Kevin Oliva</Authors>
+    <PackageId>HeroesDecode</PackageId>
+    <Product>HeroesDecode</Product>
+    <PackageProjectUrl>https://github.com/HeroesToolChest/Heroes.StormReplayParser</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/HeroesToolChest/Heroes.StormReplayParser</RepositoryUrl>
+    <Description>Parses Heroes of the Storm replay files (.StormReplay).</Description>
+    <PackageReleaseNotes>https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases</PackageReleaseNotes>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +33,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Heroes.StormReplayParser\Heroes.StormReplayParser.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
