@@ -33,8 +33,9 @@ jobs:
  
     - script: dotnet test -c $(configuration) --no-build --collect:"XPlat Code Coverage"
       displayName: Run tests
-
-    - task: PublishCodeCoverageResults@1
-      inputs:     
-        codeCoverageTool: 'cobertura'
-        summaryFileLocation: '**/**/coverage.cobertura.xml'
+        
+    - task: PublishTestResults@2
+      displayName: Publish tests
+      inputs:
+        testRunner: VSTest
+        testResultsFiles: '**/**/coverage.cobertura.xml'
