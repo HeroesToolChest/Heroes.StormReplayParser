@@ -44,10 +44,7 @@ namespace Heroes.StormReplayParser
 
             StormReplay stormReplay = ParseStormReplay(fileName, parseOptions);
 
-            if (_failedReplayException != null)
-                return new StormReplayResult(stormReplay, _stormReplayParseResult, _failedReplayException);
-            else
-                return new StormReplayResult(stormReplay, _stormReplayParseResult);
+            return new StormReplayResult(stormReplay, _stormReplayParseResult, fileName, _failedReplayException);
         }
 
         private static StormReplay ParseStormReplay(string fileName, ParseOptions parseOptions)

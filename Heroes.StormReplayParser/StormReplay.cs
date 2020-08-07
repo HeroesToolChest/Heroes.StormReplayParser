@@ -15,11 +15,6 @@ namespace Heroes.StormReplayParser
     public partial class StormReplay
     {
         /// <summary>
-        /// Gets the latest build that the parser was updated for.
-        /// </summary>
-        public static int LatestUpdatedBuild => 73016;
-
-        /// <summary>
         /// Gets a value indicating whether there is at least one observer.
         /// </summary>
         public bool HasObservers => ClientListByUserID.Any(x => x?.PlayerType == PlayerType.Observer);

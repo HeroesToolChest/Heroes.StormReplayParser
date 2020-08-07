@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -14,6 +15,7 @@ namespace HeroesDecode
     {
         private const int _statisticsFieldWidth = 21;
 
+        private static bool _resultOnly = false;
         private static bool _showPlayerTalents = false;
         private static bool _showPlayerStats = false;
 
@@ -22,11 +24,15 @@ namespace HeroesDecode
             RootCommand rootCommand = new RootCommand()
             {
                 new Option<string>(
-                    "--replay-file-path",
-                    description: "File path of a Heroes of the Storm .StormReplay file")
+                    "--replay-path",
+                    description: "File path of a Heroes of the Storm .StormReplay file or a directory")
                 {
                     IsRequired = true,
                 },
+                new Option<bool>(
+                    "--result-only",
+                    getDefaultValue: () => false,
+                    description: "Will only show result of parsing, no map info or player info; --show-player-talents and --show-player-stats options will be overridden to false"),
                 new Option<bool>(
                     "--show-player-talents",
                     getDefaultValue: () => false,
@@ -39,24 +45,60 @@ namespace HeroesDecode
 
             rootCommand.Description = "Parses Heroes of the Storm replay files";
 
-            rootCommand.Handler = CommandHandler.Create<string, bool, bool>((replayFilePath, showPlayerTalents, showPlayerStats) =>
+            rootCommand.Handler = CommandHandler.Create<string, bool, bool, bool>((replayPath, resultOnly, showPlayerTalents, showPlayerStats) =>
             {
-                _showPlayerTalents = showPlayerTalents;
-                _showPlayerStats = showPlayerStats;
-
-                StormReplayResult stormReplayResult = StormReplay.Parse(replayFilePath, new ParseOptions()
+                _resultOnly = resultOnly;
+                if (!resultOnly)
                 {
-                    AllowPTR = true,
-                    ShouldParseTrackerEvents = true,
-                    ShouldParseGameEvents = true,
-                    ShouldParseMessageEvents = true,
-                });
+                    _showPlayerTalents = showPlayerTalents;
+                    _showPlayerStats = showPlayerStats;
+                }
 
-                if (stormReplayResult.Status == StormReplayParseStatus.Success)
-                    Console.ForegroundColor = ConsoleColor.Green;
-                else
-                    Console.ForegroundColor = ConsoleColor.Red;
+                if (File.Exists(replayPath))
+                {
+                    Parse(replayPath, resultOnly);
+                }
+                else if (Directory.Exists(replayPath))
+                {
+                    foreach (string? replayFile in Directory.EnumerateFiles(replayPath, "*.StormReplay", SearchOption.AllDirectories))
+                    {
+                        if (!string.IsNullOrEmpty(replayFile) && File.Exists(replayFile))
+                            Parse(replayFile, resultOnly);
+                    }
+                }
+            });
 
+            return rootCommand.InvokeAsync(args).Result;
+        }
+
+        private static void Parse(string replayPath, bool onlyResult)
+        {
+            StormReplayResult stormReplayResult = StormReplay.Parse(replayPath, new ParseOptions()
+            {
+                AllowPTR = true,
+                ShouldParseTrackerEvents = true,
+                ShouldParseGameEvents = true,
+                ShouldParseMessageEvents = true,
+            });
+
+            ResultLine(stormReplayResult);
+
+            if (!onlyResult)
+            {
+                GetInfo(stormReplayResult);
+                Console.WriteLine();
+            }
+        }
+
+        private static void ResultLine(StormReplayResult stormReplayResult)
+        {
+            if (stormReplayResult.Status == StormReplayParseStatus.Success)
+                Console.ForegroundColor = ConsoleColor.Green;
+            else
+                Console.ForegroundColor = ConsoleColor.Red;
+
+            if (!_resultOnly)
+            {
                 Console.WriteLine(stormReplayResult.Status);
                 Console.ResetColor();
 
@@ -66,17 +108,22 @@ namespace HeroesDecode
                     Console.WriteLine(stormReplayResult.Exception.StackTrace);
                     Console.ResetColor();
                 }
-
-                GetInfo(stormReplayResult.Replay);
-            });
-
-            return rootCommand.InvokeAsync(args).Result;
+            }
+            else
+            {
+                Console.Write(stormReplayResult.Status);
+                Console.ResetColor();
+                Console.WriteLine($" [{Path.GetFileName(stormReplayResult.FileName)}] [{stormReplayResult.Replay.ReplayVersion}]");
+            }
         }
 
-        private static void GetInfo(StormReplay replay)
+        private static void GetInfo(StormReplayResult stormReplayResult)
         {
+            StormReplay replay = stormReplayResult.Replay;
+
             List<StormPlayer> players = replay.StormPlayers.ToList();
 
+            Console.WriteLine($"{"File Name: ",11}{Path.GetFileName(stormReplayResult.FileName)}");
             Console.WriteLine($"{"Game Mode: ",11}{replay.GameMode}");
             Console.WriteLine($"{"Map: ",11}{replay.MapInfo.MapName} [ID:{replay.MapInfo.MapId}]");
             Console.WriteLine($"{"Version: ",11}{replay.ReplayVersion}");
@@ -148,7 +195,7 @@ namespace HeroesDecode
                                 partyRedUsed = true;
                             }
 
-                            partyPlayers.Add(player.PartyValue.Value, partyIcon.Value);
+                            partyPlayers.Add(player.PartyValue.Value, partyIcon!.Value);
                         }
                     }
 
@@ -210,7 +257,7 @@ namespace HeroesDecode
             }
 
             // hero name
-            StringBuilder heroBuilder = new StringBuilder($"{player.PlayerHero.HeroName,-22}");
+            StringBuilder heroBuilder = new StringBuilder($"{player.PlayerHero.HeroName,-16}");
 
             // hero level
             if (player.IsAutoSelect)
@@ -228,7 +275,7 @@ namespace HeroesDecode
 
             Console.WriteLine($"    Hero: {heroBuilder}");
 
-            foreach (MatchAwardType matchAwardType in player.MatchAwards)
+            foreach (MatchAwardType matchAwardType in player.MatchAwards!)
             {
                 Console.WriteLine($"    Award: {matchAwardType}");
             }
@@ -279,7 +326,7 @@ namespace HeroesDecode
                 Console.WriteLine("Statistics");
 
                 Console.WriteLine("Combat");
-                Console.WriteLine($"{"Hero Kills:",_statisticsFieldWidth} {player.ScoreResult.SoloKills}");
+                Console.WriteLine($"{"Hero Kills:",_statisticsFieldWidth} {player.ScoreResult!.SoloKills}");
                 Console.WriteLine($"{"Assists:",_statisticsFieldWidth} {player.ScoreResult.Assists}");
                 Console.WriteLine($"{"Takedowns:",_statisticsFieldWidth} {player.ScoreResult.Takedowns}");
                 Console.WriteLine($"{"Deaths:",_statisticsFieldWidth} {player.ScoreResult.Deaths}");
