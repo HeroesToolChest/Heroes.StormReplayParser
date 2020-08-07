@@ -36,5 +36,5 @@ jobs:
 
     - task: PublishCodeCoverageResults@1
       inputs:     
-        codeCoverageTool: 'JaCoCo'
+        codeCoverageTool: 'cobertura'
         summaryFileLocation: '**/**/coverage.cobertura.xml'
