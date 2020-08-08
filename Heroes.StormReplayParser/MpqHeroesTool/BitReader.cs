@@ -11,7 +11,6 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
     public ref struct BitReader
     {
         private readonly ReadOnlySpan<byte> _buffer;
-        private readonly EndianType _endianType;
         private int _bitIndex;
         private byte _currentByte;
 
@@ -26,7 +25,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             _bitIndex = 0;
             _currentByte = 0;
             _buffer = buffer;
-            _endianType = endianType;
+            EndianType = endianType;
         }
 
         /// <summary>
@@ -38,6 +37,11 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// Gets or sets the current index in the buffer.
         /// </summary>
         public int Index { get; set; }
+
+        /// <summary>
+        /// Gets or sets the endian type.
+        /// </summary>
+        public EndianType EndianType { get; set; }
 
         /// <summary>
         /// Reads up to 32 bits from the buffer as an uint.
@@ -52,7 +56,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             if (numberOfBits < 0)
                 throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than -1");
 
-            return _endianType == EndianType.BigEndian ? GetValueFromBits(numberOfBits) : BinaryPrimitives.ReverseEndianness(GetValueFromBits(numberOfBits));
+            return EndianType == EndianType.BigEndian ? GetValueFromBits(numberOfBits) : BinaryPrimitives.ReverseEndianness(GetValueFromBits(numberOfBits));
         }
 
         /// <summary>
@@ -68,7 +72,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             if (numberOfBits < 1)
                 throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
-            return _endianType == EndianType.BigEndian ? GetULongValueFromBits(numberOfBits) : BinaryPrimitives.ReverseEndianness(GetULongValueFromBits(numberOfBits));
+            return EndianType == EndianType.BigEndian ? GetULongValueFromBits(numberOfBits) : BinaryPrimitives.ReverseEndianness(GetULongValueFromBits(numberOfBits));
         }
 
         /// <summary>
@@ -84,7 +88,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             if (numberOfBits < 1)
                 throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
-            return _endianType == EndianType.BigEndian ? GetLongValueFromBits(numberOfBits) : BinaryPrimitives.ReverseEndianness(GetLongValueFromBits(numberOfBits));
+            return EndianType == EndianType.BigEndian ? GetLongValueFromBits(numberOfBits) : BinaryPrimitives.ReverseEndianness(GetLongValueFromBits(numberOfBits));
         }
 
         /// <summary>
@@ -141,7 +145,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>An unsigned short.</returns>
         public ushort ReadUInt16Aligned()
         {
-            if (_endianType == EndianType.LittleEndian)
+            if (EndianType == EndianType.LittleEndian)
                 return BinaryPrimitives.ReadUInt16LittleEndian(_buffer[Index..(Index += 2)]);
             else
                 return BinaryPrimitives.ReadUInt16BigEndian(_buffer[Index..(Index += 2)]);
@@ -153,7 +157,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>A short.</returns>
         public short ReadInt16Aligned()
         {
-            if (_endianType == EndianType.LittleEndian)
+            if (EndianType == EndianType.LittleEndian)
                 return BinaryPrimitives.ReadInt16LittleEndian(_buffer[Index..(Index += 2)]);
             else
                 return BinaryPrimitives.ReadInt16BigEndian(_buffer[Index..(Index += 2)]);
@@ -171,7 +175,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>An unsigned interger.</returns>
         public uint ReadUInt32Aligned()
         {
-            if (_endianType == EndianType.LittleEndian)
+            if (EndianType == EndianType.LittleEndian)
                 return BinaryPrimitives.ReadUInt32LittleEndian(_buffer[Index..(Index += 4)]);
             else
                 return BinaryPrimitives.ReadUInt32BigEndian(_buffer[Index..(Index += 4)]);
@@ -183,7 +187,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>An integer.</returns>
         public int ReadInt32Aligned()
         {
-            if (_endianType == EndianType.LittleEndian)
+            if (EndianType == EndianType.LittleEndian)
                 return BinaryPrimitives.ReadInt32LittleEndian(_buffer[Index..(Index += 4)]);
             else
                 return BinaryPrimitives.ReadInt32BigEndian(_buffer[Index..(Index += 4)]);
@@ -207,7 +211,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>An unsigned long.</returns>
         public ulong ReadUInt64Aligned()
         {
-            if (_endianType == EndianType.LittleEndian)
+            if (EndianType == EndianType.LittleEndian)
                 return BinaryPrimitives.ReadUInt64LittleEndian(_buffer[Index..(Index += 8)]);
             else
                 return BinaryPrimitives.ReadUInt64BigEndian(_buffer[Index..(Index += 8)]);
@@ -219,7 +223,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         /// <returns>A long.</returns>
         public long ReadInt64Aligned()
         {
-            if (_endianType == EndianType.LittleEndian)
+            if (EndianType == EndianType.LittleEndian)
                 return BinaryPrimitives.ReadInt64LittleEndian(_buffer[Index..(Index += 8)]);
             else
                 return BinaryPrimitives.ReadInt64BigEndian(_buffer[Index..(Index += 8)]);
@@ -349,19 +353,9 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
                 throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
             if (numberOfBits < 33)
-            {
-                if (_endianType == EndianType.LittleEndian)
-                    return Encoding.UTF8.GetString(BitConverter.GetBytes(ReadBits(numberOfBits)));
-                else
-                    return Encoding.UTF8.GetString(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(ReadBits(numberOfBits))));
-            }
+                return Encoding.UTF8.GetString(BitConverter.GetBytes(ReadBits(numberOfBits)));
             else
-            {
-                if (_endianType == EndianType.LittleEndian)
-                    return Encoding.UTF8.GetString(BitConverter.GetBytes(ReadLongBits(numberOfBits)));
-                else
-                    return Encoding.UTF8.GetString(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(ReadLongBits(numberOfBits))));
-            }
+                return Encoding.UTF8.GetString(BitConverter.GetBytes(ReadLongBits(numberOfBits)));
         }
 
         /// <summary>
@@ -381,7 +375,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             if (bytes.Length == 0)
                 return string.Empty;
 
-            if (_endianType == EndianType.BigEndian)
+            if (EndianType == EndianType.BigEndian)
             {
                 return Encoding.UTF8.GetString(bytes);
             }

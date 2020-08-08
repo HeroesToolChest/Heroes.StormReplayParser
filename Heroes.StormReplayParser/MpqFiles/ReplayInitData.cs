@@ -288,7 +288,9 @@ namespace Heroes.StormReplayParser.MpqFiles
                         uint heroMasteryTiersLength = bitReader.ReadBits(10);
                         for (int j = 0; j < heroMasteryTiersLength; j++)
                         {
+                            bitReader.EndianType = EndianType.LittleEndian;
                             string heroAttributeName = bitReader.ReadStringFromBits(32);
+                            bitReader.EndianType = EndianType.BigEndian;
 
                             int tier = (int)bitReader.ReadBits(8); // m_tier
 

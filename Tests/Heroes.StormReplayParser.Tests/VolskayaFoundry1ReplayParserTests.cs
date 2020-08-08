@@ -464,6 +464,10 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(null, players[1].PartyValue);
             Assert.AreEqual(1201, players[9].AccountLevel);
             Assert.AreEqual(null, players[9].PartyValue);
+
+            Assert.IsTrue(players[0].BattleTagName.StartsWith(players[0].Name));
+            Assert.IsTrue(players[0].BattleTagName.Contains('#'));
+            Assert.IsTrue(players[0].BattleTagName.EndsWith("88"));
         }
 
         [TestMethod]

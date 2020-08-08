@@ -66,6 +66,9 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual("lavakill", player0.Name);
             Assert.AreEqual(1, player0.ToonHandle.Region);
             Assert.AreEqual(1, player0.ToonHandle.Realm);
+            Assert.AreEqual(1527252, player0.ToonHandle.Id);
+            Assert.AreEqual(1869768008, player0.ToonHandle.ProgramId);
+            Assert.AreEqual(1, player0.ToonHandle.Realm);
             Assert.AreEqual(StormTeam.Blue, player0.Team);
             Assert.IsTrue(player0.IsWinner);
             Assert.AreEqual("Qhira", player0.PlayerHero.HeroName);
@@ -75,6 +78,8 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual("Player 10", player9.Name);
             Assert.AreEqual(0, player9.ToonHandle.Region);
             Assert.AreEqual(0, player9.ToonHandle.Realm);
+            Assert.AreEqual(0, player9.ToonHandle.Id);
+            Assert.AreEqual(0, player9.ToonHandle.ProgramId);
             Assert.AreEqual(StormTeam.Red, player9.Team);
             Assert.IsFalse(player9.IsWinner);
             Assert.AreEqual("Valeera", player9.PlayerHero.HeroName);

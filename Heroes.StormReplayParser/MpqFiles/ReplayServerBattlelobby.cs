@@ -1,6 +1,8 @@
 ﻿using Heroes.StormReplayParser.MpqHeroesTool;
+using Heroes.StormReplayParser.Player;
 using Heroes.StormReplayParser.Replay;
 using System;
+using System.Linq;
 
 namespace Heroes.StormReplayParser.MpqFiles
 {
@@ -250,23 +252,52 @@ namespace Heroes.StormReplayParser.MpqFiles
             {
                 bitReader.ReadBits(32);
 
-                bitReader.ReadBits(5); // player index
+                uint playerIndex = bitReader.ReadBits(5); // player index
+
+                StormPlayer player = replay.ClientListByUserID[playerIndex];
 
                 // toon
-                bitReader.ReadBits(8); // m_region
-                if (bitReader.ReadStringFromBits(32) != "Hero") // m_programId
+                uint playerRegion = bitReader.ReadBits(8); // m_region
+
+                bitReader.EndianType = EndianType.LittleEndian;
+                if (bitReader.ReadBits(32) != 1869768008) // m_programId
                     throw new StormParseException($"{_exceptionHeader}: Not Hero");
-                bitReader.ReadBits(32); // m_realm
-                bitReader.ReadLongBits(64); // m_id
+                bitReader.EndianType = EndianType.BigEndian;
+
+                uint playerRealm = bitReader.ReadBits(32); // m_realm
+                long playerId = bitReader.ReadLongBits(64); // m_id
+
+                if (player.PlayerType != PlayerType.Observer)
+                {
+                    if (player.ToonHandle.Region != playerRegion)
+                        throw new StormParseException($"{_exceptionHeader}: Mismatch on player region");
+                    if (player.ToonHandle.Realm != playerRealm)
+                        throw new StormParseException($"{_exceptionHeader}: Mismatch on player realm");
+                    if (player.ToonHandle.Id != playerId)
+                        throw new StormParseException($"{_exceptionHeader}: Mismatch on player id");
+                }
+                else
+                {
+                    // observers don't have the information carried over to the details file
+
+                    player.ToonHandle.Region = (int)playerRegion;
+                    player.ToonHandle.ProgramId = 1869768008;
+                    player.ToonHandle.Realm = (int)playerRealm;
+                    player.ToonHandle.Id = (int)playerId;
+                }
 
                 // internal toon
                 bitReader.ReadBits(8); // m_region
-                if (bitReader.ReadStringFromBits(32) != "Hero") // m_programId
+
+                bitReader.EndianType = EndianType.LittleEndian;
+                if (bitReader.ReadBits(32) != 1869768008) // m_programId (Hero)
                     throw new StormParseException($"{_exceptionHeader}: Not Hero");
+                bitReader.EndianType = EndianType.BigEndian;
+
                 bitReader.ReadBits(32); // m_realm
 
                 int idLength = (int)bitReader.ReadBits(7) + 2;
-                replay.ClientListByUserID[i].BattleTagId = bitReader.ReadStringFromBytes(idLength);
+                player.BattleTagId = bitReader.ReadStringFromBytes(idLength);
 
                 bitReader.ReadBits(6);
 
@@ -279,7 +310,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                     bitReader.ReadBits(32); // m_realm
 
                     idLength = (int)bitReader.ReadBits(7) + 2;
-                    if (replay.ClientListByUserID[i].BattleTagId != bitReader.ReadStringFromBytes(idLength))
+                    if (player.BattleTagId != bitReader.ReadStringFromBytes(idLength))
                         throw new StormParseException($"{_exceptionHeader}: Duplicate internal id does not match");
 
                     bitReader.ReadBits(6);
@@ -327,16 +358,24 @@ namespace Heroes.StormReplayParser.MpqFiles
                     bitReader.ReadBoolean(); // m_isBlizzardStaff
 
                 if (bitReader.ReadBoolean()) // is player in party
-                    replay.ClientListByUserID[i].PartyValue = bitReader.ReadLongBits(64); // players in same party will have the same exact 8 bytes of data
+                    player.PartyValue = bitReader.ReadLongBits(64); // players in same party will have the same exact 8 bytes of data
 
                 bitReader.ReadBoolean();
-                replay.ClientListByUserID[i].BattleTagName = bitReader.ReadBlobAsString(7);
 
-                if (!string.IsNullOrEmpty(replay.ClientListByUserID[i].BattleTagName) && (!replay.ClientListByUserID[i].BattleTagName.Contains('#')))
+                string battleTagName = bitReader.ReadBlobAsString(7);
+                int poundIndex = battleTagName.IndexOf('#');
+
+                if (!string.IsNullOrEmpty(battleTagName) && poundIndex < 0)
                     throw new StormParseException($"{_exceptionHeader}: Invalid battletag");
 
+                ReadOnlySpan<char> namePart = battleTagName.AsSpan().Slice(0, poundIndex);
+                if (!namePart.SequenceEqual(player.Name))
+                    throw new StormParseException($"{_exceptionHeader}: Mismatch on battletag name with player name");
+
+                player.BattleTagName = battleTagName;
+
                 if (replay.ReplayBuild >= 52860 || (replay.ReplayVersion.Major == 2 && replay.ReplayBuild >= 51978))
-                    replay.ClientListByUserID[i].AccountLevel = (int)bitReader.ReadBits(32);  // in custom games, this is a 0
+                    player.AccountLevel = (int)bitReader.ReadBits(32);  // in custom games, this is a 0
 
                 if (replay.ReplayBuild >= 69947)
                     bitReader.ReadBoolean(); // m_hasActiveBoost

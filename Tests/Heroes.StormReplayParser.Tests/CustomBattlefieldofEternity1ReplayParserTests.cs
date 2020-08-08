@@ -57,6 +57,8 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual("AZTDoubt", player0.Name);
             Assert.AreEqual(1, player0.ToonHandle.Region);
             Assert.AreEqual(1, player0.ToonHandle.Realm);
+            Assert.AreEqual(7027042, player0.ToonHandle.Id);
+            Assert.AreEqual(1869768008, player0.ToonHandle.ProgramId);
             Assert.AreEqual(StormTeam.Blue, player0.Team);
             Assert.IsFalse(player0.IsWinner);
             Assert.AreEqual("Greymane", player0.PlayerHero.HeroName);
@@ -347,12 +349,25 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void BattleLobbyDataTest()
         {
-            List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+            List<StormPlayer> players = _stormReplay.StormPlayersWithObservers.ToList();
 
             Assert.AreEqual(0, players[1].AccountLevel);
             Assert.AreEqual(null, players[1].PartyValue);
             Assert.AreEqual(0, players[9].AccountLevel);
             Assert.AreEqual(null, players[9].PartyValue);
+
+            Assert.IsTrue(players[0].BattleTagName.StartsWith(players[0].Name));
+            Assert.IsTrue(players[0].BattleTagName.Contains('#'));
+            Assert.IsTrue(players[0].BattleTagName.EndsWith("34"));
+
+            Assert.AreEqual(6462480, players[8].ToonHandle.Id);
+            Assert.AreEqual(1869768008, players[8].ToonHandle.ProgramId);
+            Assert.AreEqual(1, players[8].ToonHandle.Realm);
+            Assert.AreEqual(1, players[8].ToonHandle.Region);
+            Assert.AreEqual(StormRegion.US, players[8].ToonHandle.StormRegion);
+            Assert.IsTrue(players[8].BattleTagName.StartsWith(players[8].Name));
+            Assert.IsTrue(players[8].BattleTagName.Contains('#'));
+            Assert.IsTrue(players[8].BattleTagName.EndsWith("27"));
         }
 
         [TestMethod]
