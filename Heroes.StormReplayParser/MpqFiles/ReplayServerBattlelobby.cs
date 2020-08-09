@@ -256,7 +256,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                 StormPlayer player = replay.ClientListByUserID[playerIndex];
 
-                // toon
+                // toon handle
                 uint playerRegion = bitReader.ReadBits(8); // m_region
 
                 bitReader.EndianType = EndianType.LittleEndian;
@@ -286,7 +286,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                     player.ToonHandle.Id = (int)playerId;
                 }
 
-                // internal toon
+                // toon handle again but with T_ shortcut
                 bitReader.ReadBits(8); // m_region
 
                 bitReader.EndianType = EndianType.LittleEndian;
@@ -297,20 +297,20 @@ namespace Heroes.StormReplayParser.MpqFiles
                 bitReader.ReadBits(32); // m_realm
 
                 int idLength = (int)bitReader.ReadBits(7) + 2;
-                player.BattleTagId = bitReader.ReadStringFromBytes(idLength);
+                player.ToonHandle.ShortcutId = bitReader.ReadStringFromBytes(idLength);
 
                 bitReader.ReadBits(6);
 
                 if (replay.ReplayBuild <= 47479)
                 {
-                    // internal toon repeat
+                    // toon handle repat again with T_ shortcut
                     bitReader.ReadBits(8); // m_region
                     if (bitReader.ReadStringFromBits(32) != "Hero") // m_programId
                         throw new StormParseException($"{_exceptionHeader}: Not Hero");
                     bitReader.ReadBits(32); // m_realm
 
                     idLength = (int)bitReader.ReadBits(7) + 2;
-                    if (player.BattleTagId != bitReader.ReadStringFromBytes(idLength))
+                    if (player.ToonHandle.ShortcutId != bitReader.ReadStringFromBytes(idLength))
                         throw new StormParseException($"{_exceptionHeader}: Duplicate internal id does not match");
 
                     bitReader.ReadBits(6);

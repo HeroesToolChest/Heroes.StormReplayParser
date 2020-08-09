@@ -95,12 +95,6 @@ namespace Heroes.StormReplayParser.Player
         public string BattleTagName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the player's TID that serves as a non-unique identifier that is associated with the <see cref="BattleTagName"/>. May not always start with T:.
-        /// </summary>
-        /// <remarks>Non-unique as this value may not change even if their battle tag changes.</remarks>
-        public string BattleTagId { get; set; } = string.Empty;
-
-        /// <summary>
         /// Gets or sets the player's account level.
         /// </summary>
         public int? AccountLevel { get; set; } = null;

@@ -14,7 +14,7 @@ namespace Heroes.StormReplayParser.Player
         public int Region { get; set; }
 
         /// <summary>
-        /// Gets or sets the program id. This id is the same for all player's in this replay.
+        /// Gets or sets the program id. This id is the identifier for the game.
         /// </summary>
         public long ProgramId { get; set; }
 
@@ -24,9 +24,22 @@ namespace Heroes.StormReplayParser.Player
         public int Realm { get; set; }
 
         /// <summary>
-        /// Gets or sets the id unique to the player's account in this region.
+        /// Gets or sets the id unique associated to the player's account in this region.
         /// </summary>
         public long Id { get; set; }
+
+        /// <summary>
+        /// <para>
+        /// Gets or sets the the shortcut id. Usually in the format of T:XXXXXXXX@XXX. May not always start with T:.
+        /// </para>
+        /// <para>
+        /// This id is used in the user's document folder (typically in the format of T_XXXXXXXX_XXX@REGION).
+        /// </para>
+        /// <para>
+        /// This id is associated to the player's account in this region.
+        /// </para>
+        /// </summary>
+        public string ShortcutId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets the region.

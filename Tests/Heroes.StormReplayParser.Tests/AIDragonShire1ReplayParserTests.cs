@@ -80,6 +80,7 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(0, player9.ToonHandle.Realm);
             Assert.AreEqual(0, player9.ToonHandle.Id);
             Assert.AreEqual(0, player9.ToonHandle.ProgramId);
+            Assert.AreEqual("1-Hero-1-1527252", players[0].ToonHandle.ToString());
             Assert.AreEqual(StormTeam.Red, player9.Team);
             Assert.IsFalse(player9.IsWinner);
             Assert.AreEqual("Valeera", player9.PlayerHero.HeroName);
@@ -278,6 +279,8 @@ namespace Heroes.StormReplayParser.Tests
 
             Assert.AreEqual(2331, players[0].AccountLevel);
             Assert.AreEqual(null, players[0].PartyValue);
+
+            Assert.AreEqual("T:56372890#167", players[0].ToonHandle.ShortcutId);
         }
 
         [TestMethod]

@@ -365,6 +365,8 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(1, players[8].ToonHandle.Realm);
             Assert.AreEqual(1, players[8].ToonHandle.Region);
             Assert.AreEqual(StormRegion.US, players[8].ToonHandle.StormRegion);
+            Assert.AreEqual("T:93796888#558", players[8].ToonHandle.ShortcutId);
+            Assert.AreEqual("1-Hero-1-6462480", players[8].ToonHandle.ToString());
             Assert.IsTrue(players[8].BattleTagName.StartsWith(players[8].Name));
             Assert.IsTrue(players[8].BattleTagName.Contains('#'));
             Assert.IsTrue(players[8].BattleTagName.EndsWith("27"));

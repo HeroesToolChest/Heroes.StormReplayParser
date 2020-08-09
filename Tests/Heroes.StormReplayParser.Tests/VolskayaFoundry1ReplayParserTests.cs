@@ -69,6 +69,7 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(1, player0.ToonHandle.Region);
             Assert.AreEqual(1, player0.ToonHandle.Realm);
             Assert.AreEqual(StormTeam.Blue, player0.Team);
+            Assert.AreEqual("1-Hero-1-1182829", player0.ToonHandle.ToString());
             Assert.IsFalse(player0.IsWinner);
             Assert.AreEqual("Greymane", player0.PlayerHero.HeroName);
             Assert.AreEqual(StormRegion.US, player0.ToonHandle.StormRegion);
@@ -468,6 +469,8 @@ namespace Heroes.StormReplayParser.Tests
             Assert.IsTrue(players[0].BattleTagName.StartsWith(players[0].Name));
             Assert.IsTrue(players[0].BattleTagName.Contains('#'));
             Assert.IsTrue(players[0].BattleTagName.EndsWith("88"));
+
+            Assert.AreEqual("T:56372890#167", players[6].ToonHandle.ShortcutId);
         }
 
         [TestMethod]
