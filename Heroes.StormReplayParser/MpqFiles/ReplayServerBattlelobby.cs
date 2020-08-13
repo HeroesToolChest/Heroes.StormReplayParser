@@ -278,7 +278,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                 }
                 else
                 {
-                    // observers don't have the information carried over to the details file
+                    // observers don't have the information carried over to the details or initdata file
 
                     player.ToonHandle.Region = (int)playerRegion;
                     player.ToonHandle.ProgramId = 1869768008;
@@ -303,7 +303,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                 if (replay.ReplayBuild <= 47479)
                 {
-                    // toon handle repat again with T_ shortcut
+                    // toon handle repeat again with T_ shortcut
                     bitReader.ReadBits(8); // m_region
                     if (bitReader.ReadStringFromBits(32) != "Hero") // m_programId
                         throw new StormParseException($"{_exceptionHeader}: Not Hero");
@@ -311,7 +311,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                     idLength = (int)bitReader.ReadBits(7) + 2;
                     if (player.ToonHandle.ShortcutId != bitReader.ReadStringFromBytes(idLength))
-                        throw new StormParseException($"{_exceptionHeader}: Duplicate internal id does not match");
+                        throw new StormParseException($"{_exceptionHeader}: Duplicate shortcut id does not match");
 
                     bitReader.ReadBits(6);
                 }

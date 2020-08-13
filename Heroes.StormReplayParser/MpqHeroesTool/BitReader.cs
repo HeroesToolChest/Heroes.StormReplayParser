@@ -106,7 +106,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         }
 
         /// <summary>
-        /// Read a number of bits from the read-only span as an array of booleans.
+        /// Read a number of bits from the buffer as an array of booleans.
         /// </summary>
         /// <param name="numberOfBits">The number of bits to read.</param>
         /// <returns>An array of booleans.</returns>
