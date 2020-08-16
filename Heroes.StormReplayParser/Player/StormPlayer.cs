@@ -13,6 +13,7 @@ namespace Heroes.StormReplayParser.Player
     {
         private Func<int, ScoreResult>? _scoreResult;
         private int? _player;
+        private int? _accountLevel = null;
 
         /// <summary>
         /// Gets or sets the player's name.
@@ -97,7 +98,11 @@ namespace Heroes.StormReplayParser.Player
         /// <summary>
         /// Gets or sets the player's account level.
         /// </summary>
-        public int? AccountLevel { get; set; } = null;
+        public int? AccountLevel
+        {
+            get => _accountLevel;
+            set => _accountLevel = value == 0 ? null : value;
+        }
 
         /// <summary>
         /// Gets or sets the player's party value. Those in the same party have the same value.

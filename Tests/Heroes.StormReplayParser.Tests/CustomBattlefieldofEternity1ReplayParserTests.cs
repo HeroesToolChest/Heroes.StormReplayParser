@@ -353,9 +353,9 @@ namespace Heroes.StormReplayParser.Tests
         {
             List<StormPlayer> players = _stormReplay.StormPlayersWithObservers.ToList();
 
-            Assert.AreEqual(0, players[1].AccountLevel);
+            Assert.IsNull(players[1].AccountLevel);
             Assert.AreEqual(null, players[1].PartyValue);
-            Assert.AreEqual(0, players[9].AccountLevel);
+            Assert.IsNull(players[9].AccountLevel);
             Assert.AreEqual(null, players[9].PartyValue);
 
             Assert.IsTrue(players[0].BattleTagName.StartsWith(players[0].Name));
