@@ -57,7 +57,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         replay.DraftPicksInternal.Add(new StormDraftPick()
                         {
                             HeroSelected = stormTrackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
-                            SelectedPlayerSlotId = (int)stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32(),
+                            Team = (StormTeam)(stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32() - 1),
                             PickType = StormDraftPickType.Banned,
                         });
                         break;
@@ -65,15 +65,16 @@ namespace Heroes.StormReplayParser.MpqFiles
                         replay.DraftPicksInternal.Add(new StormDraftPick()
                         {
                             HeroSelected = stormTrackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
-                            SelectedPlayerSlotId = (int)stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32(),
+                            Player = replay.ClientListByUserID[stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32()],
                             PickType = StormDraftPickType.Picked,
                         });
+
                         break;
                     case StormTrackerEventType.HeroSwappedEvent:
                         replay.DraftPicksInternal.Add(new StormDraftPick()
                         {
                             HeroSelected = stormTrackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
-                            SelectedPlayerSlotId = (int)stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32(),
+                            Player = replay.ClientListByUserID[stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32()],
                             PickType = StormDraftPickType.Swapped,
                         });
                         break;

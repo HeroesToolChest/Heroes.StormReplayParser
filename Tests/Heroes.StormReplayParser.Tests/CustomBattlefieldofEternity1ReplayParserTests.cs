@@ -154,11 +154,13 @@ namespace Heroes.StormReplayParser.Tests
 
             Assert.AreEqual("Maiev", draft[0].HeroSelected);
             Assert.AreEqual(StormDraftPickType.Banned, draft[0].PickType);
-            Assert.AreEqual(2, draft[0].SelectedPlayerSlotId);
+            Assert.IsNull(draft[0].Player);
+            Assert.AreEqual(StormTeam.Red, draft[0].Team);
 
             Assert.AreEqual("Kaelthas", draft[13].HeroSelected);
             Assert.AreEqual(StormDraftPickType.Picked, draft[13].PickType);
-            Assert.AreEqual(4, draft[13].SelectedPlayerSlotId);
+            Assert.AreEqual("AZTLucker", draft[13].Player!.Name);
+            Assert.AreEqual(StormTeam.Blue, draft[13].Team);
         }
 
         [TestMethod]
