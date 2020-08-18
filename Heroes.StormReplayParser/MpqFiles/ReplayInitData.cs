@@ -2,6 +2,7 @@
 using Heroes.StormReplayParser.Player;
 using Heroes.StormReplayParser.Replay;
 using System;
+using System.Linq;
 
 namespace Heroes.StormReplayParser.MpqFiles
 {
@@ -178,7 +179,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                 uint? userId = null;
                 uint? workingSetSlotID = null;
 
-                bitReader.ReadBits(8); // m_control
+                uint control = bitReader.ReadBits(8); // m_control
 
                 if (bitReader.ReadBoolean())
                     userId = bitReader.ReadBits(4); // m_userId
@@ -214,25 +215,40 @@ namespace Heroes.StormReplayParser.MpqFiles
                 if (bitReader.ReadBoolean())
                     workingSetSlotID = bitReader.ReadBits(8); // m_workingSetSlotId
 
-                if (userId.HasValue && workingSetSlotID.HasValue)
-                {
-                    if (replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value] != null)
-                        replay.ClientListByUserID[userId.Value] = replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value];
-
-                    if (observerStatus == 1)
-                        replay.ClientListByUserID[userId.Value].PlayerType = PlayerType.Observer;
-
-                    replay.ClientListByUserID[userId.Value].PlayerHero.HeroId = heroId;
-                    replay.ClientListByUserID[userId.Value].PlayerLoadout.SkinAndSkinTint = skinAndSkinTint;
-                    replay.ClientListByUserID[userId.Value].PlayerLoadout.MountAndMountTint = mountAndMountTint;
-                }
-
                 // m_rewards
                 uint rewardsLength = bitReader.ReadBits(17);
                 for (uint j = 0; j < rewardsLength; j++)
                     bitReader.ReadBits(32);
 
-                bitReader.ReadBlobAsString(7); // m_toonHandle
+                string toonHandle = bitReader.ReadBlobAsString(7); // m_toonHandle
+
+                if (userId.HasValue && workingSetSlotID.HasValue)
+                {
+                    if (replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value] != null)
+                    {
+                        replay.ClientListByUserID[userId.Value] = replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value];
+                    }
+                    else if (!string.IsNullOrEmpty(toonHandle) && observerStatus == 0)
+                    {
+                        replay.ClientListByUserID[userId.Value] = replay.Players.FirstOrDefault(x => x.ToonHandle?.ToString() == toonHandle)
+                            ?? throw new StormParseException($"Unable to set {nameof(replay.ClientListByUserID)}, could not find player with a toonhandle of {toonHandle}");
+                    }
+                    else if (observerStatus == 0)
+                    {
+                        throw new StormParseException($"Unable to set {nameof(replay.ClientListByUserID)}, no toonhandle");
+                    }
+
+                    if (observerStatus > 0)
+                        replay.ClientListByUserID[userId.Value].PlayerType = PlayerType.Observer;
+
+                    if (replay.ClientListByUserID[userId.Value].PlayerType != PlayerType.Observer)
+                    {
+                        replay.ClientListByUserID[userId.Value].PlayerHero ??= new PlayerHero();
+                        replay.ClientListByUserID[userId.Value].PlayerHero!.HeroId = heroId;
+                        replay.ClientListByUserID[userId.Value].PlayerLoadout.SkinAndSkinTint = skinAndSkinTint;
+                        replay.ClientListByUserID[userId.Value].PlayerLoadout.MountAndMountTint = mountAndMountTint;
+                    }
+                }
 
                 // m_licenses
                 if (replay.ReplayBuild < 49582 || replay.ReplayBuild == 49838)

@@ -31,6 +31,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                     Name = versionDecoders[i].Structure![0].GetValueAsString(), // m_name
                 };
 
+                stormPlayer.ToonHandle ??= new ToonHandle();
                 stormPlayer.ToonHandle.Region = (int)versionDecoders[i].Structure![1].Structure![0].GetValueAsUInt32(); // m_region
                 stormPlayer.ToonHandle.ProgramId = versionDecoders[i].Structure![1].Structure![1].GetValueAsUInt32(); // m_programId
                 stormPlayer.ToonHandle.Realm = (int)versionDecoders[i].Structure![1].Structure![2].GetValueAsUInt32(); // m_realm
@@ -54,6 +55,8 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                 stormPlayer.IsWinner = versionDecoders[i].Structure?[8].GetValueAsUInt32() == 1; // m_result
                 stormPlayer.WorkingSetSlotId = (int?)versionDecoders[i].Structure?[9].OptionalData?.GetValueAsUInt32(); // m_workingSetSlotId
+
+                stormPlayer.PlayerHero ??= new PlayerHero();
                 stormPlayer.PlayerHero.HeroName = versionDecoders[i].Structure![10].GetValueAsString(); // m_hero (name)
 
                 replay.Players[i] = stormPlayer;
@@ -61,7 +64,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                 if (stormPlayer.WorkingSetSlotId.HasValue)
                     replay.ClientListByWorkingSetSlotID[stormPlayer.WorkingSetSlotId.Value] = stormPlayer;
                 else
-                    replay.ClientListByWorkingSetSlotID[i] = stormPlayer;
+                    replay.NoWorkingSetSlotID = true;
             }
 
             replay.MapInfo.MapName = versionedDecoder.Structure?[1].GetValueAsString() ?? string.Empty;

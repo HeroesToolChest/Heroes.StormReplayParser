@@ -114,7 +114,7 @@ namespace Heroes.StormReplayParser.MessageEvent
         {
             if (MessageSender == null)
                 return $"({Timestamp}) [{ChatMessage!.MessageTarget}] ((Unknown)): {ChatMessage.Message}";
-            else if (!string.IsNullOrEmpty(MessageSender.PlayerHero.HeroName))
+            else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
                 return $"({Timestamp}) [{ChatMessage!.MessageTarget}] {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}): {ChatMessage.Message}";
             else
                 return $"({Timestamp}) [{ChatMessage!.MessageTarget}] {MessageSender.Name}: {ChatMessage.Message}";
@@ -124,7 +124,7 @@ namespace Heroes.StormReplayParser.MessageEvent
         {
             if (MessageSender == null)
                 return $"({Timestamp}) [{PingMessage!.MessageTarget}] ((Unknown)) used a ping";
-            else if (!string.IsNullOrEmpty(MessageSender.PlayerHero.HeroName))
+            else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
                 return $"({Timestamp}) [{PingMessage!.MessageTarget}] {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}) used a ping";
             else
                 return $"({Timestamp}) [{PingMessage!.MessageTarget}] {MessageSender.Name} used a ping";
@@ -134,7 +134,7 @@ namespace Heroes.StormReplayParser.MessageEvent
         {
             if (MessageSender == null)
                 return $"({Timestamp}) ((Unknown)) loading progress: {LoadingProgressMessage!.LoadingProgress}";
-            else if (!string.IsNullOrEmpty(MessageSender.PlayerHero.HeroName))
+            else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
                 return $"({Timestamp}) {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}) loading progress: {LoadingProgressMessage!.LoadingProgress}";
             else
                 return $"({Timestamp}) {MessageSender.Name} loading progress: {LoadingProgressMessage!.LoadingProgress}";
@@ -144,7 +144,7 @@ namespace Heroes.StormReplayParser.MessageEvent
         {
             if (MessageSender == null)
                 return $"({Timestamp}) ((Unknown)) reconnect status: {ReconnectNotifyMessage!.Status}";
-            else if (!string.IsNullOrEmpty(MessageSender.PlayerHero.HeroName))
+            else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
                 return $"({Timestamp}) {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}) reconnect status: {ReconnectNotifyMessage!.Status}";
             else
                 return $"({Timestamp}) {MessageSender.Name} reconnect status: {ReconnectNotifyMessage!.Status}";
@@ -154,7 +154,7 @@ namespace Heroes.StormReplayParser.MessageEvent
         {
             if (MessageSender == null)
                 return $"({Timestamp}) ((Unknown)) announced {PlayerAnnounceMessage!.AnnouncementType}";
-            else if (!string.IsNullOrEmpty(MessageSender.PlayerHero.HeroName))
+            else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
                 return $"({Timestamp}) {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}) announced {PlayerAnnounceMessage!.AnnouncementType}";
             else
                 return $"({Timestamp}) {MessageSender.Name} announced {PlayerAnnounceMessage!.AnnouncementType}";

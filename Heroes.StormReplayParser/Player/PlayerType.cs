@@ -6,18 +6,23 @@
     public enum PlayerType
     {
         /// <summary>
+        /// Indicates an unknown type of player.
+        /// </summary>
+        Unknown = -1,
+
+        /// <summary>
         /// Indicates a human player.
         /// </summary>
-        Human,
+        Human = 0,
 
         /// <summary>
         /// Indicates an AI player.
         /// </summary>
-        Computer,
+        Computer = 1,
 
         /// <summary>
         /// Indicates a non-player who is spectating.
         /// </summary>
-        Observer,
+        Observer = 2,
     }
 }

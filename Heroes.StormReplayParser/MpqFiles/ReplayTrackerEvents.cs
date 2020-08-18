@@ -40,6 +40,16 @@ namespace Heroes.StormReplayParser.MpqFiles
             {
                 switch (stormTrackerEvent.TrackerEventType)
                 {
+                    case StormTrackerEventType.PlayerSetupEvent:
+                        if (replay.NoWorkingSetSlotID)
+                        {
+                            uint playerId = stormTrackerEvent.VersionedDecoder!.Structure![3].OptionalData!.GetValueAsUInt32();
+                            uint workingSetSlotId = stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.GetValueAsUInt32();
+
+                            replay.ClientListByWorkingSetSlotID[workingSetSlotId] = replay.Players[playerId];
+                        }
+
+                        break;
                     case StormTrackerEventType.ScoreResultEvent:
                         if (stormTrackerEvent.VersionedDecoder != null)
                         {
@@ -304,7 +314,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                 {
                     StormPlayer player = replay.PlayersWithOpenSlots[stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32() - 1];
 
-                    player.PlayerHero.HeroUnitId = stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData![0].Structure![1].GetValueAsString();
+                    player.PlayerHero!.HeroUnitId = stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData![0].Structure![1].GetValueAsString();
 
                     int arrayLength = stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData!.Length;
 

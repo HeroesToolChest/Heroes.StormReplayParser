@@ -55,24 +55,24 @@ namespace Heroes.StormReplayParser.Tests
             StormPlayer player0 = players[0];
 
             Assert.AreEqual("AZTDoubt", player0.Name);
-            Assert.AreEqual(1, player0.ToonHandle.Region);
+            Assert.AreEqual(1, player0.ToonHandle!.Region);
             Assert.AreEqual(1, player0.ToonHandle.Realm);
             Assert.AreEqual(7027042, player0.ToonHandle.Id);
             Assert.AreEqual(1869768008, player0.ToonHandle.ProgramId);
             Assert.AreEqual(StormTeam.Blue, player0.Team);
             Assert.IsFalse(player0.IsWinner);
-            Assert.AreEqual("Greymane", player0.PlayerHero.HeroName);
+            Assert.AreEqual("Greymane", player0.PlayerHero!.HeroName);
             Assert.AreEqual(StormRegion.US, player0.ToonHandle.StormRegion);
             Assert.AreEqual(StormTeam.Red, _stormReplay.WinningTeam);
 
             StormPlayer player = players[9];
 
             Assert.AreEqual("FiZiX", player.Name);
-            Assert.AreEqual(1, player.ToonHandle.Region);
+            Assert.AreEqual(1, player.ToonHandle!.Region);
             Assert.AreEqual(1, player.ToonHandle.Realm);
             Assert.AreEqual(StormTeam.Red, player.Team);
             Assert.IsTrue(player.IsWinner);
-            Assert.AreEqual("Li-Ming", player.PlayerHero.HeroName);
+            Assert.AreEqual("Li-Ming", player.PlayerHero!.HeroName);
 
             Assert.AreEqual("Battlefield of Eternity", _stormReplay.MapInfo.MapName);
             Assert.AreEqual(636619794857150779, _stormReplay.Timestamp.Ticks);
@@ -85,7 +85,7 @@ namespace Heroes.StormReplayParser.Tests
             Assert.IsTrue(_stormReplay.HasObservers);
             Assert.IsFalse(_stormReplay.HasAI);
             Assert.AreEqual(1, _stormReplay.PlayersObserversCount);
-            Assert.AreEqual(string.Empty, _stormReplay.StormObservers.ToList()[0].PlayerHero.HeroName);
+            Assert.IsNull(_stormReplay.StormObservers.ToList()[0].PlayerHero);
         }
 
         [TestMethod]
@@ -129,7 +129,7 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(PlayerDifficulty.Elite, player.PlayerDifficulty);
             Assert.AreEqual(StormGameSpeed.Faster, _stormReplay.GameSpeed);
             Assert.AreEqual(StormGameMode.Custom, _stormReplay.GameMode);
-            Assert.AreEqual("Wiza", player.PlayerHero.HeroAttributeId);
+            Assert.AreEqual("Wiza", player.PlayerHero!.HeroAttributeId);
             Assert.AreEqual("WizI", player.PlayerLoadout.SkinAndSkinTintAttributeId);
             Assert.AreEqual("CLO0", player.PlayerLoadout.MountAndMountTintAttributeId);
             Assert.AreEqual("BN6d", player.PlayerLoadout.BannerAttributeId);
@@ -258,7 +258,7 @@ namespace Heroes.StormReplayParser.Tests
         {
             StormPlayer player = _stormReplay.StormPlayers.ToList()[8];
 
-            Assert.AreEqual("Malfurion", player.PlayerHero.HeroName);
+            Assert.AreEqual("Malfurion", player.PlayerHero!.HeroName);
 
             ScoreResult? scoreResult = player.ScoreResult;
 
@@ -325,7 +325,7 @@ namespace Heroes.StormReplayParser.Tests
             StormMessage stormMessage = messages[144];
 
             Assert.AreEqual(StormMessageEventType.SPlayerAnnounceMessage, stormMessage.MessageEventType);
-            Assert.AreEqual("Li Li", stormMessage.MessageSender!.PlayerHero.HeroName);
+            Assert.AreEqual("Li Li", stormMessage.MessageSender!.PlayerHero!.HeroName);
             Assert.AreEqual(0, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.AbilityIndex);
             Assert.AreEqual(423, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.AbilityLink);
             Assert.AreEqual(954, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.ButtonLink);
@@ -334,7 +334,7 @@ namespace Heroes.StormReplayParser.Tests
             stormMessage = messages.Last();
 
             Assert.AreEqual(StormMessageEventType.SChatMessage, stormMessage.MessageEventType);
-            Assert.AreEqual("Li-Ming", stormMessage.MessageSender!.PlayerHero.HeroName);
+            Assert.AreEqual("Li-Ming", stormMessage.MessageSender!.PlayerHero!.HeroName);
             Assert.AreEqual(new TimeSpan(12031875000), stormMessage.Timestamp);
             Assert.AreEqual(StormMessageTarget.All, stormMessage.ChatMessage!.MessageTarget);
         }
@@ -362,13 +362,13 @@ namespace Heroes.StormReplayParser.Tests
             Assert.IsTrue(players[0].BattleTagName.Contains('#'));
             Assert.IsTrue(players[0].BattleTagName.EndsWith("34"));
 
-            Assert.AreEqual(6462480, players[8].ToonHandle.Id);
-            Assert.AreEqual(1869768008, players[8].ToonHandle.ProgramId);
-            Assert.AreEqual(1, players[8].ToonHandle.Realm);
-            Assert.AreEqual(1, players[8].ToonHandle.Region);
-            Assert.AreEqual(StormRegion.US, players[8].ToonHandle.StormRegion);
-            Assert.AreEqual("T:93796888#558", players[8].ToonHandle.ShortcutId);
-            Assert.AreEqual("1-Hero-1-6462480", players[8].ToonHandle.ToString());
+            Assert.AreEqual(6462480, players[8].ToonHandle!.Id);
+            Assert.AreEqual(1869768008, players[8].ToonHandle!.ProgramId);
+            Assert.AreEqual(1, players[8].ToonHandle!.Realm);
+            Assert.AreEqual(1, players[8].ToonHandle!.Region);
+            Assert.AreEqual(StormRegion.US, players[8].ToonHandle!.StormRegion);
+            Assert.AreEqual("T:93796888#558", players[8].ToonHandle!.ShortcutId);
+            Assert.AreEqual("1-Hero-1-6462480", players[8].ToonHandle!.ToString());
             Assert.IsTrue(players[8].BattleTagName.StartsWith(players[8].Name));
             Assert.IsTrue(players[8].BattleTagName.Contains('#'));
             Assert.IsTrue(players[8].BattleTagName.EndsWith("27"));
@@ -385,7 +385,7 @@ namespace Heroes.StormReplayParser.Tests
         public void GameEventsTest()
         {
             Assert.AreEqual(347248, _stormReplay.GameEvents.Count);
-            Assert.AreEqual("Hanzo", _stormReplay.Owner!.PlayerHero.HeroName);
+            Assert.AreEqual("Hanzo", _stormReplay.Owner!.PlayerHero!.HeroName);
         }
 
         [TestMethod]
@@ -514,7 +514,7 @@ namespace Heroes.StormReplayParser.Tests
             StormReplay replay = result.Replay!;
 
             Assert.AreEqual(0, replay.GameEvents.Count);
-            Assert.IsNull(replay.Owner?.PlayerHero.HeroName);
+            Assert.IsNull(replay.Owner?.PlayerHero?.HeroName);
         }
     }
 }

@@ -23,17 +23,17 @@ namespace Heroes.StormReplayParser.Player
         /// <summary>
         /// Gets or sets the player's toon handle.
         /// </summary>
-        public ToonHandle ToonHandle { get; set; } = new ToonHandle();
+        public ToonHandle? ToonHandle { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the player's control type.
         /// </summary>
-        public PlayerType PlayerType { get; set; } = PlayerType.Observer;
+        public PlayerType PlayerType { get; set; } = PlayerType.Unknown;
 
         /// <summary>
         /// Gets or sets the player's hero information.
         /// </summary>
-        public PlayerHero PlayerHero { get; set; } = new PlayerHero();
+        public PlayerHero? PlayerHero { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the player's loadout information.
@@ -53,7 +53,7 @@ namespace Heroes.StormReplayParser.Player
         /// <summary>
         /// Gets or sets the player's team id.
         /// </summary>
-        public StormTeam Team { get; set; } = StormTeam.Observer;
+        public StormTeam Team { get; set; } = StormTeam.Unknown;
 
         /// <summary>
         /// Gets or sets the player's handicap.
@@ -148,7 +148,10 @@ namespace Heroes.StormReplayParser.Player
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"[{Name}-{PlayerHero.HeroId}]-{PlayerType}-{ToonHandle}";
+            if (PlayerHero != null)
+                return $"[{Name}-{PlayerHero}]-{PlayerType}-{ToonHandle}";
+            else
+                return $"[{Name}-{PlayerType}-{ToonHandle}";
         }
 
         internal void SetScoreResult(int player, Func<int, ScoreResult> scoreResult)

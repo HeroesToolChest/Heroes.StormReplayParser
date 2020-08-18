@@ -39,20 +39,20 @@ namespace Heroes.StormReplayParser.Tests
             StormPlayer player0 = players[0];
 
             Assert.AreEqual("crazealot", player0.Name);
-            Assert.AreEqual(1, player0.ToonHandle.Region);
+            Assert.AreEqual(1, player0.ToonHandle!.Region);
             Assert.AreEqual(1, player0.ToonHandle.Realm);
             Assert.AreEqual(StormTeam.Blue, player0.Team);
             Assert.IsTrue(player0.IsWinner);
-            Assert.AreEqual("Brightwing", player0.PlayerHero.HeroName);
+            Assert.AreEqual("Brightwing", player0.PlayerHero!.HeroName);
             Assert.AreEqual(StormTeam.Blue, _stormReplay.WinningTeam);
             StormPlayer player1 = players[9];
 
             Assert.AreEqual("DumbleBore", player1.Name);
-            Assert.AreEqual(1, player1.ToonHandle.Region);
+            Assert.AreEqual(1, player1.ToonHandle!.Region);
             Assert.AreEqual(1, player1.ToonHandle.Realm);
             Assert.AreEqual(StormTeam.Red, player1.Team);
             Assert.IsFalse(player1.IsWinner);
-            Assert.AreEqual("Hanzo", player1.PlayerHero.HeroName);
+            Assert.AreEqual("Hanzo", player1.PlayerHero!.HeroName);
 
             Assert.AreEqual("Hanamura Temple", _stormReplay.MapInfo.MapName);
             Assert.AreEqual(636997822244093849, _stormReplay.Timestamp.Ticks);
@@ -92,7 +92,7 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(PlayerDifficulty.Elite, player.PlayerDifficulty);
             Assert.AreEqual(StormGameSpeed.Faster, _stormReplay.GameSpeed);
             Assert.AreEqual(StormGameMode.QuickMatch, _stormReplay.GameMode);
-            Assert.AreEqual("Hanz", player.PlayerHero.HeroAttributeId);
+            Assert.AreEqual("Hanz", player.PlayerHero!.HeroAttributeId);
             Assert.AreEqual("Han2", player.PlayerLoadout.SkinAndSkinTintAttributeId);
             Assert.AreEqual("Arm2", player.PlayerLoadout.MountAndMountTintAttributeId);
             Assert.AreEqual("BNaf", player.PlayerLoadout.BannerAttributeId);

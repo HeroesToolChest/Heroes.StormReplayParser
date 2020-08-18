@@ -117,7 +117,7 @@ namespace Heroes.StormReplayParser
             get
             {
                 StormPlayer? player = StormPlayersWithObservers.FirstOrDefault();
-                if (player != null)
+                if (player != null && player.ToonHandle != null)
                     return player.ToonHandle.StormRegion;
                 else
                     return StormRegion.Unknown;
@@ -171,6 +171,12 @@ namespace Heroes.StormReplayParser
         /// </summary>
         /// <remarks>Contains AI. No observers.</remarks>
         internal StormPlayer[] ClientListByWorkingSetSlotID { get; private set; } = new StormPlayer[16];
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the replay does not contain the working set slot ids and as such <see cref=" ClientListByWorkingSetSlotID"/>
+        /// will contain all nulls.
+        /// </summary>
+        internal bool NoWorkingSetSlotID { get; set; } = false;
 
         /// <summary>
         /// Gets the collection of open slot players. In some places, this is used instead of the 'Player' array, in games with less than 10 players.

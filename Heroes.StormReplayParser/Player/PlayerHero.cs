@@ -22,7 +22,7 @@
         public string HeroName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the hero attribute id. Not recommended to use an identifier in certain brawl mapsas
+        /// Gets or sets the hero attribute id. Not recommended to use an identifier in certain brawl maps as
         /// this will be set as the pre-selected hero.
         /// </summary>
         public string HeroAttributeId { get; set; } = string.Empty;
@@ -35,7 +35,12 @@
         /// <inheritdoc/>
         public override string? ToString()
         {
-            return $"{HeroId}-{HeroName}";
+            if (!string.IsNullOrEmpty(HeroUnitId))
+                return $"UnitId: {HeroUnitId}-{HeroName}";
+            else if (!string.IsNullOrEmpty(HeroId))
+                return $"HeroId: {HeroId}-{HeroName}";
+            else
+                return HeroName;
         }
     }
 }

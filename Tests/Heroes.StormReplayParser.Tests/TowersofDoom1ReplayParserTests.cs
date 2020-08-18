@@ -112,7 +112,7 @@ namespace Heroes.StormReplayParser.Tests
         public void GameEventsTest()
         {
             Assert.AreEqual(120572, _stormReplay.GameEvents.Count);
-            Assert.AreEqual("Rexxar", _stormReplay.Owner!.PlayerHero.HeroName);
+            Assert.AreEqual("Rexxar", _stormReplay.Owner!.PlayerHero!.HeroName);
         }
     }
 }

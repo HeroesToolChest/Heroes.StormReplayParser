@@ -2,6 +2,7 @@
 using Heroes.StormReplayParser.Player;
 using Heroes.StormReplayParser.Replay;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace Heroes.StormReplayParser.MpqFiles
@@ -267,23 +268,26 @@ namespace Heroes.StormReplayParser.MpqFiles
                 uint playerRealm = bitReader.ReadBits(32); // m_realm
                 long playerId = bitReader.ReadLongBits(64); // m_id
 
-                if (player.PlayerType != PlayerType.Observer)
+                if (player.PlayerType == PlayerType.Human)
                 {
-                    if (player.ToonHandle.Region != playerRegion)
+                    if (player.ToonHandle!.Region != playerRegion)
                         throw new StormParseException($"{_exceptionHeader}: Mismatch on player region");
                     if (player.ToonHandle.Realm != playerRealm)
                         throw new StormParseException($"{_exceptionHeader}: Mismatch on player realm");
                     if (player.ToonHandle.Id != playerId)
                         throw new StormParseException($"{_exceptionHeader}: Mismatch on player id");
                 }
-                else
+                else if (player.PlayerType == PlayerType.Observer || player.PlayerType == PlayerType.Unknown)
                 {
-                    // observers don't have the information carried over to the details or initdata file
+                    // observers don't have the information carried over to the details file and sometimes not the initdata file
+                    player.ToonHandle ??= new ToonHandle();
 
                     player.ToonHandle.Region = (int)playerRegion;
                     player.ToonHandle.ProgramId = 1869768008;
                     player.ToonHandle.Realm = (int)playerRealm;
                     player.ToonHandle.Id = (int)playerId;
+                    player.PlayerType = PlayerType.Observer;
+                    player.Team = StormTeam.Observer;
                 }
 
                 // toon handle again but with T_ shortcut
@@ -297,6 +301,8 @@ namespace Heroes.StormReplayParser.MpqFiles
                 bitReader.ReadBits(32); // m_realm
 
                 int idLength = (int)bitReader.ReadBits(7) + 2;
+
+                player.ToonHandle ??= new ToonHandle();
                 player.ToonHandle.ShortcutId = bitReader.ReadStringFromBytes(idLength);
 
                 bitReader.ReadBits(6);
@@ -346,16 +352,24 @@ namespace Heroes.StormReplayParser.MpqFiles
                     bitReader.ReadBoolean();
                 }
 
-                bitReader.ReadBoolean(); // m_hasSilencePenalty
+                bool isSilenced = bitReader.ReadBoolean(); // m_hasSilencePenalty
+                if (player.PlayerType == PlayerType.Observer)
+                    player.IsSilenced = isSilenced;
 
                 if (replay.ReplayBuild >= 61718)
                 {
                     bitReader.ReadBoolean();
-                    bitReader.ReadBoolean(); // m_hasVoiceSilencePenalty
+                    bool isVoiceSilenced = bitReader.ReadBoolean(); // m_hasVoiceSilencePenalty
+                    if (player.PlayerType == PlayerType.Observer)
+                        player.IsVoiceSilenced = isVoiceSilenced;
                 }
 
                 if (replay.ReplayBuild >= 66977)
-                    bitReader.ReadBoolean(); // m_isBlizzardStaff
+                {
+                    bool isBlizzardStaff = bitReader.ReadBoolean(); // m_isBlizzardStaff
+                    if (player.PlayerType == PlayerType.Observer)
+                        player.IsBlizzardStaff = isBlizzardStaff;
+                }
 
                 if (bitReader.ReadBoolean()) // is player in party
                     player.PartyValue = bitReader.ReadLongBits(64); // players in same party will have the same exact 8 bytes of data
@@ -378,7 +392,11 @@ namespace Heroes.StormReplayParser.MpqFiles
                     player.AccountLevel = (int)bitReader.ReadBits(32);  // in custom games, this is a 0
 
                 if (replay.ReplayBuild >= 69947)
-                    bitReader.ReadBoolean(); // m_hasActiveBoost
+                {
+                    bool hasActiveBoost = bitReader.ReadBoolean(); // m_hasActiveBoost
+                    if (player.PlayerType == PlayerType.Observer)
+                        player.HasActiveBoost = hasActiveBoost;
+                }
             }
         }
     }

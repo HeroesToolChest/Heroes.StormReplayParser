@@ -56,7 +56,7 @@
         /// <summary>
         /// Indicates a player setup event.
         /// </summary>
-        /// <remarks>PlayerID, Player Type (1=Human, 2=CPU, 3=Neutral, 4=Hostile), UserID, SlotID.</remarks>
+        /// <remarks>PlayerId, Player Type (1=Human, 2=Computer, 3=Neutral, 4=Hostile), SlotId, UserId.</remarks>
         PlayerSetupEvent = 9,
 
         /// <summary>

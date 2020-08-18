@@ -131,7 +131,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                                 if (!player.IsAutoSelect)
                                     player.IsAutoSelect = upperValue.SequenceEqual("RAND");
 
-                                player.PlayerHero.HeroAttributeId = value.Trim('\0').ToString();
+                                player.PlayerHero!.HeroAttributeId = value.Trim('\0').ToString();
                             }
 
                             break;
@@ -218,7 +218,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                             if (player != null)
                             {
-                                player.PlayerHero.HeroLevel = int.Parse(value);
+                                player.PlayerHero!.HeroLevel = int.Parse(value);
 
                                 if (player.IsAutoSelect && player.PlayerHero.HeroLevel > 1)
                                     player.IsAutoSelect = false;
