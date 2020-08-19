@@ -3,6 +3,13 @@
 [![Release](https://img.shields.io/github/release/HeroesToolChest/Heroes.StormReplayParser.svg)](https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases/latest) 
 [![NuGet](https://img.shields.io/nuget/v/Heroes.StormReplayParser.svg)](https://www.nuget.org/packages/Heroes.StormReplayParser/)
 
+Heroes Storm Replay Parser is a dotnet library that parses the Heroes of the Storm replay files (.StormReplay).
+
+To see this library in action check out [Heroes Decode](https://github.com/HeroesToolChest/HeroesDecode).
+
+This library is based on [Heroes.ReplayParser](https://github.com/barrett777/Heroes.ReplayParser)
+
+
 ## Supported Platforms
 - .Net Core 3.1+ (aiming to be .NET 5)
 
