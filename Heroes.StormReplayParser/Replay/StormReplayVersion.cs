@@ -102,7 +102,7 @@ namespace Heroes.StormReplayParser.Replay
         }
 
         /// <inheritdoc/>
-        public override string? ToString()
+        public override string ToString()
         {
             return $"{Major}.{Minor}.{Revision}.{Build}";
         }
