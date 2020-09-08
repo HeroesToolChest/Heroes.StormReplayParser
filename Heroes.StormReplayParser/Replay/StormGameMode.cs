@@ -66,14 +66,19 @@
         StormLeague = 1 << 10,
 
         /// <summary>
+        /// Indicates an ARAM game mode.
+        /// </summary>
+        ARAM = 1 << 11,
+
+        /// <summary>
         /// Indicates all of the games modes available.
         /// </summary>
-        AllGameModes = Custom | QuickMatch | HeroLeague | TeamLeague | UnrankedDraft | Brawl | StormLeague | Cooperative,
+        AllGameModes = Custom | QuickMatch | HeroLeague | TeamLeague | UnrankedDraft | Brawl | StormLeague | Cooperative | ARAM,
 
         /// <summary>
         /// Indicates game modes that are not brawl, AI, or custom.
         /// </summary>
-        NormalGameModes = QuickMatch | HeroLeague | TeamLeague | UnrankedDraft | StormLeague,
+        NormalGameModes = QuickMatch | HeroLeague | TeamLeague | UnrankedDraft | StormLeague | ARAM,
 
         /// <summary>
         /// Indicates game modes that involve drafting (includes custom).

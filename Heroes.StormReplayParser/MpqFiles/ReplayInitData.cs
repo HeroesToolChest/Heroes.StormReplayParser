@@ -103,6 +103,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                     50061 => StormGameMode.HeroLeague,
                     50071 => StormGameMode.TeamLeague,
                     50091 => StormGameMode.StormLeague,
+                    50101 => StormGameMode.ARAM,
 
                     _ => StormGameMode.Unknown,
                 };
