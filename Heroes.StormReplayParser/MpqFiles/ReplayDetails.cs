@@ -38,7 +38,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                 // [1] // m_name
 
-                stormPlayer.ToonHandle.Id = versionDecoders[i].Structure?[1].Structure![4].GetValueAsInt64(); // m_id
+                stormPlayer.ToonHandle.Id = versionDecoders[i].Structure![1].Structure![4].GetValueAsInt64(); // m_id
 
                 // [2] // m_race (SC2 Remnant, Always Empty String in Heroes of the Storm)
                 // [3]...array // m_color

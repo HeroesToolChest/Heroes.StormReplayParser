@@ -144,7 +144,7 @@ namespace Heroes.StormReplayParser.Replay
             if (obj is null)
                 return 1;
 
-            if (!(obj is StormReplayVersion stormReplayVersion))
+            if (obj is not StormReplayVersion stormReplayVersion)
                 throw new ArgumentException($"{nameof(obj)} is not a {nameof(Replay.StormReplayVersion)}");
             else
                 return CompareTo(stormReplayVersion);
@@ -171,7 +171,7 @@ namespace Heroes.StormReplayParser.Replay
             if (obj is null)
                 return false;
 
-            if (!(obj is StormReplayVersion stormReplayVersion))
+            if (obj is not StormReplayVersion stormReplayVersion)
                 return false;
             else
                 return Equals(stormReplayVersion);

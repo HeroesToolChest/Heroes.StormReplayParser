@@ -53,8 +53,8 @@ namespace Heroes.StormReplayParser.MpqFiles
                     case StormTrackerEventType.ScoreResultEvent:
                         if (stormTrackerEvent.VersionedDecoder != null)
                         {
-                            Dictionary<string, int?[]> scoreResultsByScoreName = stormTrackerEvent.VersionedDecoder.Structure![0].ArrayData
-                                .ToDictionary(x => x.Structure![0].GetValueAsString(), x => x.Structure![1].ArrayData.Select(i => i.ArrayData?.Length == 1 ? (int)i.ArrayData![0].Structure![0].GetValueAsInt64() : (int?)null).ToArray());
+                            Dictionary<string, int?[]> scoreResultsByScoreName = stormTrackerEvent.VersionedDecoder.Structure![0].ArrayData!
+                                .ToDictionary(x => x.Structure![0].GetValueAsString(), x => x.Structure![1].ArrayData!.Select(i => i.ArrayData?.Length == 1 ? (int)i.ArrayData![0].Structure![0].GetValueAsInt64() : (int?)null).ToArray());
 
                             for (int i = 0; i < replay.ClientListByWorkingSetSlotID.Length; i++)
                             {

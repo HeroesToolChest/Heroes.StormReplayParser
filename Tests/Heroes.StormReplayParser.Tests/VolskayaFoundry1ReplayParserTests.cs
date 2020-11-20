@@ -335,12 +335,12 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void PlayersMatchAwardsTest()
         {
-            List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[0].MatchAwards.ToList();
+            List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[0].MatchAwards!.ToList();
 
             Assert.AreEqual(1, _stormReplay.StormPlayers.ToList()[0].MatchAwardsCount);
             Assert.AreEqual(MatchAwardType.MostMercCampsCaptured, matchAwards[0]);
 
-            matchAwards = _stormReplay.StormPlayers.ToList()[9].MatchAwards.ToList();
+            matchAwards = _stormReplay.StormPlayers.ToList()[9].MatchAwards!.ToList();
 
             Assert.AreEqual(0, matchAwards.Count);
         }

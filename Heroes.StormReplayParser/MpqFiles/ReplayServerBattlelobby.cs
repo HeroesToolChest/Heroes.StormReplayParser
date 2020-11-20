@@ -2,7 +2,6 @@
 using Heroes.StormReplayParser.Player;
 using Heroes.StormReplayParser.Replay;
 using System;
-using System.IO;
 using System.Linq;
 
 namespace Heroes.StormReplayParser.MpqFiles

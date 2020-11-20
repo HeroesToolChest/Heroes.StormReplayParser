@@ -2,6 +2,7 @@
 using Ionic.Zlib;
 using System;
 using System.Buffers.Binary;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
@@ -129,6 +130,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
             return true;
         }
 
+        [SuppressMessage("Reliability", "CA2014:Do not use stackalloc in loops", Justification = "is a finite loop")]
         public void AddFileNames(ReadOnlySpan<byte> source)
         {
             int startIndex = 0;
@@ -209,7 +211,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
 
                 while (toRead > offset)
                 {
-                    int sizeOfBlock = LoadBlockPositions(mpqArchiveEntry, blockPositionsUint, position, buffer.Slice(offset));
+                    int sizeOfBlock = LoadBlockPositions(mpqArchiveEntry, blockPositionsUint, position, buffer[offset..]);
 
                     if (sizeOfBlock < 1)
                         break;
@@ -411,7 +413,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         private static void BZip2Decompress(Span<byte> buffer)
         {
             using MemoryStream memoryStream = new MemoryStream();
-            memoryStream.Write(buffer.Slice(1));
+            memoryStream.Write(buffer[1..]);
             memoryStream.Position = 0;
 
             using BZip2InputStream stream = new BZip2InputStream(memoryStream);
@@ -422,7 +424,7 @@ namespace Heroes.StormReplayParser.MpqHeroesTool
         private static void ZlibDecompress(Span<byte> buffer)
         {
             using MemoryStream memoryStream = new MemoryStream();
-            memoryStream.Write(buffer.Slice(1));
+            memoryStream.Write(buffer[1..]);
             memoryStream.Position = 0;
 
             using ZlibStream stream = new ZlibStream(memoryStream, CompressionMode.Decompress);

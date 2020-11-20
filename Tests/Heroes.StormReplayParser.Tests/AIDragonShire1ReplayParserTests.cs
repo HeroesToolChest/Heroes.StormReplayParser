@@ -129,8 +129,8 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void TeamLevelsTest()
         {
-            List<StormTeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue).ToList();
-            List<StormTeamLevel> levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red).ToList();
+            List<StormTeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue)!.ToList();
+            List<StormTeamLevel> levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red)!.ToList();
 
             Assert.AreEqual(15, levelsBlue.Count);
             Assert.AreEqual(15, levelsRed.Count);
@@ -246,11 +246,11 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void PlayersMatchAwardsTest()
         {
-            List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[3].MatchAwards.ToList();
+            List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[3].MatchAwards!.ToList();
 
             Assert.AreEqual(0, matchAwards.Count);
 
-            matchAwards = _stormReplay.StormPlayers.ToList()[1].MatchAwards.ToList();
+            matchAwards = _stormReplay.StormPlayers.ToList()[1].MatchAwards!.ToList();
             Assert.AreEqual(1, matchAwards.Count);
             Assert.AreEqual(MatchAwardType.MostDragonShrinesCaptured, matchAwards[0]);
         }

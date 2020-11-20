@@ -166,8 +166,8 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void TeamLevelsTest()
         {
-            List<StormTeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue).ToList();
-            List<StormTeamLevel> levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red).ToList();
+            List<StormTeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue)!.ToList();
+            List<StormTeamLevel> levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red)!.ToList();
 
             Assert.AreEqual(18, levelsBlue.Count);
             Assert.AreEqual(20, levelsRed.Count);
@@ -312,7 +312,7 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void PlayersMatchAwardsTest()
         {
-            List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[8].MatchAwards.ToList();
+            List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[8].MatchAwards!.ToList();
 
             Assert.AreEqual(0, matchAwards.Count);
         }

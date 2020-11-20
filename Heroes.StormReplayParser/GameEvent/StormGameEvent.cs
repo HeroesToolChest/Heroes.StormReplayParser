@@ -74,7 +74,7 @@ namespace Heroes.StormReplayParser.GameEvent
             if (obj is null)
                 return false;
 
-            if (!(obj is StormGameEvent stormGameEvent))
+            if (obj is not StormGameEvent stormGameEvent)
                 return false;
             else
                 return Equals(stormGameEvent);
