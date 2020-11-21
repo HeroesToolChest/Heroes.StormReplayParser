@@ -9,16 +9,12 @@ To see this library in action check out [Heroes Decode](https://github.com/Heroe
 
 This library is based on [Heroes.ReplayParser](https://github.com/barrett777/Heroes.ReplayParser)
 
-
-## Supported Platforms
-- .Net Core 3.1+ (aiming to be .NET 5)
-
 ## Usage
 
 ## Developing
 To build and compile the code, it is recommended to use the latest version of [Visual Studio 2019 or Visual Studio Code](https://visualstudio.microsoft.com/downloads/).
 
-Another option is to use the dotnet CLI tools from the [.NET Core 3.1 SDK](https://dotnet.microsoft.com/download).
+Another option is to use the dotnet CLI tools from the [.NET Core 5.0 SDK](https://dotnet.microsoft.com/download).
 
 ## License
 [MIT license](/LICENSE)
