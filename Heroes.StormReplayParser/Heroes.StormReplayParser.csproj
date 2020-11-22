@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.0-beta.4</Version>
+    <Version>1.0.0-beta.5</Version>
     <Authors>Kevin Oliva</Authors>
     <Copyright>Copyright © 2020 Kevin Oliva</Copyright>
     <Description>Library to parse Heroes of the Storm replay files (.StormReplay).</Description>
@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/HeroesToolChest/Heroes.StormReplayParser</RepositoryUrl>
     <PackageReleaseNotes>https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageTags>C# dotnet core</PackageTags>
+    <PackageTags>C# dotnet</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
