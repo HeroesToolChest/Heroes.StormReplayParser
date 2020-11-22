@@ -1,8 +1,11 @@
-﻿namespace Heroes.StormReplayParser.Replay
+﻿using System;
+
+namespace Heroes.StormReplayParser.Replay
 {
     /// <summary>
     /// Specifies the game mode type.
     /// </summary>
+    [Flags]
     public enum StormGameMode
     {
         /// <summary>
