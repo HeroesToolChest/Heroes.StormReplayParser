@@ -10,6 +10,41 @@ To see this library in action check out [Heroes Decode](https://github.com/Heroe
 This library is based on [Heroes.ReplayParser](https://github.com/barrett777/Heroes.ReplayParser)
 
 ## Usage
+To parse a replay file use `StormReplay.Parse(string fileName)` by providing the `.StormReplay` file. It will return a `StormReplayResult` object that will have the result of the parsing as well as the `StormReplay` object that will contain all the data parsed.
+
+Example
+```
+// parse the replay file
+StormReplayResult stormReplayResult = StormReplay.Parse(@"C:\<USER PATH>\Replays\Multiplayer\2020-06-29 20.08.13 Garden of Terror.StormReplay";
+
+// get the result of the parsing
+StormReplayParseStatus status = stormReplayResult.Status;
+
+// check if it succeeded
+if (stormReplayResult.Status == StormReplayParseStatus.Success)
+{
+    // get the replay object
+    StormReplay replay = stormReplayResult.Replay;
+
+    // version of the replay
+    StormReplayVersion version = replay.ReplayVersion;
+
+    // player data
+    IEnumerable<StormPlayer> players = replay.StormPlayers;
+}
+else
+{
+    // check if the status is an exception
+    if (stormReplayResult.Status == StormReplayParseStatus.Exception)
+    {
+        // the exception
+        StormParseException? stormParseException = stormReplayResult.Exception;
+    }
+}
+```
+### Parsing Options
+Besides providing the file name of the replay, `ParseOptions()` may also be passed in. This defines how much of the replay to parse. By default tracker, game, and message events are enabled and PTR parsing is diasabled. Parsing a PTR will result in a `StormReplayParseStatus` of `PTRRegion`.
+
 
 ## Developing
 To build and compile the code, it is recommended to use the latest version of [Visual Studio 2019 or Visual Studio Code](https://visualstudio.microsoft.com/downloads/).
