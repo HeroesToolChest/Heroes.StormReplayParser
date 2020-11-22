@@ -212,7 +212,7 @@ namespace Heroes.StormReplayParser
                 _stormReplayParseResult = StormReplayParseStatus.PreAlphaWipe;
             else if (!_parseOptions.AllowPTR && stormReplay.Players.Any(x => x.ToonHandle?.Region >= 90))
                 _stormReplayParseResult = StormReplayParseStatus.PTRRegion;
-            else if (stormReplay.Players.Count(x => x.IsWinner) != 5 || stormReplay.PlayersCount != 10 || !StormGameMode.AllGameModes.HasFlag(stormReplay.GameMode))
+            else if (!(stormReplay.Players.Count(x => x.IsWinner) == 5 && stormReplay.PlayersCount == 10 && StormGameMode.AllGameModes.HasFlag(stormReplay.GameMode)))
                 _stormReplayParseResult = StormReplayParseStatus.UnexpectedResult;
             else
                 _stormReplayParseResult = StormReplayParseStatus.Success;
