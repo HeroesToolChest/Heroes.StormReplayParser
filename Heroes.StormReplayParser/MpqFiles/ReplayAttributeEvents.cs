@@ -73,18 +73,15 @@ namespace Heroes.StormReplayParser.MpqFiles
                         {
                             StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                            if (player != null)
+                            player.PlayerDifficulty = value.ToString() switch
                             {
-                                player.PlayerDifficulty = value.ToString() switch
-                                {
-                                    "VyEy" => PlayerDifficulty.Beginner,
-                                    "Easy" => PlayerDifficulty.Recruit,
-                                    "Medi" => PlayerDifficulty.Adept,
-                                    "HdVH" => PlayerDifficulty.Veteran,
-                                    "VyHd" => PlayerDifficulty.Elite,
-                                    _ => PlayerDifficulty.Unknown,
-                                };
-                            }
+                                "VyEy" => PlayerDifficulty.Beginner,
+                                "Easy" => PlayerDifficulty.Recruit,
+                                "Medi" => PlayerDifficulty.Adept,
+                                "HdVH" => PlayerDifficulty.Veteran,
+                                "VyHd" => PlayerDifficulty.Elite,
+                                _ => PlayerDifficulty.Unknown,
+                            };
 
                             break;
                         }
@@ -126,13 +123,10 @@ namespace Heroes.StormReplayParser.MpqFiles
                         {
                             StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                            if (player != null)
-                            {
-                                if (!player.IsAutoSelect)
-                                    player.IsAutoSelect = upperValue.SequenceEqual("RAND");
+                            if (!player.IsAutoSelect)
+                                player.IsAutoSelect = upperValue.SequenceEqual("RAND");
 
-                                player.PlayerHero!.HeroAttributeId = value.Trim('\0').ToString();
-                            }
+                            player.PlayerHero!.HeroAttributeId = value.Trim('\0').ToString();
 
                             break;
                         }
@@ -141,13 +135,10 @@ namespace Heroes.StormReplayParser.MpqFiles
                         {
                             StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                            if (player != null)
-                            {
-                                if (!player.IsAutoSelect)
-                                    player.IsAutoSelect = upperValue.SequenceEqual("RAND");
+                            if (!player.IsAutoSelect)
+                                player.IsAutoSelect = upperValue.SequenceEqual("RAND");
 
-                                player.PlayerLoadout.SkinAndSkinTintAttributeId = value.Trim('\0').ToString();
-                            }
+                            player.PlayerLoadout.SkinAndSkinTintAttributeId = value.Trim('\0').ToString();
 
                             break;
                         }
@@ -156,10 +147,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         {
                             StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                            if (player != null)
-                            {
-                                player.PlayerLoadout.MountAndMountTintAttributeId = value.Trim('\0').ToString();
-                            }
+                            player.PlayerLoadout.MountAndMountTintAttributeId = value.Trim('\0').ToString();
 
                             break;
                         }
@@ -168,10 +156,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         {
                             StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                            if (player != null)
-                            {
-                                player.PlayerLoadout.BannerAttributeId = value.Trim('\0').ToString();
-                            }
+                            player.PlayerLoadout.BannerAttributeId = value.Trim('\0').ToString();
 
                             break;
                         }
@@ -180,10 +165,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         {
                             StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                            if (player != null)
-                            {
-                                player.PlayerLoadout.SprayAttributeId = value.Trim('\0').ToString();
-                            }
+                            player.PlayerLoadout.SprayAttributeId = value.Trim('\0').ToString();
 
                             break;
                         }
@@ -192,10 +174,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         {
                             StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                            if (player != null)
-                            {
-                                player.PlayerLoadout.VoiceLineAttributeId = value.Trim('\0').ToString();
-                            }
+                            player.PlayerLoadout.VoiceLineAttributeId = value.Trim('\0').ToString();
 
                             break;
                         }
@@ -204,10 +183,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                         {
                             StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                            if (player != null)
-                            {
-                                player.PlayerLoadout.AnnouncerPackAttributeId = value.Trim('\0').ToString();
-                            }
+                            player.PlayerLoadout.AnnouncerPackAttributeId = value.Trim('\0').ToString();
 
                             break;
                         }
@@ -216,13 +192,10 @@ namespace Heroes.StormReplayParser.MpqFiles
                         {
                             StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                            if (player != null)
-                            {
-                                player.PlayerHero!.HeroLevel = int.Parse(value);
+                            player.PlayerHero!.HeroLevel = int.Parse(value);
 
-                                if (player.IsAutoSelect && player.PlayerHero.HeroLevel > 1)
-                                    player.IsAutoSelect = false;
-                            }
+                            if (player.IsAutoSelect && player.PlayerHero.HeroLevel > 1)
+                                player.IsAutoSelect = false;
 
                             break;
                         }
