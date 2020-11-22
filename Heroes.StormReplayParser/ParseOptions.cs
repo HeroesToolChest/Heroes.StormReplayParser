@@ -26,12 +26,12 @@
         public bool AllowPTR { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets a value indicating whetherthe tracker events should be parsed.
+        /// Gets or sets a value indicating whether the tracker events should be parsed.
         /// </summary>
         public bool ShouldParseTrackerEvents { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whetherthe game events should be parsed.
+        /// Gets or sets a value indicating whether the game events should be parsed.
         /// </summary>
         public bool ShouldParseGameEvents { get; set; } = true;
 

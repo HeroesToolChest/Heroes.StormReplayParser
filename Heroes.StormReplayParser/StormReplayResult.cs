@@ -16,7 +16,7 @@ namespace Heroes.StormReplayParser
         /// <param name="exception">The exception, if any.</param>
         /// <exception cref="ArgumentException"><paramref name="fileName"/> is <see langword="null"/> or emtpy.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="fileName"/> or <paramref name="stormReplay"/> is <see langword="null"/>.</exception>
-        public StormReplayResult(StormReplay stormReplay, StormReplayParseStatus stormReplayParseStatus, string fileName, Exception? exception = null)
+        internal StormReplayResult(StormReplay stormReplay, StormReplayParseStatus stormReplayParseStatus, string fileName, StormParseException? exception = null)
         {
             Replay = stormReplay ?? throw new ArgumentNullException(nameof(stormReplay));
             Status = stormReplayParseStatus;
@@ -32,7 +32,7 @@ namespace Heroes.StormReplayParser
         /// <summary>
         /// Gets the exception, if any, from the parsed replay.
         /// </summary>
-        public Exception? Exception { get; } = null;
+        public StormParseException? Exception { get; } = null;
 
         /// <summary>
         /// Gets the parsed <see cref="StormReplay"/>.

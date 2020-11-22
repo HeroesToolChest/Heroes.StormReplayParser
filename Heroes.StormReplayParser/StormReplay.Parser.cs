@@ -13,7 +13,7 @@ namespace Heroes.StormReplayParser
     public partial class StormReplay
     {
         private static StormReplayParseStatus _stormReplayParseResult = StormReplayParseStatus.Incomplete;
-        private static Exception? _failedReplayException = null;
+        private static StormParseException? _failedReplayException = null;
 
         private readonly string _fileName;
         private readonly ParseOptions _parseOptions;
@@ -57,7 +57,7 @@ namespace Heroes.StormReplayParser
             }
             catch (Exception exception)
             {
-                _failedReplayException = exception;
+                _failedReplayException = new StormParseException("An exception has occured during the parsing of the replay.", exception);
                 _stormReplayParseResult = StormReplayParseStatus.Exception;
             }
 
