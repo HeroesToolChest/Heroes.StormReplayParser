@@ -3,7 +3,7 @@
 [![Release](https://img.shields.io/github/release/HeroesToolChest/Heroes.StormReplayParser.svg)](https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases/latest) 
 [![NuGet](https://img.shields.io/nuget/v/Heroes.StormReplayParser.svg)](https://www.nuget.org/packages/Heroes.StormReplayParser/)
 
-Heroes Storm Replay Parser is a dotnet library that parses the Heroes of the Storm replay files (.StormReplay).
+Heroes Storm Replay Parser is a .NET library that parses the Heroes of the Storm replay files (.StormReplay).
 
 To see this library in action check out [Heroes Decode](https://github.com/HeroesToolChest/HeroesDecode).
 
@@ -13,15 +13,15 @@ This library is based on [Heroes.ReplayParser](https://github.com/barrett777/Her
 To parse a replay file use `StormReplay.Parse(string fileName)` by providing the `.StormReplay` file. It will return a `StormReplayResult` object that will have the result of the parsing as well as the `StormReplay` object that will contain all the data parsed.
 
 Example
-```
+```C#
 // parse the replay file
-StormReplayResult stormReplayResult = StormReplay.Parse(@"C:\<USER PATH>\Replays\Multiplayer\2020-06-29 20.08.13 Garden of Terror.StormReplay";
+StormReplayResult stormReplayResult = StormReplay.Parse(@"C:\<USER PATH>\Replays\Multiplayer\2020-06-29 20.08.13 Garden of Terror.StormReplay");
 
 // get the result of the parsing
 StormReplayParseStatus status = stormReplayResult.Status;
 
 // check if it succeeded
-if (stormReplayResult.Status == StormReplayParseStatus.Success)
+if (status == StormReplayParseStatus.Success)
 {
     // get the replay object
     StormReplay replay = stormReplayResult.Replay;
@@ -35,7 +35,7 @@ if (stormReplayResult.Status == StormReplayParseStatus.Success)
 else
 {
     // check if the status is an exception
-    if (stormReplayResult.Status == StormReplayParseStatus.Exception)
+    if (status == StormReplayParseStatus.Exception)
     {
         // the exception
         StormParseException? stormParseException = stormReplayResult.Exception;
