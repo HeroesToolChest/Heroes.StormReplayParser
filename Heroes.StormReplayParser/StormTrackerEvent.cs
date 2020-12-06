@@ -69,7 +69,7 @@ namespace Heroes.StormReplayParser
             if (obj is null)
                 return false;
 
-            if (!(obj is StormTrackerEvent trackerEvent))
+            if (obj is not StormTrackerEvent trackerEvent)
                 return false;
             else
                 return Equals(trackerEvent);

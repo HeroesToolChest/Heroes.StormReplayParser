@@ -151,7 +151,7 @@ namespace Heroes.StormReplayParser.Replay
         }
 
         /// <inheritdoc/>
-        public bool Equals([AllowNull] StormReplayVersion other)
+        public bool Equals(StormReplayVersion? other)
         {
             if (other is null)
                 return false;

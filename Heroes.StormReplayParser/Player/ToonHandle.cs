@@ -6,7 +6,7 @@ namespace Heroes.StormReplayParser.Player
     /// <summary>
     /// Contains the properties for a player's toon handle.
     /// </summary>
-    public class ToonHandle
+    public class ToonHandle : IEquatable<ToonHandle>
     {
         /// <summary>
         /// Gets or sets the region value.
@@ -63,6 +63,42 @@ namespace Heroes.StormReplayParser.Player
             }
         }
 
+        /// <summary>
+        /// Compares the <paramref name="left"/> value to the <paramref name="right"/> value and determines if they are equal.
+        /// </summary>
+        /// <param name="left">The left hand side of the operator.</param>
+        /// <param name="right">The right hand side of the operator.</param>
+        /// <returns><see langword="true"/> if the <paramref name="left"/> value is equal to the <paramref name="right"/> value; otherwise <see langword="false"/>.</returns>
+        public static bool operator ==(ToonHandle? left, ToonHandle? right)
+        {
+            if (left is null)
+                return right is null;
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// Compares the <paramref name="left"/> value to the <paramref name="right"/> value and determines if they are not equal.
+        /// </summary>
+        /// <param name="left">The left hand side of the operator.</param>
+        /// <param name="right">The right hand side of the operator.</param>
+        /// <returns><see langword="true"/> if the <paramref name="left"/> value is not equal to the <paramref name="right"/> value; otherwise <see langword="false"/>.</returns>
+        public static bool operator !=(ToonHandle? left, ToonHandle? right)
+        {
+            return !(left == right);
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(ToonHandle? other)
+        {
+            if (other is null)
+                return false;
+
+            return Region == other.Region &&
+                ProgramId == other.ProgramId &&
+                Realm == other.Realm &&
+                Id == other.Id;
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -70,6 +106,24 @@ namespace Heroes.StormReplayParser.Player
             Encoding.UTF8.GetChars(BitConverter.GetBytes(ProgramId), buffer);
 
             return $"{Region}-{buffer.Trim('\0').ToString()}-{Realm}-{Id}";
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            if (obj is null)
+                return false;
+
+            if (obj is not ToonHandle toonHandle)
+                return false;
+            else
+                return Equals(toonHandle);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Region, ProgramId, Realm, Id);
         }
     }
 }
