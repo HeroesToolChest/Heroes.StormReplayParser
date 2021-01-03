@@ -53,9 +53,9 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(string.Empty, player0.PlayerLoadout.SkinAndSkinTint);
             Assert.AreEqual("BattleBeastNexus", player0.PlayerLoadout.MountAndMountTint);
             Assert.IsFalse(player0.IsSilenced);
-            Assert.IsFalse(player0.IsVoiceSilenced);
-            Assert.IsFalse(player0.IsBlizzardStaff);
-            Assert.IsFalse(player0.HasActiveBoost);
+            Assert.IsNull(player0.IsVoiceSilenced);
+            Assert.IsNull(player0.IsBlizzardStaff);
+            Assert.IsNull(player0.HasActiveBoost);
             Assert.AreEqual(string.Empty, player0.PlayerLoadout.Banner);
             Assert.AreEqual(string.Empty, player0.PlayerLoadout.Spray);
             Assert.AreEqual(string.Empty, player0.PlayerLoadout.AnnouncerPack);

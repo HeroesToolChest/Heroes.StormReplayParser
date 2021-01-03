@@ -73,12 +73,12 @@ namespace Heroes.StormReplayParser.Player
         /// <summary>
         /// Gets or sets a value indicating whether the player has been given the voice silence penalty.
         /// </summary>
-        public bool IsVoiceSilenced { get; set; } = false;
+        public bool? IsVoiceSilenced { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the player is Blizzard staff.
         /// </summary>
-        public bool IsBlizzardStaff { get; set; } = false;
+        public bool? IsBlizzardStaff { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the player is auto select or not.
@@ -88,7 +88,7 @@ namespace Heroes.StormReplayParser.Player
         /// <summary>
         /// Gets or sets a value indicating whether the player has an active boost.
         /// </summary>
-        public bool HasActiveBoost { get; set; } = false;
+        public bool? HasActiveBoost { get; set; }
 
         /// <summary>
         /// Gets or sets the player's battletag which serves as the players display name.

@@ -75,10 +75,10 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(StormRegion.XX, players[0].ToonHandle!.StormRegion);
             Assert.AreEqual("T:39037232#704", players[0].ToonHandle!.ShortcutId);
 
-            Assert.IsFalse(players[0].IsBlizzardStaff);
-            Assert.IsFalse(players[0].IsVoiceSilenced);
+            Assert.IsFalse(players[0].IsBlizzardStaff!.Value);
+            Assert.IsFalse(players[0].IsVoiceSilenced!.Value);
             Assert.IsFalse(players[0].IsSilenced);
-            Assert.IsFalse(players[0].HasActiveBoost);
+            Assert.IsNull(players[0].HasActiveBoost);
         }
 
         [TestMethod]

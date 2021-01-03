@@ -70,9 +70,9 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual("BrightwingLuxMonkeyWhite", player0.PlayerLoadout.SkinAndSkinTint);
             Assert.AreEqual(string.Empty, player0.PlayerLoadout.MountAndMountTint);
             Assert.IsFalse(player0.IsSilenced);
-            Assert.IsFalse(player0.IsVoiceSilenced);
-            Assert.IsFalse(player0.IsBlizzardStaff);
-            Assert.IsTrue(player0.HasActiveBoost);
+            Assert.IsNull(player0.IsVoiceSilenced);
+            Assert.IsNull(player0.IsBlizzardStaff);
+            Assert.IsTrue(player0.HasActiveBoost!.Value);
             Assert.AreEqual("BannerD3WitchDoctorRareVar2", player0.PlayerLoadout.Banner);
             Assert.AreEqual("SprayStaticWinterRewardReigndeer", player0.PlayerLoadout.Spray);
             Assert.AreEqual("MurkyA", player0.PlayerLoadout.AnnouncerPack);
