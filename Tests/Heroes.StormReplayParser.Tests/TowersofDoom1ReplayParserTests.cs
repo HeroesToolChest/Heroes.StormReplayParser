@@ -26,6 +26,8 @@ namespace Heroes.StormReplayParser.Tests
         public void ParseResultTest()
         {
             Assert.AreEqual(StormReplayParseStatus.Success, _result);
+
+            Assert.IsFalse(_stormReplay.BattleLobbyPlayerInfoParsed);
         }
 
         [TestMethod]

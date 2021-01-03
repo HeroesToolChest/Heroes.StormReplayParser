@@ -281,6 +281,7 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(null, players[0].PartyValue);
 
             Assert.AreEqual("T:56372890#167", players[0].ToonHandle!.ShortcutId);
+            Assert.IsTrue(_stormReplay.BattleLobbyPlayerInfoParsed);
         }
 
         [TestMethod]

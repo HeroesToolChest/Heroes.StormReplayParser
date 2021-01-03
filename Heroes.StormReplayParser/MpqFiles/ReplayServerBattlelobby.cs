@@ -397,6 +397,8 @@ namespace Heroes.StormReplayParser.MpqFiles
                         player.HasActiveBoost = hasActiveBoost;
                 }
             }
+
+            replay.BattleLobbyPlayerInfoParsed = true;
         }
     }
 }

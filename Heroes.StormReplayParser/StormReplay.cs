@@ -155,6 +155,11 @@ namespace Heroes.StormReplayParser
         public IReadOnlyList<StormDraftPick> DraftPicks => DraftPicksInternal;
 
         /// <summary>
+        /// Gets or sets a value indicating whether if the player info of the battle lobby data was parsed.
+        /// </summary>
+        public bool BattleLobbyPlayerInfoParsed { get; set; }
+
+        /// <summary>
         /// Gets or sets the list of all players (no observers).
         /// </summary>
         /// <remarks>Contains AI.</remarks>

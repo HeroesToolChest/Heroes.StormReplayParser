@@ -353,6 +353,8 @@ namespace Heroes.StormReplayParser.Tests
         {
             List<StormPlayer> players = _stormReplay.StormPlayersWithObservers.ToList();
 
+            Assert.IsTrue(_stormReplay.BattleLobbyPlayerInfoParsed);
+
             Assert.IsNull(players[1].AccountLevel);
             Assert.AreEqual(null, players[1].PartyValue);
             Assert.IsNull(players[9].AccountLevel);
