@@ -45,6 +45,24 @@ else
 ### Parsing Options
 Besides providing the file name of the replay, `ParseOptions()` may also be passed in. This defines how much of the replay to parse. By default tracker, game, and message events are enabled and PTR parsing is diasabled. Parsing a PTR will result in a `StormReplayParseStatus` of `PTRRegion`.
 
+Game Event parsing provides the following:
+- Hero names (localized)
+- Talent timestamps
+
+Tracker Event parsing provides the following:
+- Hero unit ids
+- Map id name
+- Team levels
+- Team xp breakdown
+- Draft picks
+- Talent ids
+- Player end of game score results
+- Player end of game match awards
+
+Message Events provides the following:
+- All message types (chat, ping, player announce messages, etc...)
+
+The above provided are properties of classes that are automatically parsed out. `GameEvents`, `TrackerEvents`, and `Messages` are also properties that are available that can be used for obtaining specific data.
 
 ## Developing
 To build and compile the code, it is recommended to use the latest version of [Visual Studio 2019 or Visual Studio Code](https://visualstudio.microsoft.com/downloads/).
