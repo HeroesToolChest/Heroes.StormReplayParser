@@ -398,7 +398,7 @@ namespace Heroes.StormReplayParser.MpqFiles
                 }
             }
 
-            replay.BattleLobbyPlayerInfoParsed = true;
+            replay.IsBattleLobbyPlayerInfoParsed = true;
         }
     }
 }

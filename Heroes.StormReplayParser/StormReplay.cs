@@ -157,7 +157,7 @@ namespace Heroes.StormReplayParser
         /// <summary>
         /// Gets or sets a value indicating whether if the player info of the battle lobby data was parsed.
         /// </summary>
-        public bool BattleLobbyPlayerInfoParsed { get; set; }
+        public bool IsBattleLobbyPlayerInfoParsed { get; set; }
 
         /// <summary>
         /// Gets or sets the list of all players (no observers).
