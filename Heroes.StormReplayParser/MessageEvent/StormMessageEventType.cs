@@ -6,6 +6,11 @@
     public enum StormMessageEventType
     {
         /// <summary>
+        /// Indicates an unknown type.
+        /// </summary>
+        Unknown = -1,
+
+        /// <summary>
         /// Indicates a chat message.
         /// </summary>
         SChatMessage = 0,

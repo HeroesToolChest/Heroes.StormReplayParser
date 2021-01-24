@@ -258,7 +258,7 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void MessagesTest()
         {
-            List<StormMessage> messages = _stormReplay.Messages.ToList();
+            List<IStormMessage> messages = _stormReplay.Messages.ToList();
 
             Assert.AreEqual(10, messages.Count);
         }
@@ -266,10 +266,10 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void ChatMessagesTest()
         {
-            List<StormMessage> messages = _stormReplay.ChatMessages.ToList();
+            List<IStormMessage> messages = _stormReplay.ChatMessages.ToList();
 
             Assert.AreEqual(0, messages.Count);
-            Assert.IsTrue(messages.All(x => x.ChatMessage != null && !string.IsNullOrEmpty(x.ChatMessage.Message)));
+            Assert.IsTrue(messages.All(x => !string.IsNullOrEmpty(x.Message)));
         }
 
         [TestMethod]

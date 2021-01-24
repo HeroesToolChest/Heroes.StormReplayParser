@@ -320,15 +320,15 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void MessagesTest()
         {
-            List<StormMessage> messages = _stormReplay.Messages.ToList();
+            List<IStormMessage> messages = _stormReplay.Messages.ToList();
 
-            StormMessage stormMessage = messages[144];
+            IStormMessage stormMessage = messages[144];
 
             Assert.AreEqual(StormMessageEventType.SPlayerAnnounceMessage, stormMessage.MessageEventType);
             Assert.AreEqual("Li Li", stormMessage.MessageSender!.PlayerHero!.HeroName);
-            Assert.AreEqual(0, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.AbilityIndex);
-            Assert.AreEqual(423, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.AbilityLink);
-            Assert.AreEqual(954, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.ButtonLink);
+            Assert.AreEqual(0, ((PlayerAnnounceMessage)stormMessage).AbilityAnnouncement!.Value.AbilityIndex);
+            Assert.AreEqual(423, ((PlayerAnnounceMessage)stormMessage).AbilityAnnouncement!.Value.AbilityLink);
+            Assert.AreEqual(954, ((PlayerAnnounceMessage)stormMessage).AbilityAnnouncement!.Value.ButtonLink);
             Assert.AreEqual(new TimeSpan(7110000000), stormMessage.Timestamp);
 
             stormMessage = messages.Last();
@@ -336,16 +336,16 @@ namespace Heroes.StormReplayParser.Tests
             Assert.AreEqual(StormMessageEventType.SChatMessage, stormMessage.MessageEventType);
             Assert.AreEqual("Li-Ming", stormMessage.MessageSender!.PlayerHero!.HeroName);
             Assert.AreEqual(new TimeSpan(12031875000), stormMessage.Timestamp);
-            Assert.AreEqual(StormMessageTarget.All, stormMessage.ChatMessage!.MessageTarget);
+            Assert.AreEqual(StormMessageTarget.All, ((ChatMessage)stormMessage).MessageTarget);
         }
 
         [TestMethod]
         public void ChatMessagesTest()
         {
-            List<StormMessage> messages = _stormReplay.ChatMessages.ToList();
+            List<IStormMessage> messages = _stormReplay.ChatMessages.ToList();
 
             Assert.AreEqual(4, messages.Count);
-            Assert.IsTrue(messages.All(x => x.ChatMessage != null && !string.IsNullOrEmpty(x.ChatMessage.Message)));
+            Assert.IsTrue(messages.All(x => !string.IsNullOrEmpty(x.Message)));
         }
 
         [TestMethod]

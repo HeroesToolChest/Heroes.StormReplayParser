@@ -3,7 +3,7 @@
     /// <summary>
     /// Contains the information for a chat message.
     /// </summary>
-    public class ChatMessage
+    public class ChatMessage : StormMessageBase
     {
         /// <summary>
         /// Gets or sets the target of the message.
@@ -11,14 +11,22 @@
         public StormMessageTarget MessageTarget { get; set; }
 
         /// <summary>
-        /// Gets or sets the message sent.
+        /// Gets or sets the text sent by the player.
         /// </summary>
-        public string? Message { get; set; } = null;
+        public string Text { get; set; } = string.Empty;
 
         /// <inheritdoc/>
-        public override string ToString()
+        public override string Message
         {
-            return $"[{MessageTarget}] {Message}";
+            get
+            {
+                if (MessageSender == null)
+                    return $"({Timestamp}) [{MessageTarget}] ((Unknown)): {Text}";
+                else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
+                    return $"({Timestamp}) [{MessageTarget}] {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}): {Text}";
+                else
+                    return $"({Timestamp}) [{MessageTarget}] {MessageSender.Name}: {Text}";
+            }
         }
     }
 }

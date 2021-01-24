@@ -142,12 +142,12 @@ namespace Heroes.StormReplayParser
         /// <summary>
         /// Gets a collection of all messages.
         /// </summary>
-        public IReadOnlyList<StormMessage> Messages => MessagesInternal;
+        public IReadOnlyList<IStormMessage> Messages => MessagesInternal;
 
         /// <summary>
         /// Gets a collection of only chat messages.
         /// </summary>
-        public IEnumerable<StormMessage> ChatMessages => MessagesInternal.Where(x => x.MessageEventType.HasValue && x.MessageEventType.Value == StormMessageEventType.SChatMessage);
+        public IEnumerable<IStormMessage> ChatMessages => MessagesInternal.Where(x => x.MessageEventType == StormMessageEventType.SChatMessage);
 
         /// <summary>
         /// Gets a collection of the draft order.
@@ -198,7 +198,7 @@ namespace Heroes.StormReplayParser
         internal List<StormTrackerEvent> TrackerEventsInternal { get; private set; } = new List<StormTrackerEvent>();
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal List<StormMessage> MessagesInternal { get; private set; } = new List<StormMessage>();
+        internal List<IStormMessage> MessagesInternal { get; private set; } = new List<IStormMessage>();
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal List<StormDraftPick> DraftPicksInternal { get; private set; } = new List<StormDraftPick>();

@@ -3,7 +3,7 @@
     /// <summary>
     /// Contains the information for a player announce message.
     /// </summary>
-    public class PlayerAnnounceMessage
+    public class PlayerAnnounceMessage : StormMessageBase
     {
         /// <summary>
         /// Gets the type of announcment.
@@ -24,5 +24,19 @@
         /// Gets the vital announcement.
         /// </summary>
         public VitalAnnouncement? VitalAnnouncement { get; internal set; } = null;
+
+        /// <inheritdoc/>
+        public override string Message
+        {
+            get
+            {
+                if (MessageSender == null)
+                    return $"({Timestamp}) ((Unknown)): [announced '{AnnouncementType}']";
+                else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
+                    return $"({Timestamp}) {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}): [announced '{AnnouncementType}']";
+                else
+                    return $"({Timestamp}) {MessageSender.Name}: [announced '{AnnouncementType}']";
+            }
+        }
     }
 }

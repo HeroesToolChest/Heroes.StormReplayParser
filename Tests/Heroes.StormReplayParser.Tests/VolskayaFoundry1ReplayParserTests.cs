@@ -348,41 +348,53 @@ namespace Heroes.StormReplayParser.Tests
         [TestMethod]
         public void MessagesTest()
         {
-            List<StormMessage> messages = _stormReplay.Messages.ToList();
+            List<IStormMessage> messages = _stormReplay.Messages.ToList();
 
-            StormMessage stormMessage = messages.Last();
+            IStormMessage stormMessage = messages.Last();
+
+            Assert.IsTrue(stormMessage.MessageEventType == StormMessageEventType.SChatMessage);
+
+            ChatMessage chatMessage = (ChatMessage)stormMessage;
 
             Assert.AreEqual(StormMessageEventType.SChatMessage, stormMessage.MessageEventType);
             Assert.AreEqual("Rehgar", stormMessage.MessageSender!.PlayerHero!.HeroName);
-            Assert.AreEqual(StormMessageTarget.Allies, stormMessage.ChatMessage!.MessageTarget);
-            Assert.IsTrue(stormMessage.ChatMessage!.Message!.StartsWith("https:"));
-            Assert.IsTrue(stormMessage.ChatMessage!.Message!.EndsWith("nzs"));
+            Assert.AreEqual(StormMessageTarget.Allies, chatMessage.MessageTarget);
+            Assert.IsTrue(chatMessage.Text.StartsWith("https:"));
+            Assert.IsTrue(chatMessage.Text.EndsWith("nzs"));
             Assert.AreEqual(new TimeSpan(11055625000), stormMessage.Timestamp);
 
             stormMessage = messages.First();
 
+            Assert.IsTrue(stormMessage.MessageEventType == StormMessageEventType.SLoadingProgressMessage);
+
+            LoadingProgressMessage loadingProgressMessage = (LoadingProgressMessage)stormMessage;
+
             Assert.AreEqual(StormMessageEventType.SLoadingProgressMessage, stormMessage.MessageEventType);
             Assert.AreEqual("Rehgar", stormMessage.MessageSender!.PlayerHero!.HeroName);
-            Assert.AreEqual(12, stormMessage.LoadingProgressMessage!.LoadingProgress);
+            Assert.AreEqual(12, loadingProgressMessage.LoadingProgress);
             Assert.AreEqual(new TimeSpan(0), stormMessage.Timestamp);
 
             stormMessage = messages[97];
 
+            Assert.IsTrue(stormMessage.MessageEventType == StormMessageEventType.SPingMessage);
+
+            PingMessage pingMessage = (PingMessage)stormMessage;
+
             Assert.AreEqual(StormMessageEventType.SPingMessage, stormMessage.MessageEventType);
             Assert.AreEqual("Arthas", stormMessage.MessageSender!.PlayerHero!.HeroName);
-            Assert.AreEqual(StormMessageTarget.Allies, stormMessage.PingMessage!.MessageTarget);
-            Assert.AreEqual(146.725830078125, stormMessage.PingMessage!.Point!.Value.X);
-            Assert.AreEqual(73.9296875, stormMessage.PingMessage!.Point!.Value.Y);
+            Assert.AreEqual(StormMessageTarget.Allies, pingMessage.MessageTarget);
+            Assert.AreEqual(146.725830078125, pingMessage.Point.X);
+            Assert.AreEqual(73.9296875, pingMessage.Point.Y);
             Assert.AreEqual(new TimeSpan(1091250000), stormMessage.Timestamp);
         }
 
         [TestMethod]
         public void ChatMessagesTest()
         {
-            List<StormMessage> messages = _stormReplay.ChatMessages.ToList();
+            List<IStormMessage> messages = _stormReplay.ChatMessages.ToList();
 
             Assert.AreEqual(15, messages.Count);
-            Assert.IsTrue(messages.All(x => x.ChatMessage != null && !string.IsNullOrEmpty(x.ChatMessage.Message)));
+            Assert.IsTrue(messages.All(x => !string.IsNullOrEmpty(x.Message)));
         }
 
         [TestMethod]

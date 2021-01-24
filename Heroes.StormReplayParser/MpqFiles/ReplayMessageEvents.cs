@@ -26,37 +26,31 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                 StormMessageEventType messageEventType = (StormMessageEventType)bitReader.ReadBits(4);
 
-                StormMessage? message = null;
+                IStormMessage? stormMessage = null;
 
                 switch (messageEventType)
                 {
                     case StormMessageEventType.SChatMessage:
-                        ChatMessage chatMessage = new ChatMessage
+                        stormMessage = new ChatMessage
                         {
                             MessageTarget = (StormMessageTarget)bitReader.ReadBits(3), // m_recipient (the target)
-                            Message = bitReader.ReadBlobAsString(11), // m_string
+                            Text = bitReader.ReadBlobAsString(11), // m_string
                         };
-
-                        message = new StormMessage(chatMessage);
 
                         break;
                     case StormMessageEventType.SPingMessage:
-                        PingMessage pingMessage = new PingMessage()
+                        stormMessage = new PingMessage()
                         {
                             MessageTarget = (StormMessageTarget)bitReader.ReadBits(3), // m_recipient (the target)
                             Point = new Point((double)(bitReader.ReadInt32Unaligned() - (-2147483648)) / 4096, ((double)bitReader.ReadInt32Unaligned() - (-2147483648)) / 4096), // m_point x and m_point y
                         };
 
-                        message = new StormMessage(pingMessage);
-
                         break;
                     case StormMessageEventType.SLoadingProgressMessage:
-                        LoadingProgressMessage loadingProgressMessage = new LoadingProgressMessage()
+                        stormMessage = new LoadingProgressMessage()
                         {
                             LoadingProgress = bitReader.ReadInt32Unaligned() - (-2147483648), // m_progress
                         };
-
-                        message = new StormMessage(loadingProgressMessage);
 
                         break;
                     case StormMessageEventType.SServerPingMessage:
@@ -101,24 +95,24 @@ namespace Heroes.StormReplayParser.MpqFiles
                         bitReader.ReadInt32Unaligned(); // m_otherUnitTag
                         bitReader.ReadInt32Unaligned(); // m_unitTag
 
-                        message = new StormMessage(playerAnnounceMessage);
+                        stormMessage = playerAnnounceMessage;
                         break;
 
                     default:
                         throw new NotImplementedException();
                 }
 
-                if (message != null)
+                if (stormMessage is not null)
                 {
-                    message.MessageEventType = messageEventType;
-                    message.Timestamp = timeStamp;
+                    stormMessage.MessageEventType = messageEventType;
+                    stormMessage.Timestamp = timeStamp;
 
                     if (playerIndex != 16)
                     {
-                        message.MessageSender = replay.ClientListByUserID[playerIndex];
+                        stormMessage.MessageSender = replay.ClientListByUserID[playerIndex];
                     }
 
-                    replay.MessagesInternal.Add(message);
+                    replay.MessagesInternal.Add(stormMessage);
                 }
 
                 bitReader.AlignToByte();
