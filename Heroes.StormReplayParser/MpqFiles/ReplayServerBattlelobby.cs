@@ -239,6 +239,9 @@ namespace Heroes.StormReplayParser.MpqFiles
                 return;
             }
 
+            if (replay.ReplayBuild >= 85027)
+                bitReader.ReadAlignedByte(); // could contain m_disabledHeroList
+
             replay.RandomValue = bitReader.ReadBits(32); // m_randomSeed
 
             bitReader.ReadAlignedBytes(4);
