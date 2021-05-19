@@ -166,6 +166,23 @@ namespace Heroes.StormReplayParser.MpqFiles
             bitReader.ReadBoolean(); // m_isPremadeFFA
             bitReader.ReadBoolean(); // m_isCoopMode
 
+            if (replay.ReplayBuild >= 85027)
+            {
+                bitReader.ReadBoolean(); // m_isRandomTestValue
+
+                // m_disabledHeroList
+                uint disabledHeroListLength = bitReader.ReadBits(10);
+
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < disabledHeroListLength; i++)
+                {
+                    string disabledHero = bitReader.ReadStringFromBits(32);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+            }
+
             /* m_lobbyState section */
 
             bitReader.ReadBits(3); // m_phase
