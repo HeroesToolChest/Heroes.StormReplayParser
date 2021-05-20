@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.0-beta.8</Version>
+    <Version>1.0.0-beta.9</Version>
     <Authors>Kevin Oliva</Authors>
     <Copyright>Copyright © 2020 - 2021 Kevin Oliva</Copyright>
     <Description>Library to parse Heroes of the Storm replay files (.StormReplay).</Description>
