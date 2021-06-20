@@ -240,7 +240,22 @@ namespace Heroes.StormReplayParser.MpqFiles
             }
 
             if (replay.ReplayBuild >= 85027)
-                bitReader.ReadAlignedByte(); // could contain m_disabledHeroList
+            {
+                // m_disabledHeroList
+                uint disabledHeroListLength = bitReader.ReadBits(8);
+
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < disabledHeroListLength; i++)
+                {
+                    string disabledHeroAttributeId = bitReader.ReadStringFromBits(32);
+
+                    if (replay.DisabledHeroAttributeIdList.Count == 0)
+                        replay.DisabledHeroAttributeIdList.Add(disabledHeroAttributeId);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+            }
 
             replay.RandomValue = bitReader.ReadBits(32); // m_randomSeed
 

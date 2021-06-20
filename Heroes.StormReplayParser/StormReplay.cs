@@ -160,6 +160,11 @@ namespace Heroes.StormReplayParser
         public bool IsBattleLobbyPlayerInfoParsed { get; set; }
 
         /// <summary>
+        /// Gets a collection of disabled heroes as attributeIds.
+        /// </summary>
+        public IReadOnlyCollection<string> DisabledHeroes => DisabledHeroAttributeIdList;
+
+        /// <summary>
         /// Gets or sets the list of all players (no observers).
         /// </summary>
         /// <remarks>Contains AI.</remarks>
@@ -206,6 +211,9 @@ namespace Heroes.StormReplayParser
         internal Dictionary<int, StormTeamLevel>[] TeamLevelsInternal { get; private set; } = new Dictionary<int, StormTeamLevel>[2];
 
         internal List<StormTeamXPBreakdown>[] TeamXPBreakdownInternal { get; private set; } = new List<StormTeamXPBreakdown>[2];
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal List<string> DisabledHeroAttributeIdList { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets a collection of a team's bans (as attribute ids).

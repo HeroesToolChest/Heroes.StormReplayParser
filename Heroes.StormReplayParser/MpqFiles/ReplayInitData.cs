@@ -177,7 +177,7 @@ namespace Heroes.StormReplayParser.MpqFiles
 
                 for (int i = 0; i < disabledHeroListLength; i++)
                 {
-                    string disabledHero = bitReader.ReadStringFromBits(32);
+                    replay.DisabledHeroAttributeIdList.Add(bitReader.ReadStringFromBits(32));
                 }
 
                 bitReader.EndianType = EndianType.BigEndian;
