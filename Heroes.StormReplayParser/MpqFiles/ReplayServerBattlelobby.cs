@@ -399,9 +399,13 @@ namespace Heroes.StormReplayParser.MpqFiles
                 if (!string.IsNullOrEmpty(battleTagName) && poundIndex < 0)
                     throw new StormParseException($"{_exceptionHeader}: Invalid battletag");
 
-                ReadOnlySpan<char> namePart = battleTagName.AsSpan().Slice(0, poundIndex);
-                if (!namePart.SequenceEqual(player.Name))
-                    throw new StormParseException($"{_exceptionHeader}: Mismatch on battletag name with player name");
+                // check if there is no tag number
+                if (poundIndex >= 0)
+                {
+                    ReadOnlySpan<char> namePart = battleTagName.AsSpan().Slice(0, poundIndex);
+                    if (!namePart.SequenceEqual(player.Name))
+                        throw new StormParseException($"{_exceptionHeader}: Mismatch on battletag name with player name");
+                }
 
                 player.BattleTagName = battleTagName;
 
