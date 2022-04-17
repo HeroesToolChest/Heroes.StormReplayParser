@@ -1,38 +1,37 @@
-﻿namespace Heroes.StormReplayParser.Player
+﻿namespace Heroes.StormReplayParser.Player;
+
+/// <summary>
+/// Specifices the player difficulty.
+/// </summary>
+public enum PlayerDifficulty
 {
     /// <summary>
-    /// Specifices the player difficulty.
+    /// Indicates an unknown difficulty.
     /// </summary>
-    public enum PlayerDifficulty
-    {
-        /// <summary>
-        /// Indicates an unknown difficulty.
-        /// </summary>
-        Unknown,
+    Unknown,
 
-        /// <summary>
-        /// Indicates a beginner difficulty.
-        /// </summary>
-        Beginner,
+    /// <summary>
+    /// Indicates a beginner difficulty.
+    /// </summary>
+    Beginner,
 
-        /// <summary>
-        /// Indicates a recruit difficulty.
-        /// </summary>
-        Recruit,
+    /// <summary>
+    /// Indicates a recruit difficulty.
+    /// </summary>
+    Recruit,
 
-        /// <summary>
-        /// Indicates an adept difficulty.
-        /// </summary>
-        Adept,
+    /// <summary>
+    /// Indicates an adept difficulty.
+    /// </summary>
+    Adept,
 
-        /// <summary>
-        /// Indicates a veteran difficulty.
-        /// </summary>
-        Veteran,
+    /// <summary>
+    /// Indicates a veteran difficulty.
+    /// </summary>
+    Veteran,
 
-        /// <summary>
-        /// Indicates an elite difficulty.
-        /// </summary>
-        Elite,
-    }
+    /// <summary>
+    /// Indicates an elite difficulty.
+    /// </summary>
+    Elite,
 }

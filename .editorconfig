@@ -1,6 +1,14 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
+# .csproj files
+[*.csproj]
+
+# Indentation and spacing
+indent_size = 2
+indent_style = space
+tab_width = 2
+
 # C# files
 [*.cs]
 
@@ -105,6 +113,9 @@ csharp_style_unused_value_expression_statement_preference = discard_variable:sil
 
 # 'using' directive preferences
 csharp_using_directive_placement = outside_namespace:silent
+
+# Namespace preference
+csharp_style_namespace_declarations = file_scoped:warning
 
 #### C# Formatting Rules ####
 
@@ -272,3 +283,7 @@ dotnet_diagnostic.CA1819.severity = none
 
 # SA1512: Single-line comments should not be followed by blank line
 dotnet_diagnostic.SA1512.severity = none
+
+# SA1518: Use line endings correctly at end of file
+dotnet_diagnostic.SA1518.severity = none
+

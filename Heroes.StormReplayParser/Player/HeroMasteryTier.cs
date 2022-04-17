@@ -1,24 +1,23 @@
-﻿namespace Heroes.StormReplayParser.Player
+﻿namespace Heroes.StormReplayParser.Player;
+
+/// <summary>
+/// Contains the properties for a hero master tiers.
+/// </summary>
+public class HeroMasteryTier
 {
     /// <summary>
-    /// Contains the properties for a hero master tiers.
+    /// Gets or sets the hero attribute id.
     /// </summary>
-    public class HeroMasteryTier
+    public string HeroAttributeId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the tier level.
+    /// </summary>
+    public int TierLevel { get; set; }
+
+    /// <inheritdoc/>
+    public override string ToString()
     {
-        /// <summary>
-        /// Gets or sets the hero attribute id.
-        /// </summary>
-        public string HeroAttributeId { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the tier level.
-        /// </summary>
-        public int TierLevel { get; set; }
-
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            return $"{HeroAttributeId}: {TierLevel}";
-        }
+        return $"{HeroAttributeId}: {TierLevel}";
     }
 }

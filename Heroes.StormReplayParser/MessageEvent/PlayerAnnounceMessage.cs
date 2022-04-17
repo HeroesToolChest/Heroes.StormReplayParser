@@ -1,42 +1,41 @@
-﻿namespace Heroes.StormReplayParser.MessageEvent
+﻿namespace Heroes.StormReplayParser.MessageEvent;
+
+/// <summary>
+/// Contains the information for a player announce message.
+/// </summary>
+public class PlayerAnnounceMessage : StormMessageBase
 {
     /// <summary>
-    /// Contains the information for a player announce message.
+    /// Gets the type of announcment.
     /// </summary>
-    public class PlayerAnnounceMessage : StormMessageBase
+    public AnnouncementType AnnouncementType { get; internal set; }
+
+    /// <summary>
+    /// Gets the ability announcement.
+    /// </summary>
+    public AbilityAnnouncement? AbilityAnnouncement { get; internal set; } = null;
+
+    /// <summary>
+    /// Gets the behavior announcment.
+    /// </summary>
+    public BehaviorAnnouncement? BehaviorAnnouncement { get; internal set; } = null;
+
+    /// <summary>
+    /// Gets the vital announcement.
+    /// </summary>
+    public VitalAnnouncement? VitalAnnouncement { get; internal set; } = null;
+
+    /// <inheritdoc/>
+    public override string Message
     {
-        /// <summary>
-        /// Gets the type of announcment.
-        /// </summary>
-        public AnnouncementType AnnouncementType { get; internal set; }
-
-        /// <summary>
-        /// Gets the ability announcement.
-        /// </summary>
-        public AbilityAnnouncement? AbilityAnnouncement { get; internal set; } = null;
-
-        /// <summary>
-        /// Gets the behavior announcment.
-        /// </summary>
-        public BehaviorAnnouncement? BehaviorAnnouncement { get; internal set; } = null;
-
-        /// <summary>
-        /// Gets the vital announcement.
-        /// </summary>
-        public VitalAnnouncement? VitalAnnouncement { get; internal set; } = null;
-
-        /// <inheritdoc/>
-        public override string Message
+        get
         {
-            get
-            {
-                if (MessageSender == null)
-                    return $"({Timestamp}) ((Unknown)): [announced '{AnnouncementType}']";
-                else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
-                    return $"({Timestamp}) {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}): [announced '{AnnouncementType}']";
-                else
-                    return $"({Timestamp}) {MessageSender.Name}: [announced '{AnnouncementType}']";
-            }
+            if (MessageSender == null)
+                return $"({Timestamp}) ((Unknown)): [announced '{AnnouncementType}']";
+            else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
+                return $"({Timestamp}) {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}): [announced '{AnnouncementType}']";
+            else
+                return $"({Timestamp}) {MessageSender.Name}: [announced '{AnnouncementType}']";
         }
     }
 }

@@ -1,12 +1,10 @@
 ﻿using Heroes.StormReplayParser;
-using System;
 
-namespace Heroes.ReplayParser.MpqFiles
+namespace Heroes.ReplayParser.MpqFiles;
+
+internal interface IMpqFiles
 {
-    internal interface IMpqFiles
-    {
-        public string FileName { get; }
+    public string FileName { get; }
 
-        public void Parse(StormReplay stormReplay, ReadOnlySpan<byte> source);
-    }
+    public void Parse(StormReplay stormReplay, ReadOnlySpan<byte> source);
 }
