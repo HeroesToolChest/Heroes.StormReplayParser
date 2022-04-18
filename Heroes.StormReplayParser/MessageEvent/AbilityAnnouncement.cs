@@ -52,7 +52,7 @@ public struct AbilityAnnouncement : IEquatable<AbilityAnnouncement>
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
-        if (!(obj is AbilityAnnouncement))
+        if (obj is not AbilityAnnouncement)
             return false;
 
         return Equals((AbilityAnnouncement)obj);

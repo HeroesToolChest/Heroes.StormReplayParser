@@ -6,7 +6,7 @@ internal static class ReplayGameEvents
 
     public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
     {
-        BitReader bitReader = new BitReader(source, EndianType.BigEndian);
+        BitReader bitReader = new(source, EndianType.BigEndian);
 
         uint ticksElapsed = 0;
 
@@ -48,7 +48,7 @@ internal static class ReplayGameEvents
                     gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(new StormDataStructure<StormGameEventData>(0)));
                     break;
                 case StormGameEventType.SUserOptionsEvent:
-                    StormDataStructure<StormGameEventData> structure = new StormDataStructure<StormGameEventData>(14)
+                    StormDataStructure<StormGameEventData> structure = new(14)
                     {
                         [0] = new StormGameEventData(bitReader.ReadBoolean()), // m_gameFullyDownloaded
                         [1] = new StormGameEventData(bitReader.ReadBoolean()), // m_developmentCheatsEnabled
@@ -225,7 +225,7 @@ internal static class ReplayGameEvents
                     // m_abil
                     if (bitReader.ReadBoolean())
                     {
-                        StormDataStructure<StormGameEventData> abilStructure = new StormDataStructure<StormGameEventData>(3)
+                        StormDataStructure<StormGameEventData> abilStructure = new(3)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_abilLink
                             [1] = new StormGameEventData(bitReader.ReadBits(5)), // m_abilCmdIndex
@@ -338,7 +338,7 @@ internal static class ReplayGameEvents
 
                     for (int i = 0; i < addSubgroupsArray.Length; i++)
                     {
-                        StormDataStructure<StormGameEventData> subGroupStructure = new StormDataStructure<StormGameEventData>(4)
+                        StormDataStructure<StormGameEventData> subGroupStructure = new(4)
                         {
                             [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_unitLink
                             [1] = new StormGameEventData(bitReader.ReadBits(8)), // m_subgroupPriority
@@ -395,7 +395,7 @@ internal static class ReplayGameEvents
                         [0] = new StormGameEventData(bitReader.ReadBits(4)), // m_controlGroupId
                     };
 
-                    StormDataStructure<StormGameEventData> selectionSyncDataStructure = new StormDataStructure<StormGameEventData>(6); // m_selectionSyncData
+                    StormDataStructure<StormGameEventData> selectionSyncDataStructure = new(6); // m_selectionSyncData
 
                     if (replay.ReplayVersion.Major < 2)
                     {
@@ -995,7 +995,7 @@ internal static class ReplayGameEvents
                     }
 
                     // m_target
-                    StormDataStructure<StormGameEventData> targetStructure = new StormDataStructure<StormGameEventData>(7)
+                    StormDataStructure<StormGameEventData> targetStructure = new(7)
                     {
                         [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_targetUnitFlags
                         [1] = new StormGameEventData(bitReader.ReadBits(8)), // m_timer

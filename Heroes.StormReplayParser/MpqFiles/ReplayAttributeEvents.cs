@@ -6,7 +6,7 @@ internal static class ReplayAttributeEvents
 
     public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
     {
-        BitReader bitReader = new BitReader(source, EndianType.LittleEndian);
+        BitReader bitReader = new(source, EndianType.LittleEndian);
 
         bitReader.ReadAlignedByte();
         bitReader.ReadUInt32Aligned();

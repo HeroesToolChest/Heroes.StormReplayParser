@@ -62,7 +62,7 @@ public class StormReplayVersion : IComparable, IComparable<StormReplayVersion>, 
     /// <returns><see langword="true"/> if the <paramref name="left"/> value is less than the <paramref name="right"/> value; otherwise <see langword="false"/>.</returns>
     public static bool operator <(StormReplayVersion? left, StormReplayVersion? right)
     {
-        return left is null ? right is object : left.CompareTo(right) < 0;
+        return left is null ? right is not null : left.CompareTo(right) < 0;
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public class StormReplayVersion : IComparable, IComparable<StormReplayVersion>, 
     /// <returns><see langword="true"/> if the <paramref name="left"/> value is greater than the <paramref name="right"/> value; otherwise <see langword="false"/>.</returns>
     public static bool operator >(StormReplayVersion? left, StormReplayVersion? right)
     {
-        return left is object && left.CompareTo(right) > 0;
+        return left is not null && left.CompareTo(right) > 0;
     }
 
     /// <summary>

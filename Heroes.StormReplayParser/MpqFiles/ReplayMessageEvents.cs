@@ -9,7 +9,7 @@ internal static class ReplayMessageEvents
         if (source.Length <= 1)
             return;
 
-        BitReader bitReader = new BitReader(source, EndianType.BigEndian);
+        BitReader bitReader = new(source, EndianType.BigEndian);
 
         uint ticksElapsed = 0;
 
@@ -55,7 +55,7 @@ internal static class ReplayMessageEvents
                     bitReader.ReadBits(2); // m_status; is either a 1 or a 2
                     break;
                 case StormMessageEventType.SPlayerAnnounceMessage:
-                    PlayerAnnounceMessage playerAnnounceMessage = new PlayerAnnounceMessage()
+                    PlayerAnnounceMessage playerAnnounceMessage = new()
                     {
                         AnnouncementType = (AnnouncementType)bitReader.ReadBits(2),
                     };

@@ -6,9 +6,9 @@ internal static class ReplayDetails
 
     public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
     {
-        BitReader bitReader = new BitReader(source, EndianType.BigEndian);
+        BitReader bitReader = new(source, EndianType.BigEndian);
 
-        VersionedDecoder versionedDecoder = new VersionedDecoder(ref bitReader);
+        VersionedDecoder versionedDecoder = new(ref bitReader);
 
         // this section does not include the observers
         VersionedDecoder[]? versionDecoders = versionedDecoder.Structure?[0].OptionalData?.ArrayData;
@@ -20,7 +20,7 @@ internal static class ReplayDetails
 
         for (int i = 0; i < versionDecoders?.Length; i++)
         {
-            StormPlayer stormPlayer = new StormPlayer
+            StormPlayer stormPlayer = new()
             {
                 Name = versionDecoders[i].Structure![0].GetValueAsString(), // m_name
             };

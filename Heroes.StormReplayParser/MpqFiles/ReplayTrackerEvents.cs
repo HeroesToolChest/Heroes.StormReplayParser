@@ -6,7 +6,7 @@ internal static class ReplayTrackerEvents
 
     public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
     {
-        BitReader bitReader = new BitReader(source, EndianType.BigEndian);
+        BitReader bitReader = new(source, EndianType.BigEndian);
 
         uint gameLoop = 0;
 
@@ -16,7 +16,7 @@ internal static class ReplayTrackerEvents
 
             TimeSpan timeSpan = TimeSpan.FromSeconds(gameLoop / 16.0);
             StormTrackerEventType type = (StormTrackerEventType)new VersionedDecoder(ref bitReader).GetValueAsUInt32();
-            VersionedDecoder decoder = new VersionedDecoder(ref bitReader);
+            VersionedDecoder decoder = new(ref bitReader);
 
             replay.TrackerEventsInternal.Add(new StormTrackerEvent(type, timeSpan, decoder));
         }
@@ -362,7 +362,7 @@ internal static class ReplayTrackerEvents
 
     private static ScoreResult GetScoreResult(int player, Dictionary<string, int?[]> scoreResultsByScoreName)
     {
-        ScoreResult scoreResult = new ScoreResult();
+        ScoreResult scoreResult = new();
 
         foreach (string scoreResultEventKey in scoreResultsByScoreName.Keys)
         {

@@ -4,7 +4,7 @@ internal static class StormReplayHeader
 {
     public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
     {
-        BitReader bitReader = new BitReader(source, EndianType.BigEndian);
+        BitReader bitReader = new(source, EndianType.BigEndian);
 
         bitReader.ReadAlignedBytes(3);
         bitReader.ReadAlignedByte();
@@ -12,7 +12,7 @@ internal static class StormReplayHeader
         bitReader.ReadAlignedBytes(4); // Header Offset
         bitReader.ReadAlignedBytes(4); // User Data Header Size
 
-        VersionedDecoder versionedDecoder = new VersionedDecoder(ref bitReader);
+        VersionedDecoder versionedDecoder = new(ref bitReader);
 
         // headerStructure.StructureByIndex[0].GetValueAsString(); // m_signature => "Heroes of the Storm replay 11
 

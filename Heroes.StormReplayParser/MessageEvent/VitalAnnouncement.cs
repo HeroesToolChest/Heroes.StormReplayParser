@@ -38,7 +38,7 @@ public struct VitalAnnouncement : System.IEquatable<VitalAnnouncement>
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
-        if (!(obj is VitalAnnouncement))
+        if (obj is not VitalAnnouncement)
             return false;
 
         return Equals((VitalAnnouncement)obj);

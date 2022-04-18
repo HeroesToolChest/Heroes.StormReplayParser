@@ -51,7 +51,7 @@ public struct Point : IEquatable<Point>
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
-        if (!(obj is Point))
+        if (obj is not Point)
             return false;
 
         return Equals((Point)obj);

@@ -48,7 +48,7 @@ public class ToonHandleTests
             }
             .Equals(5));
 
-        ToonHandle toonHandle = new ToonHandle()
+        ToonHandle toonHandle = new()
         {
             Region = 1,
             ProgramId = 123456789,
@@ -68,7 +68,7 @@ public class ToonHandleTests
     [DataRow(5, 123456789, 2, 45757)]
     public void NotEqualsTest(int region, int programId, int realm, long id)
     {
-        ToonHandle toonHandle = new ToonHandle()
+        ToonHandle toonHandle = new()
         {
             Region = 1,
             ProgramId = 123456789,
@@ -88,7 +88,7 @@ public class ToonHandleTests
     [TestMethod]
     public void NotSameObjectTest()
     {
-        ToonHandle toonHandle = new ToonHandle()
+        ToonHandle toonHandle = new()
         {
             Region = 1,
             ProgramId = 123456789,
@@ -103,7 +103,7 @@ public class ToonHandleTests
     [DataRow(1, 123456789, 2, 1457856945, 1, 123456789, 2, 1457856945)]
     public void OperatorEqualTest(int region, int programId, int realm, long id, int region2, int programId2, int realm2, long id2)
     {
-        ToonHandle toonHandle = new ToonHandle()
+        ToonHandle toonHandle = new()
         {
             Region = region,
             ProgramId = programId,
@@ -111,7 +111,7 @@ public class ToonHandleTests
             Id = id,
         };
 
-        ToonHandle toonHandle2 = new ToonHandle()
+        ToonHandle toonHandle2 = new()
         {
             Region = region2,
             ProgramId = programId2,
@@ -137,7 +137,7 @@ public class ToonHandleTests
 
     public void OperatorNotEqualTest(int region, int programId, int realm, long id, int region2, int programId2, int realm2, long id2)
     {
-        ToonHandle toonHandle = new ToonHandle()
+        ToonHandle toonHandle = new()
         {
             Region = region,
             ProgramId = programId,
@@ -145,7 +145,7 @@ public class ToonHandleTests
             Id = id,
         };
 
-        ToonHandle toonHandle2 = new ToonHandle()
+        ToonHandle toonHandle2 = new()
         {
             Region = region2,
             ProgramId = programId2,
@@ -166,7 +166,7 @@ public class ToonHandleTests
     [DataRow(1, 123456789, 2, 1457856945, 1, 123456789, 2, 1457856945)]
     public void GetHashCodeEqualTest(int region, int programId, int realm, long id, int region2, int programId2, int realm2, long id2)
     {
-        ToonHandle toonHandle = new ToonHandle()
+        ToonHandle toonHandle = new()
         {
             Region = region,
             ProgramId = programId,
@@ -174,7 +174,7 @@ public class ToonHandleTests
             Id = id,
         };
 
-        ToonHandle toonHandle2 = new ToonHandle()
+        ToonHandle toonHandle2 = new()
         {
             Region = region2,
             ProgramId = programId2,
@@ -193,7 +193,7 @@ public class ToonHandleTests
     [DataRow(1, 123456789, 2, 1457856945, 2, 123456789, 2, 1457856945)]
     public void GetHashCodeNotEqualTest(int region, int programId, int realm, long id, int region2, int programId2, int realm2, long id2)
     {
-        ToonHandle toonHandle = new ToonHandle()
+        ToonHandle toonHandle = new()
         {
             Region = region,
             ProgramId = programId,
@@ -201,7 +201,7 @@ public class ToonHandleTests
             Id = id,
         };
 
-        ToonHandle toonHandle2 = new ToonHandle()
+        ToonHandle toonHandle2 = new()
         {
             Region = region2,
             ProgramId = programId2,

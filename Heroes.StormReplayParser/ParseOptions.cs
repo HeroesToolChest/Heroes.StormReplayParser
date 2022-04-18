@@ -8,12 +8,12 @@ public class ParseOptions
     /// <summary>
     /// Gets the default parse options. Disallows ptr and allows parsing of tracker, game, and message events.
     /// </summary>
-    public static ParseOptions DefaultParsing => new ParseOptions();
+    public static ParseOptions DefaultParsing => new();
 
     /// <summary>
     /// Gets the minimal parse options. No parsing of tracker, game, or message events.
     /// </summary>
-    public static ParseOptions MinimalParsing => new ParseOptions()
+    public static ParseOptions MinimalParsing => new()
     {
         ShouldParseTrackerEvents = false,
         ShouldParseGameEvents = false,

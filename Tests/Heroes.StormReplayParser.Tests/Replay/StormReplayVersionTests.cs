@@ -52,7 +52,7 @@ public class StormReplayVersionTests
             }
             .Equals(5));
 
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = 2,
             Minor = 3,
@@ -66,7 +66,7 @@ public class StormReplayVersionTests
     [TestMethod]
     public void CompareToMethodTest()
     {
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = 2,
             Minor = 3,
@@ -93,7 +93,7 @@ public class StormReplayVersionTests
     [DataRow(1, 1, 1, 11111, 11111)]
     public void NotEqualsTest(int major, int minor, int revision, int build, int baseBuild)
     {
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = 2,
             Minor = 3,
@@ -115,7 +115,7 @@ public class StormReplayVersionTests
     [TestMethod]
     public void NotSameObjectTest()
     {
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = 2,
             Minor = 3,
@@ -131,7 +131,7 @@ public class StormReplayVersionTests
     [DataRow(2, 2, 2, 11111, 11111, 2, 2, 2, 11111, 11111)]
     public void OperatorEqualTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)
     {
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = major,
             Minor = minor,
@@ -140,7 +140,7 @@ public class StormReplayVersionTests
             BaseBuild = baseBuild,
         };
 
-        StormReplayVersion version2 = new StormReplayVersion()
+        StormReplayVersion version2 = new()
         {
             Major = major2,
             Minor = minor2,
@@ -167,7 +167,7 @@ public class StormReplayVersionTests
     [DataRow(2, 2, 2, 11111, 11111, 2, 4, 78, 45781, 45781)]
     public void OperatorNotEqualTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)
     {
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = major,
             Minor = minor,
@@ -176,7 +176,7 @@ public class StormReplayVersionTests
             BaseBuild = baseBuild,
         };
 
-        StormReplayVersion version2 = new StormReplayVersion()
+        StormReplayVersion version2 = new()
         {
             Major = major2,
             Minor = minor2,
@@ -203,7 +203,7 @@ public class StormReplayVersionTests
     [DataRow(2, 2, 2, 10000, 10000, 2, 2, 2, 10000, 77777)]
     public void OperatorLessThanTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)
     {
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = major,
             Minor = minor,
@@ -212,7 +212,7 @@ public class StormReplayVersionTests
             BaseBuild = baseBuild,
         };
 
-        StormReplayVersion version2 = new StormReplayVersion()
+        StormReplayVersion version2 = new()
         {
             Major = major2,
             Minor = minor2,
@@ -243,7 +243,7 @@ public class StormReplayVersionTests
     [DataRow(2, 2, 2, 10000, 10000, 2, 2, 2, 10000, 10000)]
     public void OperatorLessThanOrEqualTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)
     {
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = major,
             Minor = minor,
@@ -252,7 +252,7 @@ public class StormReplayVersionTests
             BaseBuild = baseBuild,
         };
 
-        StormReplayVersion version2 = new StormReplayVersion()
+        StormReplayVersion version2 = new()
         {
             Major = major2,
             Minor = minor2,
@@ -282,7 +282,7 @@ public class StormReplayVersionTests
     [DataRow(2, 2, 2, 88888, 11111, 2, 2, 2, 11111, 11111)]
     public void OperatorGreaterThanTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)
     {
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = major,
             Minor = minor,
@@ -291,7 +291,7 @@ public class StormReplayVersionTests
             BaseBuild = baseBuild,
         };
 
-        StormReplayVersion version2 = new StormReplayVersion()
+        StormReplayVersion version2 = new()
         {
             Major = major2,
             Minor = minor2,
@@ -322,7 +322,7 @@ public class StormReplayVersionTests
     [DataRow(2, 2, 2, 10000, 10000, 2, 2, 2, 10000, 10000)]
     public void OperatorGreaterThanOrEqualTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)
     {
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = major,
             Minor = minor,
@@ -331,7 +331,7 @@ public class StormReplayVersionTests
             BaseBuild = baseBuild,
         };
 
-        StormReplayVersion version2 = new StormReplayVersion()
+        StormReplayVersion version2 = new()
         {
             Major = major2,
             Minor = minor2,
@@ -356,7 +356,7 @@ public class StormReplayVersionTests
     [DataRow(2, 2, 2, 11111, 11111, 2, 2, 2, 11111, 11111)]
     public void GetHashCodeEqualTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)
     {
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = major,
             Minor = minor,
@@ -365,7 +365,7 @@ public class StormReplayVersionTests
             BaseBuild = baseBuild,
         };
 
-        StormReplayVersion version2 = new StormReplayVersion()
+        StormReplayVersion version2 = new()
         {
             Major = major2,
             Minor = minor2,
@@ -387,7 +387,7 @@ public class StormReplayVersionTests
     [DataRow(2, 2, 2, 11111, 88888, 2, 2, 2, 11111, 11111)]
     public void GetHashCodeNotEqualTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)
     {
-        StormReplayVersion version = new StormReplayVersion()
+        StormReplayVersion version = new()
         {
             Major = major,
             Minor = minor,
@@ -396,7 +396,7 @@ public class StormReplayVersionTests
             BaseBuild = baseBuild,
         };
 
-        StormReplayVersion version2 = new StormReplayVersion()
+        StormReplayVersion version2 = new()
         {
             Major = major2,
             Minor = minor2,

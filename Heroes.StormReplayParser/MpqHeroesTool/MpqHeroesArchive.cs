@@ -30,7 +30,7 @@ internal class MpqHeroesArchive : IDisposable
         Span<byte> headerBuffer = stackalloc byte[2048]; // guess how much the header will be
         stream.Read(headerBuffer);
 
-        BitReader bitReader = new BitReader(headerBuffer, EndianType.LittleEndian);
+        BitReader bitReader = new(headerBuffer, EndianType.LittleEndian);
 
         _mpqHeader = new MpqHeader(ref bitReader);
 
@@ -48,7 +48,7 @@ internal class MpqHeroesArchive : IDisposable
 
         _mpqHashes = new MpqHash[_mpqHeader.HashTableSize];
 
-        BitReader mpqHashesBitReader = new BitReader(hashBuffer, EndianType.LittleEndian);
+        BitReader mpqHashesBitReader = new(hashBuffer, EndianType.LittleEndian);
 
         for (int i = 0; i < _mpqHeader.HashTableSize; i++)
             _mpqHashes[i] = new MpqHash(ref mpqHashesBitReader);
@@ -61,7 +61,7 @@ internal class MpqHeroesArchive : IDisposable
         DecryptTable(entryBuffer, "(block table)");
 
         _mpqArchiveEntries = new MpqHeroesArchiveEntry[_mpqHeader.BlockTableSize];
-        BitReader mpqArchivesEntryBitReader = new BitReader(entryBuffer, EndianType.LittleEndian);
+        BitReader mpqArchivesEntryBitReader = new(entryBuffer, EndianType.LittleEndian);
 
         for (int i = 0; i < _mpqHeader.BlockTableSize; i++)
             _mpqArchiveEntries[i] = new MpqHeroesArchiveEntry(ref mpqArchivesEntryBitReader, (uint)_mpqHeader.HeaderOffset);
@@ -219,7 +219,7 @@ internal class MpqHeroesArchive : IDisposable
         {
             _archiveStream.Position = mpqArchiveEntry.FilePosition;
 
-            int read = _archiveStream.Read(buffer.Slice(0, (int)mpqArchiveEntry.CompressedSize));
+            int read = _archiveStream.Read(buffer[..(int)mpqArchiveEntry.CompressedSize]);
 
             if (read != mpqArchiveEntry.CompressedSize)
                 throw new MpqHeroesToolException("Insufficient data or invalid data length");
@@ -407,29 +407,29 @@ internal class MpqHeroesArchive : IDisposable
 
     private static void BZip2Decompress(Span<byte> buffer)
     {
-        using MemoryStream memoryStream = new MemoryStream();
+        using MemoryStream memoryStream = new();
         memoryStream.Write(buffer[1..]);
         memoryStream.Position = 0;
 
-        using BZip2InputStream stream = new BZip2InputStream(memoryStream);
+        using BZip2InputStream stream = new(memoryStream);
 
         stream.Read(buffer);
     }
 
     private static void ZlibDecompress(Span<byte> buffer)
     {
-        using MemoryStream memoryStream = new MemoryStream();
+        using MemoryStream memoryStream = new();
         memoryStream.Write(buffer[1..]);
         memoryStream.Position = 0;
 
-        using ZlibStream stream = new ZlibStream(memoryStream, CompressionMode.Decompress);
+        using ZlibStream stream = new(memoryStream, CompressionMode.Decompress);
 
         stream.Read(buffer);
     }
 
     private static void SetBlockPositions(ReadOnlySpan<byte> source, Span<uint> blockPositions, int blockPositionCount)
     {
-        BitReader bitReader = new BitReader(source, EndianType.LittleEndian);
+        BitReader bitReader = new(source, EndianType.LittleEndian);
 
         for (int i = 0; i < blockPositionCount; i++)
         {
@@ -466,7 +466,7 @@ internal class MpqHeroesArchive : IDisposable
         offset += mpqArchiveEntry.FilePosition;
 
         _archiveStream.Seek(offset, SeekOrigin.Begin);
-        int read = _archiveStream.Read(buffer.Slice(0, toRead));
+        int read = _archiveStream.Read(buffer[..toRead]);
 
         if (read != toRead)
             throw new MpqHeroesToolException("Insufficient data or invalid data length");
@@ -477,13 +477,13 @@ internal class MpqHeroesArchive : IDisposable
                 throw new MpqHeroesToolException("Unable to determine encryption key");
 
             encryptionSeed = (uint)(blockIndex + mpqArchiveEntry.EncryptionSeed);
-            DecryptBlock(buffer.Slice(0, expectedLength), encryptionSeed);
+            DecryptBlock(buffer[..expectedLength], encryptionSeed);
         }
 
         if (mpqArchiveEntry.IsCompressed && (toRead != expectedLength))
         {
             if ((mpqArchiveEntry.Flags & MpqFileFlags.CompressedMulti) != 0)
-                DecompressByteData(buffer.Slice(0, expectedLength));
+                DecompressByteData(buffer[..expectedLength]);
             else
                 throw new MpqHeroesToolException("Non-single unit must be decompresssed using pk");
         }

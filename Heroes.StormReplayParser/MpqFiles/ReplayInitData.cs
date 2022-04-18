@@ -6,7 +6,7 @@ internal static class ReplayInitData
 
     public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
     {
-        BitReader bitReader = new BitReader(source, EndianType.BigEndian);
+        BitReader bitReader = new(source, EndianType.BigEndian);
 
         /* m_userInitialData section */
 

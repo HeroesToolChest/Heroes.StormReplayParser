@@ -33,7 +33,7 @@ public partial class StormReplay
     /// <summary>
     /// Gets the length of the replay.
     /// </summary>
-    public TimeSpan ReplayLength => new TimeSpan(0, 0, ElapsedGamesLoops / 16);
+    public TimeSpan ReplayLength => new(0, 0, ElapsedGamesLoops / 16);
 
     /// <summary>
     /// Gets or sets the map info.

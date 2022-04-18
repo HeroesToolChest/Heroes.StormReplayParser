@@ -9,7 +9,7 @@ internal static class MpqHeroesFile
             throw new ArgumentException("Argument cannot be null or empty", nameof(fileName));
         }
 
-        FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 0x1000, false);
+        FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 0x1000, false);
 
         try
         {
