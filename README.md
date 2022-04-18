@@ -65,9 +65,9 @@ Message Events provides the following:
 The above provided are properties of classes that are automatically parsed out. `GameEvents`, `TrackerEvents`, and `Messages` are also properties that are available that can be used for obtaining specific data.
 
 ## Developing
-To build and compile the code, it is recommended to use the latest version of [Visual Studio 2019 or Visual Studio Code](https://visualstudio.microsoft.com/downloads/).
+To build and compile the code, it is recommended to use the latest version of [Visual Studio 2022 or Visual Studio Code](https://visualstudio.microsoft.com/downloads/).
 
-Another option is to use the dotnet CLI tools from the [.NET Core 5.0 SDK](https://dotnet.microsoft.com/download).
+Another option is to use the dotnet CLI tools from the [.NET Core 6.0 SDK](https://dotnet.microsoft.com/download).
 
 ## License
 [MIT license](/LICENSE)
