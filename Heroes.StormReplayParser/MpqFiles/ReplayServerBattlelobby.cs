@@ -160,7 +160,7 @@ internal static class ReplayServerBattlelobby
 
         */
 
-        for (; ;)
+        for (; ; )
         {
             if (bitReader.ReadStringFromBytes(4) == "s2mh")
             {

@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains the information for a vital announcment.
 /// </summary>
-public struct VitalAnnouncement : System.IEquatable<VitalAnnouncement>
+public readonly struct VitalAnnouncement : IEquatable<VitalAnnouncement>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="VitalAnnouncement"/> struct.

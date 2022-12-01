@@ -11,7 +11,7 @@ public class ToonHandle : IEquatable<ToonHandle>
     public int Region { get; set; }
 
     /// <summary>
-    /// Gets or sets the program id. This id is the identifier for the game.
+    /// Gets or sets the program id. This id is the identifier for the game (Heroes of the Storm).
     /// </summary>
     public long ProgramId { get; set; }
 

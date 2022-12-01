@@ -5,8 +5,8 @@
 /// </summary>
 /// <remarks>
 /// Ping messages include normal pings (no target), targeted pings (such as Player 1 wants to help Player 2), retreat,
-/// and the more ping options (on my way, defend, danger, assist)
-/// does not include captured camps, hearthing, no way to tell which one is which.
+/// and the more ping options (on my way, defend, danger, assist).
+/// Does not include captured camps or hearthing. There is no way to differentiate the pings.
 /// </remarks>
 public class PingMessage : StormMessageBase
 {

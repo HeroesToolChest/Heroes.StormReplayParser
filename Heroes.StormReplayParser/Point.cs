@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains the properties for point coordinates.
 /// </summary>
-public struct Point : IEquatable<Point>
+public readonly struct Point : IEquatable<Point>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Point"/> struct.

@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains the information for a game event.
 /// </summary>
-public struct StormGameEvent : IEquatable<StormGameEvent>
+public readonly struct StormGameEvent : IEquatable<StormGameEvent>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="StormGameEvent"/> struct.

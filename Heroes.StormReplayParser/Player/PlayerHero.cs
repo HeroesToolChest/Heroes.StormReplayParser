@@ -6,7 +6,7 @@
 public class PlayerHero
 {
     /// <summary>
-    /// Gets or sets the hero id. Not recommended to use an identifier in certain brawl maps as
+    /// Gets or sets the hero id. Not recommended to use an identifier for certain brawl maps as
     /// this will be set as the pre-selected hero.
     /// </summary>
     public string HeroId { get; set; } = string.Empty;
@@ -22,7 +22,7 @@ public class PlayerHero
     public string HeroName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the hero attribute id. Not recommended to use an identifier in certain brawl maps as
+    /// Gets or sets the hero attribute id. Not recommended to use an identifier for certain brawl maps as
     /// this will be set as the pre-selected hero.
     /// </summary>
     public string HeroAttributeId { get; set; } = string.Empty;
