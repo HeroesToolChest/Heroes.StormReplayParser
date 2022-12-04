@@ -18,76 +18,77 @@ internal static class ReplayTrackerEvents
             StormTrackerEventType type = (StormTrackerEventType)new VersionedDecoder(ref bitReader).GetValueAsUInt32();
             VersionedDecoder decoder = new(ref bitReader);
 
-            replay.TrackerEventsInternal.Add(new StormTrackerEvent(type, timeSpan, decoder));
+            AddParsedTrackerEvent(replay, new StormTrackerEvent(type, timeSpan, decoder));
         }
-
-        SetParsedData(replay);
     }
 
-    private static void SetParsedData(StormReplay replay)
+    private static void AddParsedTrackerEvent(StormReplay replay, StormTrackerEvent stormTrackerEvent)
     {
-        foreach (StormTrackerEvent stormTrackerEvent in replay.TrackerEventsInternal)
+        ParseTrackerEvent(replay, stormTrackerEvent);
+        replay.TrackerEventsInternal.Add(stormTrackerEvent);
+    }
+
+    private static void ParseTrackerEvent(StormReplay replay, StormTrackerEvent stormTrackerEvent)
+    {
+        switch (stormTrackerEvent.TrackerEventType)
         {
-            switch (stormTrackerEvent.TrackerEventType)
-            {
-                case StormTrackerEventType.PlayerSetupEvent:
-                    if (replay.NoWorkingSetSlotID)
-                    {
-                        uint playerId = stormTrackerEvent.VersionedDecoder!.Structure![3].OptionalData!.GetValueAsUInt32();
-                        uint workingSetSlotId = stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.GetValueAsUInt32();
+            case StormTrackerEventType.PlayerSetupEvent:
+                if (replay.NoWorkingSetSlotID)
+                {
+                    uint playerId = stormTrackerEvent.VersionedDecoder!.Structure![3].OptionalData!.GetValueAsUInt32();
+                    uint workingSetSlotId = stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.GetValueAsUInt32();
 
-                        replay.ClientListByWorkingSetSlotID[workingSetSlotId] = replay.Players[playerId];
+                    replay.ClientListByWorkingSetSlotID[workingSetSlotId] = replay.Players[playerId];
+                }
+
+                break;
+            case StormTrackerEventType.ScoreResultEvent:
+                if (stormTrackerEvent.VersionedDecoder is not null)
+                {
+                    Dictionary<string, int?[]> scoreResultsByScoreName = stormTrackerEvent.VersionedDecoder.Structure![0].ArrayData!
+                        .ToDictionary(x => x.Structure![0].GetValueAsString(), x => x.Structure![1].ArrayData!.Select(i => i.ArrayData?.Length == 1 ? (int)i.ArrayData![0].Structure![0].GetValueAsInt64() : (int?)null).ToArray());
+
+                    for (int i = 0; i < replay.ClientListByWorkingSetSlotID.Length; i++)
+                    {
+                        replay.ClientListByWorkingSetSlotID[i]?.SetScoreResult(i, (i) => GetScoreResult(i, scoreResultsByScoreName));
                     }
+                }
 
-                    break;
-                case StormTrackerEventType.ScoreResultEvent:
-                    if (stormTrackerEvent.VersionedDecoder is not null)
-                    {
-                        Dictionary<string, int?[]> scoreResultsByScoreName = stormTrackerEvent.VersionedDecoder.Structure![0].ArrayData!
-                            .ToDictionary(x => x.Structure![0].GetValueAsString(), x => x.Structure![1].ArrayData!.Select(i => i.ArrayData?.Length == 1 ? (int)i.ArrayData![0].Structure![0].GetValueAsInt64() : (int?)null).ToArray());
+                break;
+            case StormTrackerEventType.HeroBannedEvent:
+                replay.DraftPicksInternal.Add(new StormDraftPick()
+                {
+                    HeroSelected = stormTrackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
+                    Team = (StormTeam)(stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32() - 1),
+                    PickType = StormDraftPickType.Banned,
+                });
+                break;
+            case StormTrackerEventType.HeroPickedEvent:
+                replay.DraftPicksInternal.Add(new StormDraftPick()
+                {
+                    HeroSelected = stormTrackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
+                    Player = replay.ClientListByUserID[stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32()],
+                    PickType = StormDraftPickType.Picked,
+                });
 
-                        for (int i = 0; i < replay.ClientListByWorkingSetSlotID.Length; i++)
-                        {
-                            replay.ClientListByWorkingSetSlotID[i]?.SetScoreResult(i, (i) => GetScoreResult(i, scoreResultsByScoreName));
-                        }
-                    }
+                break;
+            case StormTrackerEventType.HeroSwappedEvent:
+                replay.DraftPicksInternal.Add(new StormDraftPick()
+                {
+                    HeroSelected = stormTrackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
+                    Player = replay.ClientListByUserID[stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32()],
+                    PickType = StormDraftPickType.Swapped,
+                });
+                break;
+            case StormTrackerEventType.StatGameEvent:
+                if (stormTrackerEvent.VersionedDecoder is not null)
+                {
+                    ParseStatGameEvent(replay, stormTrackerEvent);
+                }
 
-                    break;
-                case StormTrackerEventType.HeroBannedEvent:
-                    replay.DraftPicksInternal.Add(new StormDraftPick()
-                    {
-                        HeroSelected = stormTrackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
-                        Team = (StormTeam)(stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32() - 1),
-                        PickType = StormDraftPickType.Banned,
-                    });
-                    break;
-                case StormTrackerEventType.HeroPickedEvent:
-                    replay.DraftPicksInternal.Add(new StormDraftPick()
-                    {
-                        HeroSelected = stormTrackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
-                        Player = replay.ClientListByUserID[stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32()],
-                        PickType = StormDraftPickType.Picked,
-                    });
-
-                    break;
-                case StormTrackerEventType.HeroSwappedEvent:
-                    replay.DraftPicksInternal.Add(new StormDraftPick()
-                    {
-                        HeroSelected = stormTrackerEvent.VersionedDecoder!.Structure![0].GetValueAsString(),
-                        Player = replay.ClientListByUserID[stormTrackerEvent.VersionedDecoder.Structure[1].GetValueAsUInt32()],
-                        PickType = StormDraftPickType.Swapped,
-                    });
-                    break;
-                case StormTrackerEventType.StatGameEvent:
-                    if (stormTrackerEvent.VersionedDecoder is not null)
-                    {
-                        ParseStatGameEvent(replay, stormTrackerEvent);
-                    }
-
-                    break;
-                default:
-                    break;
-            }
+                break;
+            default:
+                break;
         }
     }
 
