@@ -32,8 +32,7 @@ public partial class StormReplay
         if (fileName is null)
             throw new ArgumentNullException(nameof(fileName));
 
-        if (parseOptions is null)
-            parseOptions = ParseOptions.DefaultParsing;
+        parseOptions ??= ParseOptions.DefaultParsing;
 
         StormReplay stormReplay = ParseStormReplay(fileName, parseOptions);
 

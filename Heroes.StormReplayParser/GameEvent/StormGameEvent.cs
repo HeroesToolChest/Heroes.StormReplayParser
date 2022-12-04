@@ -93,11 +93,11 @@ public readonly struct StormGameEvent : IEquatable<StormGameEvent>
     /// <inheritdoc/>
     public override string ToString()
     {
-        if (MessageSender == null)
+        if (MessageSender is null)
             return $"[{Timestamp}] {GameEventType}: {Data}";
-        else if (GameEventType == null && MessageSender == null)
+        else if (GameEventType is null && MessageSender is null)
             return $"[{Timestamp}]: {Data}";
-        else if (GameEventType == null)
+        else if (GameEventType is null)
             return $"[{Timestamp}] [{MessageSender}]: {Data}";
         else
             return $"[{Timestamp}] [{MessageSender}] {GameEventType} : {Data}";

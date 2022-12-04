@@ -13,7 +13,7 @@ internal static class ReplayDetails
         // this section does not include the observers
         VersionedDecoder[]? versionDecoders = versionedDecoder.Structure?[0].OptionalData?.ArrayData;
 
-        if (versionDecoders == null || versionDecoders.Length < 1)
+        if (versionDecoders is null || versionDecoders.Length < 1)
             throw new StormParseException("ReplayDetails: Less than 1 player");
 
         replay.Players = new StormPlayer[versionDecoders.Length];

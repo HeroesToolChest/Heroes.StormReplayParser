@@ -15,7 +15,7 @@ public class ReconnectNotifyMessage : StormMessageBase
     {
         get
         {
-            if (MessageSender == null)
+            if (MessageSender is null)
                 return $"({Timestamp}) ((Unknown)): [reconnect status '{Status}']";
             else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
                 return $"({Timestamp}) {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}): [reconnect status '{Status}']";

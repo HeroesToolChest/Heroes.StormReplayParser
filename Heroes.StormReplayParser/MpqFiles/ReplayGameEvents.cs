@@ -1079,7 +1079,7 @@ internal static class ReplayGameEvents
 
             bitReader.AlignToByte();
 
-            if (gameEvent != null)
+            if (gameEvent is not null)
                 replay.GameEventsInternal.Add(gameEvent.Value);
         }
 

@@ -236,7 +236,7 @@ internal static class ReplayInitData
 
             if (userId.HasValue && workingSetSlotID.HasValue)
             {
-                if (replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value] != null)
+                if (replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value] is not null)
                 {
                     replay.ClientListByUserID[userId.Value] = replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value];
                 }

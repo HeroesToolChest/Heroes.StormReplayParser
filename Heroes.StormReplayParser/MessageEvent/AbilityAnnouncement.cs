@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains the information for an ability announcement.
 /// </summary>
-public struct AbilityAnnouncement : IEquatable<AbilityAnnouncement>
+public readonly struct AbilityAnnouncement : IEquatable<AbilityAnnouncement>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AbilityAnnouncement"/> struct.

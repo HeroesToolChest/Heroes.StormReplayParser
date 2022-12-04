@@ -15,7 +15,7 @@ public class LoadingProgressMessage : StormMessageBase
     {
         get
         {
-            if (MessageSender == null)
+            if (MessageSender is null)
                 return $"({Timestamp}) ((Unknown)): [loading progress '{LoadingProgress}']";
             else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
                 return $"({Timestamp}) {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}): [loading progress '{LoadingProgress}']";

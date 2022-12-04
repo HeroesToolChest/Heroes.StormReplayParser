@@ -20,7 +20,7 @@ public class ChatMessage : StormMessageBase
     {
         get
         {
-            if (MessageSender == null)
+            if (MessageSender is null)
                 return $"({Timestamp}) [{MessageTarget}] ((Unknown)): {Text}";
             else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
                 return $"({Timestamp}) [{MessageTarget}] {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}): {Text}";

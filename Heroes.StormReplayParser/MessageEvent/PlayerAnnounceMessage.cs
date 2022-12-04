@@ -30,7 +30,7 @@ public class PlayerAnnounceMessage : StormMessageBase
     {
         get
         {
-            if (MessageSender == null)
+            if (MessageSender is null)
                 return $"({Timestamp}) ((Unknown)): [announced '{AnnouncementType}']";
             else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
                 return $"({Timestamp}) {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}): [announced '{AnnouncementType}']";

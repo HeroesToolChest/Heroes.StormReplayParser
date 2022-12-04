@@ -142,7 +142,7 @@ public class StormPlayer
     /// <inheritdoc/>
     public override string ToString()
     {
-        if (PlayerHero != null)
+        if (PlayerHero is not null)
             return $"[{Name}-{PlayerHero}]-{PlayerType}-{ToonHandle}";
         else
             return $"[{Name}-{PlayerType}-{ToonHandle}";

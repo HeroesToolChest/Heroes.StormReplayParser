@@ -41,7 +41,7 @@ internal static class ReplayTrackerEvents
 
                     break;
                 case StormTrackerEventType.ScoreResultEvent:
-                    if (stormTrackerEvent.VersionedDecoder != null)
+                    if (stormTrackerEvent.VersionedDecoder is not null)
                     {
                         Dictionary<string, int?[]> scoreResultsByScoreName = stormTrackerEvent.VersionedDecoder.Structure![0].ArrayData!
                             .ToDictionary(x => x.Structure![0].GetValueAsString(), x => x.Structure![1].ArrayData!.Select(i => i.ArrayData?.Length == 1 ? (int)i.ArrayData![0].Structure![0].GetValueAsInt64() : (int?)null).ToArray());
@@ -79,7 +79,7 @@ internal static class ReplayTrackerEvents
                     });
                     break;
                 case StormTrackerEventType.StatGameEvent:
-                    if (stormTrackerEvent.VersionedDecoder != null)
+                    if (stormTrackerEvent.VersionedDecoder is not null)
                     {
                         ParseStatGameEvent(replay, stormTrackerEvent);
                     }
@@ -94,7 +94,7 @@ internal static class ReplayTrackerEvents
     private static void ParseStatGameEvent(StormReplay replay, StormTrackerEvent stormTrackerEvent)
     {
         byte[]? value = stormTrackerEvent.VersionedDecoder!.Structure?[0].Value;
-        if (value != null)
+        if (value is not null)
         {
             Span<char> valueSpan = stackalloc char[value.Length];
             Encoding.UTF8.GetChars(value, valueSpan);
@@ -127,7 +127,7 @@ internal static class ReplayTrackerEvents
         byte[]? playerIdValue = stormTrackerEvent.VersionedDecoder!.Structure?[2].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
         byte[]? levelValue = stormTrackerEvent.VersionedDecoder!.Structure?[2].OptionalData?.ArrayData?[1].Structure?[0].Structure?[0].Value;
 
-        if (playerIdValue != null && levelValue != null)
+        if (playerIdValue is not null && levelValue is not null)
         {
             Span<char> playerIdValueSpan = stackalloc char[playerIdValue.Length];
             Encoding.UTF8.GetChars(playerIdValue, playerIdValueSpan);
@@ -167,8 +167,8 @@ internal static class ReplayTrackerEvents
         byte[]? heroXPValue = stormTrackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[5].Structure?[0].Structure?[0].Value;
         byte[]? trickleXPValue = stormTrackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[6].Structure?[0].Structure?[0].Value;
 
-        if (teamLevelValue != null && gameTimeValue != null && previousGameTimeValue != null && minionXPValue != null &&
-            creepXPValue != null && structureXPValue != null && heroXPValue != null && trickleXPValue != null)
+        if (teamLevelValue is not null && gameTimeValue is not null && previousGameTimeValue is not null && minionXPValue is not null &&
+            creepXPValue is not null && structureXPValue is not null && heroXPValue is not null && trickleXPValue is not null)
         {
             Span<char> teamLevelValueSpan = stackalloc char[teamLevelValue.Length];
             Encoding.UTF8.GetChars(teamLevelValue, teamLevelValueSpan);
@@ -229,8 +229,8 @@ internal static class ReplayTrackerEvents
         byte[]? heroXPValue = stormTrackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[3].Structure?[0].Structure?[0].Value;
         byte[]? trickleXPValue = stormTrackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[4].Structure?[0].Structure?[0].Value;
 
-        if (playerIdValue != null && minionXPValue != null && creepXPValue != null && structureXPValue != null &&
-            heroXPValue != null && trickleXPValue != null)
+        if (playerIdValue is not null && minionXPValue is not null && creepXPValue is not null && structureXPValue is not null &&
+            heroXPValue is not null && trickleXPValue is not null)
         {
             Span<char> playerIdValueSpan = stackalloc char[playerIdValue.Length];
             Encoding.UTF8.GetChars(playerIdValue, playerIdValueSpan);
@@ -292,7 +292,7 @@ internal static class ReplayTrackerEvents
         byte[]? playerIdValue = stormTrackerEvent.VersionedDecoder?.Structure?[2].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
         byte[]? heroValue = stormTrackerEvent.VersionedDecoder?.Structure?[1].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
 
-        if (playerIdValue != null && heroValue != null)
+        if (playerIdValue is not null && heroValue is not null)
         {
             Span<char> playerIdValueSpan = stackalloc char[playerIdValue.Length];
             Encoding.UTF8.GetChars(playerIdValue, playerIdValueSpan);
@@ -337,7 +337,7 @@ internal static class ReplayTrackerEvents
         byte[]? playerIdValue = stormTrackerEvent.VersionedDecoder?.Structure?[2].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
         byte[]? purchaseNameValue = stormTrackerEvent.VersionedDecoder?.Structure?[1].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
 
-        if (playerIdValue != null && purchaseNameValue != null)
+        if (playerIdValue is not null && purchaseNameValue is not null)
         {
             Span<char> playerIdValueSpan = stackalloc char[playerIdValue.Length];
             Encoding.UTF8.GetChars(playerIdValue, playerIdValueSpan);
@@ -368,7 +368,7 @@ internal static class ReplayTrackerEvents
         {
             int? value = scoreResultsByScoreName[scoreResultEventKey][player];
 
-            if (value != null && value >= 0)
+            if (value is not null && value >= 0)
             {
                 switch (scoreResultEventKey)
                 {

@@ -25,7 +25,7 @@ public class PingMessage : StormMessageBase
     {
         get
         {
-            if (MessageSender == null)
+            if (MessageSender is null)
                 return $"({Timestamp}) [{MessageTarget}] ((Unknown)): ['PING']";
             else if (!string.IsNullOrEmpty(MessageSender.PlayerHero?.HeroName))
                 return $"({Timestamp}) [{MessageTarget}] {MessageSender.Name} ({MessageSender.PlayerHero.HeroName}): ['PING']";

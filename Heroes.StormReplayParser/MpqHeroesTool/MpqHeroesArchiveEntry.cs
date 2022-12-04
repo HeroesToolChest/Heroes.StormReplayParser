@@ -50,7 +50,7 @@ internal struct MpqHeroesArchiveEntry
 
     public override string ToString()
     {
-        if (FileName == null)
+        if (FileName is null)
         {
             if (!Exists)
                 return "(Deleted file)";
@@ -62,7 +62,7 @@ internal struct MpqHeroesArchiveEntry
 
     private uint CalculateEncryptionSeed()
     {
-        if (FileName == null) return 0;
+        if (FileName is null) return 0;
 
         uint seed = MpqHeroesArchive.HashString(Path.GetFileName(FileName), 0x300);
         if ((Flags & MpqFileFlags.BlockOffsetAdjustedKey) == MpqFileFlags.BlockOffsetAdjustedKey)

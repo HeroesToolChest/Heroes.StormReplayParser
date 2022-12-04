@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains the properties for a tracker event.
 /// </summary>
-public struct StormTrackerEvent : IEquatable<StormTrackerEvent>
+public readonly struct StormTrackerEvent : IEquatable<StormTrackerEvent>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="StormTrackerEvent"/> struct.

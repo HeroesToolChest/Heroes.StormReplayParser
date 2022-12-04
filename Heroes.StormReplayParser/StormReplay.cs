@@ -73,12 +73,12 @@ public partial class StormReplay
     /// <summary>
     /// Gets a collection of playing players (no observers, has AI).
     /// </summary>
-    public IEnumerable<StormPlayer> StormPlayers => Players.Where(x => x != null);
+    public IEnumerable<StormPlayer> StormPlayers => Players.Where(x => x is not null);
 
     /// <summary>
     /// Gets a collection of players (no AI, has observers).
     /// </summary>
-    public IEnumerable<StormPlayer> StormPlayersWithObservers => ClientListByUserID.Where(x => x != null);
+    public IEnumerable<StormPlayer> StormPlayersWithObservers => ClientListByUserID.Where(x => x is not null);
 
     /// <summary>
     /// Gets a collection of observer players.
@@ -88,12 +88,12 @@ public partial class StormReplay
     /// <summary>
     /// Gets the total number of playing players (no observers, has AI).
     /// </summary>
-    public int PlayersCount => Players.Count(x => x != null);
+    public int PlayersCount => Players.Count(x => x is not null);
 
     /// <summary>
     /// Gets the total number of playing players in the game (no AI, has observers).
     /// </summary>
-    public int PlayersWithObserversCount => ClientListByUserID.Count(x => x != null);
+    public int PlayersWithObserversCount => ClientListByUserID.Count(x => x is not null);
 
     /// <summary>
     /// Gets the total number of observers in the game.
@@ -108,7 +108,7 @@ public partial class StormReplay
         get
         {
             StormPlayer? player = StormPlayersWithObservers.FirstOrDefault();
-            if (player != null && player.ToonHandle != null)
+            if (player is not null && player.ToonHandle is not null)
                 return player.ToonHandle.StormRegion;
             else
                 return StormRegion.Unknown;

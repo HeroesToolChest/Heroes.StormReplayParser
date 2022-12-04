@@ -152,7 +152,7 @@ public class StormReplayVersionTests
 #pragma warning disable SA1131 // Use readable conditions
         Assert.IsFalse(null! == version2);
 #pragma warning restore SA1131 // Use readable conditions
-        Assert.IsFalse(version2 == null!);
+        Assert.IsFalse(version2 is null);
 
         Assert.IsTrue(null! == (StormReplayVersion)null!);
         Assert.IsTrue(version == version2);
@@ -188,7 +188,7 @@ public class StormReplayVersionTests
 #pragma warning disable SA1131 // Use readable conditions
         Assert.IsTrue(null! != version2);
 #pragma warning restore SA1131 // Use readable conditions
-        Assert.IsTrue(version2 != null!);
+        Assert.IsTrue(version2 is not null);
 
         Assert.IsFalse(null! != (StormReplayVersion)null!);
         Assert.IsTrue(version != version2);

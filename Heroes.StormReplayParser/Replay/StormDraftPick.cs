@@ -24,7 +24,7 @@ public class StormDraftPick
     {
         get
         {
-            if (Player == null)
+            if (Player is null)
                 return _team;
             else
                 return Player.Team;
@@ -40,7 +40,7 @@ public class StormDraftPick
     /// <inheritdoc/>
     public override string ToString()
     {
-        if (Player != null)
+        if (Player is not null)
         {
             if (PickType == StormDraftPickType.Swapped)
                 return $"Player: {Player.Name} - {PickType} to {HeroSelected}";

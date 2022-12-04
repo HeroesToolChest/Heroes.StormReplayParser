@@ -116,7 +116,7 @@ public class VersionedDecoder
             0x03 => Get32UIntFromVInt(),
             0x04 => throw new InvalidOperationException("Invalid call, use OptionalData"),
             0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
-            0x06 => Value != null ? Value[0] : throw new InvalidOperationException("No value available"),
+            0x06 => Value is not null ? Value[0] : throw new InvalidOperationException("No value available"),
             0x07 => BinaryPrimitives.ReadUInt32LittleEndian(Value),
             0x08 => throw new ArithmeticException("Incorrect conversion. Use Int64 method instead."),
             0x09 => Get32UIntFromVInt(),
@@ -154,18 +154,18 @@ public class VersionedDecoder
     /// Gets the value in the current structure as a string.
     /// </summary>
     /// <returns></returns>
-    public string GetValueAsString() => Value != null ? Encoding.UTF8.GetString(Value) : string.Empty;
+    public string GetValueAsString() => Value is not null ? Encoding.UTF8.GetString(Value) : string.Empty;
 
     /// <inheritdoc/>
     public override string? ToString()
     {
         return DataType switch
         {
-            0x00 => ArrayData != null ? $"[{string.Join(", ", ArrayData.Select(i => i?.ToString()))}]" : null,
-            0x02 => Value != null ? @$"""{Encoding.UTF8.GetString(Value)}""" : null,
+            0x00 => ArrayData is not null ? $"[{string.Join(", ", ArrayData.Select(i => i?.ToString()))}]" : null,
+            0x02 => Value is not null ? @$"""{Encoding.UTF8.GetString(Value)}""" : null,
             0x03 => $"Choice: Flag: {BinaryPrimitivesExtensions.ReadVIntLittleEndian(Value)} , Data: {ChoiceData}",
             0x04 => OptionalData?.ToString(),
-            0x05 => Structure != null ? $"{{{string.Join(", ", Structure.Select(i => i?.ToString()))}}}" : null,
+            0x05 => Structure is not null ? $"{{{string.Join(", ", Structure.Select(i => i?.ToString()))}}}" : null,
             0x06 => Value?[0].ToString(),
             0x07 => BinaryPrimitives.ReadUInt32LittleEndian(Value).ToString(),
             0x08 => BinaryPrimitives.ReadUInt64LittleEndian(Value).ToString(),

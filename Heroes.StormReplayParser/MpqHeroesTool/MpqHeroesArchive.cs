@@ -88,8 +88,7 @@ internal class MpqHeroesArchive : IDisposable
             throw new FileNotFoundException("File not found: " + fileName);
 
         MpqHeroesArchiveEntry entry = _mpqArchiveEntries[hash.BlockIndex];
-        if (entry.FileName == null)
-            entry.FileName = fileName;
+        entry.FileName ??= fileName;
 
         return entry;
     }
@@ -100,8 +99,7 @@ internal class MpqHeroesArchive : IDisposable
             throw new FileNotFoundException("File not found: " + filename);
 
         MpqHeroesArchiveEntry entry = _mpqArchiveEntries[hash.BlockIndex];
-        if (entry.FileName == null)
-            entry.FileName = filename;
+        entry.FileName ??= filename;
 
         Span<byte> buffer = new byte[(int)entry.FileSize];
 

@@ -139,10 +139,10 @@ public class StormGameEventData
             StormGameEventDataType.Integer32 => Integer32?.ToString(),
             StormGameEventDataType.UnsignedInteger32 => UnsignedInteger32?.ToString(),
             StormGameEventDataType.UnsignedInteger64 => UnsignedInteger64?.ToString(),
-            StormGameEventDataType.Blob => Blob != null ? @$"""{Blob}""" : null,
-            StormGameEventDataType.Array => Array != null ? $"[{string.Join(", ", Array.Select(i => i?.ToString()))}]" : null,
-            StormGameEventDataType.Structure => Structure != null ? $"{{{string.Join(", ", Structure.Select(i => i?.ToString()))}}}" : null,
-            StormGameEventDataType.BitArray => BitArray != null ? $"[{string.Join(", ", BitArray.Select(i => i.ToString()))}]" : null,
+            StormGameEventDataType.Blob => Blob is not null ? @$"""{Blob}""" : null,
+            StormGameEventDataType.Array => Array is not null ? $"[{string.Join(", ", Array.Select(i => i?.ToString()))}]" : null,
+            StormGameEventDataType.Structure => Structure is not null ? $"{{{string.Join(", ", Structure.Select(i => i?.ToString()))}}}" : null,
+            StormGameEventDataType.BitArray => BitArray is not null ? $"[{string.Join(", ", BitArray.Select(i => i.ToString()))}]" : null,
 
             _ => string.Empty,
         };
