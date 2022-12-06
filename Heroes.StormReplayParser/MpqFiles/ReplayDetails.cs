@@ -11,14 +11,14 @@ internal static class ReplayDetails
         VersionedDecoder versionedDecoder = new(ref bitReader);
 
         // this section does not include the observers
-        VersionedDecoder[]? versionDecoders = versionedDecoder.Structure?[0].OptionalData?.ArrayData;
+        Span<VersionedDecoder> versionDecoders = versionedDecoder.Structure?[0].OptionalData?.ArrayData;
 
-        if (versionDecoders is null || versionDecoders.Length < 1)
+        if (versionDecoders.IsEmpty)
             throw new StormParseException("ReplayDetails: Less than 1 player");
 
         replay.Players = new StormPlayer[versionDecoders.Length];
 
-        for (int i = 0; i < versionDecoders?.Length; i++)
+        for (int i = 0; i < versionDecoders.Length; i++)
         {
             StormPlayer stormPlayer = new()
             {

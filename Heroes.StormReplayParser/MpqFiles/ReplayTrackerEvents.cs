@@ -48,9 +48,11 @@ internal static class ReplayTrackerEvents
                     Dictionary<string, int?[]> scoreResultsByScoreName = stormTrackerEvent.VersionedDecoder.Structure![0].ArrayData!
                         .ToDictionary(x => x.Structure![0].GetValueAsString(), x => x.Structure![1].ArrayData!.Select(i => i.ArrayData?.Length == 1 ? (int)i.ArrayData![0].Structure![0].GetValueAsInt64() : (int?)null).ToArray());
 
-                    for (int i = 0; i < replay.ClientListByWorkingSetSlotID.Length; i++)
+                    Span<StormPlayer> stormPlayersSpan = replay.ClientListByWorkingSetSlotID;
+
+                    for (int i = 0; i < stormPlayersSpan.Length; i++)
                     {
-                        replay.ClientListByWorkingSetSlotID[i]?.SetScoreResult(i, (i) => GetScoreResult(i, scoreResultsByScoreName));
+                        stormPlayersSpan[i]?.SetScoreResult(i, (i) => GetScoreResult(i, scoreResultsByScoreName));
                     }
                 }
 
