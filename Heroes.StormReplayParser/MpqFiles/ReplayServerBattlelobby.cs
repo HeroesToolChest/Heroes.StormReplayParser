@@ -11,6 +11,7 @@ internal static class ReplayServerBattlelobby
         BitReader bitReader = new(source, EndianType.BigEndian);
 
         uint dependenciesLength = bitReader.ReadBits(6);
+
         for (int i = 0; i < dependenciesLength; i++)
         {
             bitReader.ReadBlobAsString(10);
@@ -30,9 +31,648 @@ internal static class ReplayServerBattlelobby
         if (source.ReadStringFromBytes(4) != "Clsd")
            throw new StormParseException($"{ExceptionHeader}: Clsd"); */
 
-        // we're just going to skip all the way down to the s2mh
+        //// we're just going to skip all the way down to the s2mh
 
         bitReader.AlignToByte();
+
+        // skip to the first hero attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "Abat") // tabA [BE - 1096966516] 0x41626174
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < heroAttributeSizeS1; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    bitReader.ReadBits(29);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the second hero attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "Abat") // tabA [BE - 1096966516] 0x41626174
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < heroAttributeSizeS1; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    bitReader.ReadBits(29);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the banner attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "Rand") // dnaR
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint bannerAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < 22; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    bitReader.ReadBits(29);
+                }
+
+                // hmmmmmmmmmmmmmmmm
+                uint adsf = bitReader.ReadBits(4);
+                items.Add(bitReader.ReadStringFromBits(32)); // hVH8  8HVh
+
+                uint rxl = bitReader.ReadBits(2);
+                for (int i = 0; i < bannerAttributeSizeS1 - 23; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    bitReader.ReadBits(29);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the hero skin attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "But3") // 3tuB
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko = bitReader.ReadStringFromBits(32);
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko2 = bitReader.ReadStringFromBits(32);
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko3 = bitReader.ReadStringFromBits(32);
+
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko4 = bitReader.ReadStringFromBits(32);
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko5 = bitReader.ReadStringFromBits(32);
+
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko6 = bitReader.ReadStringFromBits(32);
+
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint heroSkinAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < heroSkinAttributeSizeS1; i++) // 1564
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    if (bitReader.ReadBoolean())
+                        bitReader.ReadBits(28);
+                    else
+                        bitReader.ReadBits(5);
+                }
+
+                // finder
+                //for (int i = 1; i < 999; i++)
+                //{
+                //    bitReader.ReadBits(i);
+                //    string xvcdvcx = bitReader.ReadStringFromBits(32);
+                //    bitReader.BitReversement(32);
+                //    bitReader.BitReversement(i);
+                //}
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the third hero attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "Abat") // tabA [BE - 1096966516] 0x41626174
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < heroAttributeSizeS1; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    bitReader.ReadBits(29);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the fourth hero attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "Abat") // tabA [BE - 1096966516] 0x41626174
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < heroAttributeSizeS1; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    bitReader.ReadBits(29);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the voiceline attribute section
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "10BA") // 10BA
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko = bitReader.ReadStringFromBits(32);
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko2 = bitReader.ReadStringFromBits(32); // \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint voicelineAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < voicelineAttributeSizeS1; i++) // 1564
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    bitReader.ReadBits(29);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the fifth hero attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "Abat") // tabA [BE - 1096966516] 0x41626174
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < heroAttributeSizeS1; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    bitReader.ReadBits(29);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the sixth hero attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "Abat") // tabA [BE - 1096966516] 0x41626174
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < heroAttributeSizeS1; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    bitReader.ReadBits(29);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the seventh hero attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "Abat") // tabA [BE - 1096966516] 0x41626174
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < heroAttributeSizeS1; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    bitReader.ReadBits(29);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the spray attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "Rand")
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint sprayAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < sprayAttributeSizeS1; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    bitReader.ReadBits(29);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the mount attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "Tilu")
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko = bitReader.ReadStringFromBits(32);
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko2 = bitReader.ReadStringFromBits(32);
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko3 = bitReader.ReadStringFromBits(32);
+
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko4 = bitReader.ReadStringFromBits(32);
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko5 = bitReader.ReadStringFromBits(32);
+
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko6 = bitReader.ReadStringFromBits(32);
+
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint mountAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < mountAttributeSizeS1; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    if (bitReader.ReadBoolean())
+                        bitReader.ReadBits(28);
+                    else
+                        bitReader.ReadBits(5);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        // skip to the announcer attribute section
+
+        bitReader.EndianType = EndianType.LittleEndian;
+
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromBits(32) == "Rand")
+            {
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                string ko = bitReader.ReadStringFromBits(32);
+                bitReader.BitReversement(32);
+
+                // back to get the first item
+                bitReader.BitReversement(29);
+                bitReader.BitReversement(32);
+
+                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
+                bitReader.BitReversement(32);
+
+                bitReader.EndianType = EndianType.BigEndian;
+                bitReader.BitReversement(12);
+                uint announcerAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+                bitReader.EndianType = EndianType.LittleEndian;
+
+                for (int i = 0; i < announcerAttributeSizeS1; i++)
+                {
+                    items.Add(bitReader.ReadStringFromBits(32));
+                    if (bitReader.ReadBoolean())
+                        bitReader.ReadBits(28);
+                    else
+                        bitReader.ReadBits(5);
+                }
+
+                bitReader.EndianType = EndianType.BigEndian;
+
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
 
         /*for (; ;)
         {
@@ -415,5 +1055,26 @@ internal static class ReplayServerBattlelobby
         }
 
         replay.IsBattleLobbyPlayerInfoParsed = true;
+
+
+        // skip to the optional 8th Abat attribute
+        //for (; ; )
+        //{
+        //    if (bitReader.ReadStringFromBits(32) == "tabA") // Abat 1096966516 0x41626174
+        //    {
+        //        List<string> itemsss = new();
+        //        for (int i = 0; i < 100; i++)
+        //        {
+        //            bitReader.ReadBits(29); // no
+        //            itemsss.Add(bitReader.ReadStringFromBits(32));
+        //        }
+
+        //        break;
+        //    }
+        //    else
+        //    {
+        //        bitReader.BitReversement(31);
+        //    }
+        //}
     }
 }
