@@ -402,6 +402,87 @@ public ref struct BitReader
         }
     }
 
+    public void BitReversement(int numberOfBits)
+    {
+        if (numberOfBits < 1)
+            return;
+
+        // check if at end of byte already, need to realign the current byte
+        int bytePosition = _bitIndex & 7;
+        if (bytePosition == 0)
+        {
+            _currentByte = ReadAlignedByte();
+        }
+
+        while (numberOfBits > 0)
+        {
+            bytePosition = _bitIndex & 7;
+
+            if (bytePosition == 0)
+            {
+                Index--;
+                _currentByte = ((Index - 1) < 0) ? (byte)0 : _buffer[Index - 1];
+                bytePosition = 8; // we want to be at the end of the byte
+            }
+            //else
+            //{
+            //    Index--;
+            //    _currentByte = _buffer[Index];
+            //}
+
+            //int bitsToRemove = 0;
+            //if (bytePosition < numberOfBits)
+            //{
+            //    bitsToRemove = bytePosition;
+            //}
+
+            int bitsToRemove = (bytePosition < numberOfBits) ? bytePosition : numberOfBits;
+
+            _bitIndex -= bitsToRemove;
+            numberOfBits -= bitsToRemove;
+
+
+            //if (numberOfBits <= 8)
+            //{
+            //    _bitIndex -= numberOfBits;
+            //    numberOfBits -= numberOfBits;
+            //} 
+            //else
+            //{
+            //    int bitsToRemove = (bytePosition > 0) ? bytePosition : 8;
+
+            //    _bitIndex -= bitsToRemove;
+            //    numberOfBits -= bitsToRemove;
+            //}
+
+
+
+
+
+
+
+
+            // int bitsToRemove = (bytePosition > 0) ? bytePosition : 8;
+
+            //  _bitIndex -= bitsToRemove;
+            //  numberOfBits -= bitsToRemove;
+            //}
+            //int bitsToRemove = (bytePosition > numberOfBits) ? numberOfBits : bytePosition;
+        }
+
+        bytePosition = _bitIndex & 7;
+
+        if (bytePosition == 0 && Index > 0)
+        {
+            Index--;
+            _currentByte = _buffer[Index];
+        }
+        //if (Index > 0)
+
+        //else
+         //   _currentByte = _buffer[0];
+    }
+
     private uint GetValueFromBits(int numberOfBits)
     {
         uint value = 0;
@@ -409,13 +490,13 @@ public ref struct BitReader
         while (numberOfBits > 0)
         {
             int bytePosition = _bitIndex & 7;
-            int bitsLeftInByte = 8 - bytePosition;
 
             if (bytePosition == 0)
             {
                 _currentByte = ReadAlignedByte();
             }
 
+            int bitsLeftInByte = 8 - bytePosition;
             int bitsToRead = (bitsLeftInByte > numberOfBits) ? numberOfBits : bitsLeftInByte;
 
             value = (value << bitsToRead) | (((uint)_currentByte >> bytePosition) & ((1u << bitsToRead) - 1u));
