@@ -5,8 +5,6 @@ namespace Heroes.StormReplayParser.Tests.MpqHeroesTool;
 [TestClass]
 public class BitReaderTests
 {
-    private byte[] _byteArray = new byte[7] { 8, 130, 67, 58, 92, 80, 114 };
-
     public BitReaderTests()
     {
     }
@@ -14,8 +12,7 @@ public class BitReaderTests
     [TestMethod]
     public void ReadBitsTest()
     {
-        Span<byte> buffer = stackalloc byte[7];
-        _byteArray.CopyTo(buffer);
+        Span<byte> buffer = stackalloc byte[4] { 8, 130, 67, 58 };
 
         BitReader bitReader = new(buffer, EndianType.BigEndian);
 
@@ -27,8 +24,7 @@ public class BitReaderTests
     [TestMethod]
     public void BitReversementTest()
     {
-        Span<byte> buffer = stackalloc byte[7];
-        _byteArray.CopyTo(buffer);
+        Span<byte> buffer = stackalloc byte[18] { 8, 130, 67, 58, 92, 80, 114, 102, 0, 1, 12, 13, 115, 23, 28, 56, 47, 35 };
 
         for (int bitsToRead = 1; bitsToRead < 33; bitsToRead++)
         {
@@ -46,8 +42,7 @@ public class BitReaderTests
     [TestMethod]
     public void BitReversementWithStartingOffsetTest()
     {
-        Span<byte> buffer = stackalloc byte[7];
-        _byteArray.CopyTo(buffer);
+        Span<byte> buffer = stackalloc byte[18] { 8, 130, 67, 58, 92, 80, 114, 102, 0, 1, 12, 13, 115, 23, 28, 56, 47, 35 };
 
         for (int offset = 1; offset < 32; offset++)
         {
@@ -67,46 +62,62 @@ public class BitReaderTests
     }
 
     [TestMethod]
-    public void BitReversementWithStartingOffsetTest22222()
+    public void ReadStringFromBitsAsBigEndian()
     {
-        Span<byte> buffer = stackalloc byte[7];
-        _byteArray.CopyTo(buffer);
+        Span<byte> buffer = stackalloc byte[4] { 115, 50, 109, 118 };
 
         BitReader bitReader = new(buffer, EndianType.BigEndian);
 
-        bitReader.ReadBytes(3);
-        int asd = bitReader.ReadInt32Aligned();
+        string value = bitReader.ReadStringFromBits(32);
 
-        bitReader = new(buffer, EndianType.BigEndian);
+        Assert.AreEqual("s2mv", value);
+    }
 
-        int bitsToRead = 32;
-        for (int i = 0; i < 32; i++)
-        {
+    [TestMethod]
+    public void ReadStringFromBitsAsLittleEndian()
+    {
+        Span<byte> buffer = stackalloc byte[4] { 115, 50, 109, 118 };
 
-            uint valueHere = bitReader.ReadBits(bitsToRead);
-            if (valueHere == asd)
-            {
-                break;
-            }
-            bitReader.BitReversement(bitsToRead - 1);
-        }
+        BitReader bitReader = new(buffer, EndianType.LittleEndian);
 
-        int sdf = bitReader.ReadInt32Unaligned();
+        string value = bitReader.ReadStringFromBits(32);
 
-        //for (int offset = 1; offset < 32; offset++)
-        //{
-        //    for (int bitsToRead = 1; bitsToRead < 18; bitsToRead++)
-        //    {
-        //        BitReader bitReader = new(buffer, EndianType.BigEndian);
-        //        bitReader.ReadBits(offset);
+        Assert.AreEqual("vm2s", value);
+    }
 
-        //        uint resultFirst = bitReader.ReadBits(bitsToRead);
-        //        bitReader.BitReversement(bitsToRead);
+    [TestMethod]
+    public void ReadStringFromBytesAsBigEndian()
+    {
+        Span<byte> buffer = stackalloc byte[4] { 115, 50, 109, 118 };
 
-        //        uint resultAfterReversement = bitReader.ReadBits(bitsToRead);
+        BitReader bitReader = new(buffer, EndianType.BigEndian);
 
-        //        Assert.AreEqual(resultAfterReversement, resultFirst);
-        //    }
-        //}
+        string value = bitReader.ReadStringFromAlignedBytes(4);
+
+        Assert.AreEqual("s2mv", value);
+    }
+
+    [TestMethod]
+    public void ReadStringFromBytesAsLittleEndian()
+    {
+        Span<byte> buffer = stackalloc byte[4] { 115, 50, 109, 118 };
+
+        BitReader bitReader = new(buffer, EndianType.LittleEndian);
+
+        string value = bitReader.ReadStringFromAlignedBytes(4);
+
+        Assert.AreEqual("vm2s", value);
+    }
+
+    [TestMethod]
+    public void ReadBlobAsString()
+    {
+        Span<byte> buffer = stackalloc byte[5] { 4, 115, 50, 109, 118 };
+
+        BitReader bitReader = new(buffer, EndianType.BigEndian);
+
+        string value = bitReader.ReadBlobAsString(8);
+
+        Assert.AreEqual("s2mv", value);
     }
 }

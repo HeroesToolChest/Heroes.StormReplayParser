@@ -540,7 +540,7 @@ internal static class ReplayGameEvents
                         // m_clanLogo
                         if (bitReader.ReadBoolean())
                         {
-                            userInfosArray[i].Structure![5] = new StormGameEventData(bitReader.ReadStringFromBytes(40));
+                            userInfosArray[i].Structure![5] = new StormGameEventData(bitReader.ReadStringFromAlignedBytes(40));
                         }
                     }
 
@@ -933,7 +933,7 @@ internal static class ReplayGameEvents
                     // m_clanLogo
                     if (bitReader.ReadBoolean())
                     {
-                        structure[4] = new StormGameEventData(bitReader.ReadStringFromBytes(40));
+                        structure[4] = new StormGameEventData(bitReader.ReadStringFromAlignedBytes(40));
                     }
 
                     structure[5] = new StormGameEventData(bitReader.ReadBoolean()); // m_hijack

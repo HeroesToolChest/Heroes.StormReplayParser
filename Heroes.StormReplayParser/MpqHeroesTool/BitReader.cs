@@ -348,18 +348,18 @@ public ref struct BitReader
             throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
         if (numberOfBits < 33)
-            return Encoding.UTF8.GetString(BitConverter.GetBytes(ReadBits(numberOfBits)));
+            return GetUTF8StringBaseOnMachineEndiness(BitConverter.GetBytes(ReadBits(numberOfBits)));
         else
-            return Encoding.UTF8.GetString(BitConverter.GetBytes(ReadLongBits(numberOfBits)));
+            return GetUTF8StringBaseOnMachineEndiness(BitConverter.GetBytes(ReadLongBits(numberOfBits)));
     }
 
     /// <summary>
-    /// Reads a number of bytes from the read-only span as a UTF-8 string.
+    /// Reads a number of aligned bytes from the read-only span as a UTF-8 string.
     /// </summary>
     /// <param name="numberOfBytes">The number of bytes to read.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="numberOfBytes"/> is less than 1.</exception>
     /// <returns>A string.</returns>
-    public string ReadStringFromBytes(int numberOfBytes)
+    public string ReadStringFromAlignedBytes(int numberOfBytes)
     {
         if (numberOfBytes < 1)
             throw new ArgumentOutOfRangeException(nameof(numberOfBytes), "Number of bytes must be greater than 0");
@@ -370,18 +370,7 @@ public ref struct BitReader
         if (bytes.Length == 0)
             return string.Empty;
 
-        if (EndianType == EndianType.BigEndian)
-        {
-            return Encoding.UTF8.GetString(bytes);
-        }
-        else
-        {
-            Span<byte> buffer = stackalloc byte[bytes.Length];
-            bytes.CopyTo(buffer);
-            buffer.Reverse();
-
-            return Encoding.UTF8.GetString(buffer);
-        }
+        return GetUTF8String(bytes);
     }
 
     /// <summary>
@@ -402,6 +391,10 @@ public ref struct BitReader
         }
     }
 
+    /// <summary>
+    /// Sets the index and bit index back to a number of bits.
+    /// </summary>
+    /// <param name="numberOfBits">Tje number of bits to read back.</param>
     public void BitReversement(int numberOfBits)
     {
         if (numberOfBits < 1)
@@ -424,50 +417,11 @@ public ref struct BitReader
                 _currentByte = ((Index - 1) < 0) ? (byte)0 : _buffer[Index - 1];
                 bytePosition = 8; // we want to be at the end of the byte
             }
-            //else
-            //{
-            //    Index--;
-            //    _currentByte = _buffer[Index];
-            //}
-
-            //int bitsToRemove = 0;
-            //if (bytePosition < numberOfBits)
-            //{
-            //    bitsToRemove = bytePosition;
-            //}
 
             int bitsToRemove = (bytePosition < numberOfBits) ? bytePosition : numberOfBits;
 
             _bitIndex -= bitsToRemove;
             numberOfBits -= bitsToRemove;
-
-
-            //if (numberOfBits <= 8)
-            //{
-            //    _bitIndex -= numberOfBits;
-            //    numberOfBits -= numberOfBits;
-            //} 
-            //else
-            //{
-            //    int bitsToRemove = (bytePosition > 0) ? bytePosition : 8;
-
-            //    _bitIndex -= bitsToRemove;
-            //    numberOfBits -= bitsToRemove;
-            //}
-
-
-
-
-
-
-
-
-            // int bitsToRemove = (bytePosition > 0) ? bytePosition : 8;
-
-            //  _bitIndex -= bitsToRemove;
-            //  numberOfBits -= bitsToRemove;
-            //}
-            //int bitsToRemove = (bytePosition > numberOfBits) ? numberOfBits : bytePosition;
         }
 
         bytePosition = _bitIndex & 7;
@@ -477,10 +431,27 @@ public ref struct BitReader
             Index--;
             _currentByte = _buffer[Index];
         }
-        //if (Index > 0)
+    }
 
-        //else
-         //   _currentByte = _buffer[0];
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string GetUTF8StringBaseOnMachineEndiness(byte[] bytes)
+    {
+        if (BitConverter.IsLittleEndian)
+            Array.Reverse(bytes);
+
+        return Encoding.UTF8.GetString(bytes);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private readonly string GetUTF8String(ReadOnlySpan<byte> bytes)
+    {
+        Span<byte> buffer = stackalloc byte[bytes.Length];
+        bytes.CopyTo(buffer);
+
+        if (EndianType == EndianType.LittleEndian)
+            buffer.Reverse();
+
+        return Encoding.UTF8.GetString(buffer);
     }
 
     private uint GetValueFromBits(int numberOfBits)

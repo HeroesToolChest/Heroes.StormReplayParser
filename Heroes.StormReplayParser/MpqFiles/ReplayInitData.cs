@@ -167,14 +167,10 @@ internal static class ReplayInitData
             // m_disabledHeroList
             uint disabledHeroListLength = bitReader.ReadBits(10);
 
-            bitReader.EndianType = EndianType.LittleEndian;
-
             for (int i = 0; i < disabledHeroListLength; i++)
             {
                 replay.DisabledHeroAttributeIdList.Add(bitReader.ReadStringFromBits(32));
             }
-
-            bitReader.EndianType = EndianType.BigEndian;
         }
 
         /* m_lobbyState section */
@@ -316,9 +312,7 @@ internal static class ReplayInitData
                     uint heroMasteryTiersLength = bitReader.ReadBits(10);
                     for (int j = 0; j < heroMasteryTiersLength; j++)
                     {
-                        bitReader.EndianType = EndianType.LittleEndian;
                         string heroAttributeName = bitReader.ReadStringFromBits(32);
-                        bitReader.EndianType = EndianType.BigEndian;
 
                         int tier = (int)bitReader.ReadBits(8); // m_tier
 
