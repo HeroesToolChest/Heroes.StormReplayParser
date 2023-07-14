@@ -86,7 +86,7 @@ public class BitReaderTests
     }
 
     [TestMethod]
-    public void ReadStringFromBytesAsBigEndian()
+    public void ReadStringFromAlignedBytesAsBigEndian()
     {
         Span<byte> buffer = stackalloc byte[4] { 115, 50, 109, 118 };
 
@@ -98,7 +98,7 @@ public class BitReaderTests
     }
 
     [TestMethod]
-    public void ReadStringFromBytesAsLittleEndian()
+    public void ReadStringFromAlignedBytesAsLittleEndian()
     {
         Span<byte> buffer = stackalloc byte[4] { 115, 50, 109, 118 };
 
@@ -119,5 +119,33 @@ public class BitReaderTests
         string value = bitReader.ReadBlobAsString(8);
 
         Assert.AreEqual("s2mv", value);
+    }
+
+    [TestMethod]
+    public void ReadStringFromUnalignedBytesAsBigEndian()
+    {
+        Span<byte> buffer = stackalloc byte[5] { 108, 211, 66, 162, 55 };
+
+        BitReader bitReader = new(buffer, EndianType.BigEndian);
+
+        bitReader.ReadBits(5);
+
+        string value = bitReader.ReadStringFromUnalignedBytes(4);
+
+        Assert.AreEqual("zhTW", value);
+    }
+
+    [TestMethod]
+    public void ReadStringFromUnalignedBytesAsLittleEndian()
+    {
+        Span<byte> buffer = stackalloc byte[5] { 108, 211, 66, 162, 55 };
+
+        BitReader bitReader = new(buffer, EndianType.LittleEndian);
+
+        bitReader.ReadBits(5);
+
+        string value = bitReader.ReadStringFromUnalignedBytes(4);
+
+        Assert.AreEqual("WThz", value);
     }
 }

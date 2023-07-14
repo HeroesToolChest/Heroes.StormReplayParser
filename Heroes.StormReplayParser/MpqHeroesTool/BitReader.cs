@@ -374,6 +374,20 @@ public ref struct BitReader
     }
 
     /// <summary>
+    /// Reads a number of unaligned bytes from the read-only span as a UTF-8 string.
+    /// </summary>
+    /// <param name="numberOfBytes">The number of bytes to read.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="numberOfBytes"/> is less than 1.</exception>
+    /// <returns>A string.</returns>
+    public string ReadStringFromUnalignedBytes(int numberOfBytes)
+    {
+        if (numberOfBytes < 1)
+            throw new ArgumentOutOfRangeException(nameof(numberOfBytes), "Number of bytes must be greater than 0");
+
+        return ReadStringFromBits(numberOfBytes * 8);
+    }
+
+    /// <summary>
     /// Reads a number of bytes.
     /// </summary>
     /// <param name="count">The number of bytes to read.</param>
