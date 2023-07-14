@@ -21,7 +21,7 @@ internal static class ReplayServerBattlelobby
         uint s2maCacheHandlesLength = bitReader.ReadBits(6);
         for (int i = 0; i < s2maCacheHandlesLength; i++)
         {
-            if (bitReader.ReadStringFromBytes(4) != "s2ma")
+            if (bitReader.ReadStringFromAlignedBytes(4) != "s2ma")
                 throw new StormParseException($"{_exceptionHeader}: s2ma cache");
 
             bitReader.ReadAlignedBytes(36);
@@ -36,9 +36,6 @@ internal static class ReplayServerBattlelobby
         bitReader.AlignToByte();
 
         // skip to the first hero attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -53,18 +50,14 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < heroAttributeSizeS1; i++)
                 {
                     items.Add(bitReader.ReadStringFromBits(32));
                     bitReader.ReadBits(29);
                 }
-
-                bitReader.EndianType = EndianType.BigEndian;
 
                 break;
             }
@@ -75,9 +68,6 @@ internal static class ReplayServerBattlelobby
         }
 
         // skip to the second hero attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -92,18 +82,14 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < heroAttributeSizeS1; i++)
                 {
                     items.Add(bitReader.ReadStringFromBits(32));
                     bitReader.ReadBits(29);
                 }
-
-                bitReader.EndianType = EndianType.BigEndian;
 
                 break;
             }
@@ -114,9 +100,6 @@ internal static class ReplayServerBattlelobby
         }
 
         // skip to the banner attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -131,10 +114,8 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint bannerAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < 22; i++)
                 {
@@ -153,8 +134,6 @@ internal static class ReplayServerBattlelobby
                     bitReader.ReadBits(29);
                 }
 
-                bitReader.EndianType = EndianType.BigEndian;
-
                 break;
             }
             else
@@ -164,9 +143,6 @@ internal static class ReplayServerBattlelobby
         }
 
         // skip to the hero skin attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -201,7 +177,6 @@ internal static class ReplayServerBattlelobby
                 bitReader.BitReversement(32);
 
                 string ko4 = bitReader.ReadStringFromBits(32);
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(32);
 
                 // back to get the first item
@@ -227,10 +202,8 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint heroSkinAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < heroSkinAttributeSizeS1; i++) // 1564
                 {
@@ -250,8 +223,6 @@ internal static class ReplayServerBattlelobby
                 //    bitReader.BitReversement(i);
                 //}
 
-                bitReader.EndianType = EndianType.BigEndian;
-
                 break;
             }
             else
@@ -261,9 +232,6 @@ internal static class ReplayServerBattlelobby
         }
 
         // skip to the third hero attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -278,18 +246,14 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < heroAttributeSizeS1; i++)
                 {
                     items.Add(bitReader.ReadStringFromBits(32));
                     bitReader.ReadBits(29);
                 }
-
-                bitReader.EndianType = EndianType.BigEndian;
 
                 break;
             }
@@ -300,9 +264,6 @@ internal static class ReplayServerBattlelobby
         }
 
         // skip to the fourth hero attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -317,18 +278,14 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < heroAttributeSizeS1; i++)
                 {
                     items.Add(bitReader.ReadStringFromBits(32));
                     bitReader.ReadBits(29);
                 }
-
-                bitReader.EndianType = EndianType.BigEndian;
 
                 break;
             }
@@ -342,7 +299,7 @@ internal static class ReplayServerBattlelobby
         for (; ;)
         {
             List<string> items = new();
-            if (bitReader.ReadStringFromBits(32) == "10BA") // 10BA
+            if (bitReader.ReadStringFromBits(32) == "AB01")
             {
                 bitReader.BitReversement(32);
 
@@ -360,18 +317,14 @@ internal static class ReplayServerBattlelobby
                 string ko2 = bitReader.ReadStringFromBits(32); // \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint voicelineAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < voicelineAttributeSizeS1; i++) // 1564
                 {
                     items.Add(bitReader.ReadStringFromBits(32));
                     bitReader.ReadBits(29);
                 }
-
-                bitReader.EndianType = EndianType.BigEndian;
 
                 break;
             }
@@ -382,9 +335,6 @@ internal static class ReplayServerBattlelobby
         }
 
         // skip to the fifth hero attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -399,18 +349,14 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < heroAttributeSizeS1; i++)
                 {
                     items.Add(bitReader.ReadStringFromBits(32));
                     bitReader.ReadBits(29);
                 }
-
-                bitReader.EndianType = EndianType.BigEndian;
 
                 break;
             }
@@ -421,9 +367,6 @@ internal static class ReplayServerBattlelobby
         }
 
         // skip to the sixth hero attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -438,18 +381,14 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < heroAttributeSizeS1; i++)
                 {
                     items.Add(bitReader.ReadStringFromBits(32));
                     bitReader.ReadBits(29);
                 }
-
-                bitReader.EndianType = EndianType.BigEndian;
 
                 break;
             }
@@ -460,9 +399,6 @@ internal static class ReplayServerBattlelobby
         }
 
         // skip to the seventh hero attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -477,18 +413,14 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < heroAttributeSizeS1; i++)
                 {
                     items.Add(bitReader.ReadStringFromBits(32));
                     bitReader.ReadBits(29);
                 }
-
-                bitReader.EndianType = EndianType.BigEndian;
 
                 break;
             }
@@ -499,9 +431,6 @@ internal static class ReplayServerBattlelobby
         }
 
         // skip to the spray attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -516,18 +445,14 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint sprayAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < sprayAttributeSizeS1; i++)
                 {
                     items.Add(bitReader.ReadStringFromBits(32));
                     bitReader.ReadBits(29);
                 }
-
-                bitReader.EndianType = EndianType.BigEndian;
 
                 break;
             }
@@ -538,9 +463,6 @@ internal static class ReplayServerBattlelobby
         }
 
         // skip to the mount attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -575,7 +497,6 @@ internal static class ReplayServerBattlelobby
                 bitReader.BitReversement(32);
 
                 string ko4 = bitReader.ReadStringFromBits(32);
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(32);
 
                 // back to get the first item
@@ -601,10 +522,8 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint mountAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < mountAttributeSizeS1; i++)
                 {
@@ -615,8 +534,6 @@ internal static class ReplayServerBattlelobby
                         bitReader.ReadBits(5);
                 }
 
-                bitReader.EndianType = EndianType.BigEndian;
-
                 break;
             }
             else
@@ -626,9 +543,6 @@ internal static class ReplayServerBattlelobby
         }
 
         // skip to the announcer attribute section
-
-        bitReader.EndianType = EndianType.LittleEndian;
-
         for (; ;)
         {
             List<string> items = new();
@@ -650,10 +564,8 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
                 bitReader.BitReversement(32);
 
-                bitReader.EndianType = EndianType.BigEndian;
                 bitReader.BitReversement(12);
                 uint announcerAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-                bitReader.EndianType = EndianType.LittleEndian;
 
                 for (int i = 0; i < announcerAttributeSizeS1; i++)
                 {
@@ -664,7 +576,56 @@ internal static class ReplayServerBattlelobby
                         bitReader.ReadBits(5);
                 }
 
-                bitReader.EndianType = EndianType.BigEndian;
+                break;
+            }
+            else
+            {
+                bitReader.BitReversement(31);
+            }
+        }
+
+        ////////////////////
+        //// Player selections here
+        ////////////////////
+
+        // skip down to s2mv /w locales section
+        for (; ;)
+        {
+            List<string> items = new();
+            if (bitReader.ReadStringFromUnalignedBytes(4) == "s2mv")
+            {
+                bitReader.BitReversement(32);
+
+                bitReader.BitReversement(6);
+
+                uint s2mvCacheHandlesLength = bitReader.ReadBits(6);
+
+                for (int i = 0; i < s2mvCacheHandlesLength; i++)
+                {
+                    if (bitReader.ReadStringFromAlignedBytes(4) != "s2mv")
+                        throw new StormParseException($"{_exceptionHeader}: s2mv");
+
+                    bitReader.ReadAlignedBytes(36);
+                }
+
+                uint localesLength = bitReader.ReadBits(5); // number of locales
+
+                for (int i = 0; i < localesLength; i++)
+                {
+                    items.Add(bitReader.ReadStringFromUnalignedBytes(4));
+
+                    uint s2mlSize = bitReader.ReadBits(6); // number of s2ml in locale
+
+                    bitReader.AlignToByte();
+
+                    for (int j = 0; j < s2mlSize; j++)
+                    {
+                        if (bitReader.ReadStringFromAlignedBytes(4) != "s2ml")
+                            throw new StormParseException($"{_exceptionHeader}: s2ml");
+
+                        bitReader.ReadAlignedBytes(36);
+                    }
+                }
 
                 break;
             }
@@ -674,72 +635,9 @@ internal static class ReplayServerBattlelobby
             }
         }
 
-        /*for (; ;)
-        {
-            if (source.ReadStringFromBytes(4) == "s2mh")
-            {
-                BitReader.Index -= 4;
-                break;
-            }
-            else
-            {
-                BitReader.Index -= 3;
-            }
-        }*/
-
-        /*
-        for (; ; )
-        {
-            if (source.ReadStringFromBytes(4) == "s2mv")
-            {
-                BitReader.Index -= 4;
-                break;
-            }
-            else
-            {
-                BitReader.Index -= 3;
-            }
-        }*/
-
-        // first hit
-        /*
-        BitReader.Index -= 1;
-
-        uint s2mvCacheHandlesLength = source.ReadBits(8);
-
-        for (int i = 0; i < s2mvCacheHandlesLength; i++)
-        {
-            if (source.ReadStringFromBytes(4) != "s2mv")
-                throw new StormParseException($"{ExceptionHeader}: s2mv cache");
-
-            source.ReadAlignedBytes(36);
-        }
-
-        uint localeCount = source.ReadBits(5);
-
-        for (int i = 0; i < localeCount; i++)
-        {
-            source.ReadStringFromBits(32); // locale
-
-            uint s2mlCacheHandlesLength = source.ReadBits(6);
-
-            for (int j = 0; j < s2mlCacheHandlesLength; j++)
-            {
-                if (source.ReadStringFromBytes(4) != "s2ml")
-                    throw new StormParseException($"{ExceptionHeader}: s2ml cache");
-
-                source.ReadAlignedBytes(36);
-            }
-        }
-
-        source.ReadAlignedBytes(16);
-        uint sm2vCacheBlizzLength = source.ReadBits(8);
-
-        for (int i = 0; i < sm2vCacheBlizzLength; i++)
-        {
-
-        }
-        */
+        ////////////////////
+        //// s2mv w/ blizzmaps players section
+        ////////////////////
 
         // second s2mv hit
         /*
@@ -800,30 +698,30 @@ internal static class ReplayServerBattlelobby
 
         */
 
+        // skip down to s2mh section
         for (; ;)
         {
-            if (bitReader.ReadStringFromBytes(4) == "s2mh")
+            if (bitReader.ReadStringFromUnalignedBytes(4) == "s2mh")
             {
-                bitReader.Index -= 4;
+                bitReader.BitReversement(32);
+
+                bitReader.BitReversement(7);
+
+                uint s2mhCacheHandlesLength = bitReader.ReadBits(7);
+                for (int i = 0; i < s2mhCacheHandlesLength; i++)
+                {
+                    if (bitReader.ReadStringFromAlignedBytes(4) != "s2mh")
+                        throw new StormParseException($"{_exceptionHeader}: s2mh");
+
+                    bitReader.ReadAlignedBytes(36);
+                }
+
                 break;
             }
             else
             {
-                bitReader.Index -= 3;
+                bitReader.BitReversement(31);
             }
-        }
-
-        // source.ReadBits(???); // this depends on previous data (not byte aligned)
-
-        // s2mh cache handles
-        // uint s2mhCacheHandlesLength = source.ReadBits(6);
-        // for (int i = 0; i < s2mhCacheHandlesLength; i++)
-        for (int i = 0; i < s2maCacheHandlesLength; i++)
-        {
-            if (bitReader.ReadStringFromBytes(4) != "s2mh")
-                throw new StormParseException($"{_exceptionHeader}: s2mh cache");
-
-            bitReader.ReadAlignedBytes(36);
         }
 
         // player collections
@@ -841,7 +739,7 @@ internal static class ReplayServerBattlelobby
             if (replay.ReplayBuild >= 55929)
                 bitReader.ReadAlignedBytes(8); // most likey an identifier for the item; first six bytes are 0x00
             else
-                bitReader.ReadStringFromBytes(bitReader.ReadAlignedByte());
+                bitReader.ReadStringFromAlignedBytes(bitReader.ReadAlignedByte());
         }
 
         // use to determine if the collection item is usable by the player (owns/free to play/internet cafe)
@@ -954,7 +852,7 @@ internal static class ReplayServerBattlelobby
             int idLength = (int)bitReader.ReadBits(7) + 2;
 
             player.ToonHandle ??= new ToonHandle();
-            player.ToonHandle.ShortcutId = bitReader.ReadStringFromBytes(idLength);
+            player.ToonHandle.ShortcutId = bitReader.ReadStringFromAlignedBytes(idLength);
 
             bitReader.ReadBits(6);
 
@@ -967,7 +865,7 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadBits(32); // m_realm
 
                 idLength = (int)bitReader.ReadBits(7) + 2;
-                if (player.ToonHandle.ShortcutId != bitReader.ReadStringFromBytes(idLength))
+                if (player.ToonHandle.ShortcutId != bitReader.ReadStringFromAlignedBytes(idLength))
                     throw new StormParseException($"{_exceptionHeader}: Duplicate shortcut id does not match");
 
                 bitReader.ReadBits(6);
