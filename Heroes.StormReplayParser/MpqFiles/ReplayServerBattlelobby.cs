@@ -3,6 +3,8 @@
 internal static class ReplayServerBattlelobby
 {
     private const string _exceptionHeader = "battlelobby";
+    private const string _emptyAttributeId = "\0\0\0\0";
+    private const string _randomAttributeId = "Rand";
 
     public static string FileName { get; } = "replay.server.battlelobby";
 
@@ -17,7 +19,7 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBlobAsString(10);
         }
 
-        // s2ma cache handles
+        // repeat s2ma cache handles for the above
         uint s2maCacheHandlesLength = bitReader.ReadBits(6);
         for (int i = 0; i < s2maCacheHandlesLength; i++)
         {
@@ -27,272 +29,391 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadAlignedBytes(36);
         }
 
-        /*source.ReadAlignedBytes(94);
-        if (source.ReadStringFromBytes(4) != "Clsd")
-           throw new StormParseException($"{ExceptionHeader}: Clsd"); */
+        bitReader.ReadUnalignedBytes(9);
+        bitReader.ReadBits(1);
 
-        //// we're just going to skip all the way down to the s2mh
+        uint unknown1length = bitReader.ReadBits(12);
 
-        bitReader.AlignToByte();
-
-        // skip to the first hero attribute section
-        for (; ;)
+        for (int i = 0; i < unknown1length; i++)
         {
-            List<string> items = new();
-            if (bitReader.ReadStringFromBits(32) == "Abat") // tabA [BE - 1096966516] 0x41626174
+            bitReader.ReadStringFromUnalignedBytes(4);
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        uint attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Open, Humn, Comp
+        }
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // player typer attributes - closed, human, etc...
+        List<string> playerTypeAttributes = new();
+
+        uint playerTypeAttributesLength = bitReader.ReadBits(12);
+        for (int i = 0; i < playerTypeAttributesLength; i++)
+        {
+            playerTypeAttributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(44);
+        bitReader.ReadBits(4);
+
+        // hero roles - tank, healer, ranged assassin, etc...
+        List<string> heroRoleAttributes = new();
+
+        uint heroRoleAttributesLength = bitReader.ReadBits(12);
+        for (int i = 0; i < heroRoleAttributesLength; i++)
+        {
+            heroRoleAttributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Humn
+        }
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // team attributes section 1 - Team 1, Team 2, Team 3, repeat, etc...
+        List<string> teamAttributesS1 = new();
+
+        uint teamS1Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamS1Length; i++)
+        {
+            teamAttributesS1.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(26);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
+        }
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // 0 -> 255 attributes
+        List<string> zeroTo255Attributes = new();
+
+        uint zeroTo255AttributeLength = bitReader.ReadBits(12);
+        for (int i = 0; i < zeroTo255AttributeLength; i++)
+        {
+            zeroTo255Attributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Humn, Comp
+        }
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // hero attribute section 1
+        List<string> heroAttributesS1 = new();
+
+        uint heroAttributeS1Length = bitReader.ReadBits(12);
+        for (int i = 0; i < heroAttributeS1Length; i++)
+        {
+            heroAttributesS1.Add(bitReader.ReadStringFromBits(32));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // drft - Draft
+        }
+
+        bitReader.ReadUnalignedBytes(17);
+        bitReader.ReadBits(4);
+
+        // hero attribute section 2
+        List<string> heroAttributesS2 = new();
+
+        uint heroAttributeS2Length = bitReader.ReadBits(12);
+        for (int i = 0; i < heroAttributeS2Length; i++)
+        {
+            heroAttributesS2.Add(bitReader.ReadStringFromBits(32));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // drft - Draft
+        }
+
+        bitReader.ReadUnalignedBytes(17);
+        bitReader.ReadBits(4);
+
+        // team attributes section 2 - Team 1 -> Team 10, repeat, etc...
+        List<string> teamAttributesS2 = new();
+
+        uint teamS2Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamS2Length; i++)
+        {
+            teamAttributesS2.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // CuTa - Custom Teams Archon ???
+        }
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
+        }
+
+        bitReader.ReadUnalignedBytes(17);
+        bitReader.ReadUnalignedBytes(22);
+        bitReader.ReadBits(13);
+
+        // hero skin attributes
+        List<string> heroSkinAttributes = new();
+
+        uint heroSkinAttributeLength = bitReader.ReadBits(12);
+        for (int i = 0; i < heroSkinAttributeLength; i++)
+        {
+            heroSkinAttributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            if (bitReader.ReadBoolean())
+                bitReader.ReadBits(28);
+            else
+                bitReader.ReadBits(5);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Dflt - Default
+        }
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Humn, Comp
+        }
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
+        }
+
+        bitReader.ReadUnalignedBytes(101);
+        bitReader.ReadBits(7);
+
+        // banner attributes
+        List<string> bannerAttributes = new();
+
+        uint bannerAttributeLength = bitReader.ReadBits(12);
+        for (int i = 0; i < bannerAttributeLength; i++)
+        {
+            string bannerAttribute = bitReader.ReadStringFromUnalignedBytes(4);
+
+            bannerAttributes.Add(bannerAttribute);
+
+            if (bannerAttribute == "TST2")
             {
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
-                bitReader.BitReversement(32);
-
-                bitReader.BitReversement(12);
-                uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-
-                for (int i = 0; i < heroAttributeSizeS1; i++)
-                {
-                    items.Add(bitReader.ReadStringFromBits(32));
-                    bitReader.ReadBits(29);
-                }
-
-                break;
+                bitReader.ReadBits(6);
             }
             else
             {
-                bitReader.BitReversement(31);
+                if (bitReader.ReadBoolean())
+                    bitReader.ReadBits(28);
+                else
+                    bitReader.ReadBits(5);
             }
         }
 
-        // skip to the second hero attribute section
-        for (; ;)
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
         {
-            List<string> items = new();
-            if (bitReader.ReadStringFromBits(32) == "Abat") // tabA [BE - 1096966516] 0x41626174
-            {
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
-                bitReader.BitReversement(32);
-
-                bitReader.BitReversement(12);
-                uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-
-                for (int i = 0; i < heroAttributeSizeS1; i++)
-                {
-                    items.Add(bitReader.ReadStringFromBits(32));
-                    bitReader.ReadBits(29);
-                }
-
-                break;
-            }
-            else
-            {
-                bitReader.BitReversement(31);
-            }
+            bitReader.ReadStringFromUnalignedBytes(4); // Dflt - Default
         }
 
-        // skip to the banner attribute section
-        for (; ;)
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
         {
-            List<string> items = new();
-            if (bitReader.ReadStringFromBits(32) == "Rand") // dnaR
-            {
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
-                bitReader.BitReversement(32);
-
-                bitReader.BitReversement(12);
-                uint bannerAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-
-                for (int i = 0; i < 22; i++)
-                {
-                    items.Add(bitReader.ReadStringFromBits(32));
-                    bitReader.ReadBits(29);
-                }
-
-                // hmmmmmmmmmmmmmmmm
-                uint adsf = bitReader.ReadBits(4);
-                items.Add(bitReader.ReadStringFromBits(32)); // hVH8  8HVh
-
-                uint rxl = bitReader.ReadBits(2);
-                for (int i = 0; i < bannerAttributeSizeS1 - 23; i++)
-                {
-                    items.Add(bitReader.ReadStringFromBits(32));
-                    bitReader.ReadBits(29);
-                }
-
-                break;
-            }
-            else
-            {
-                bitReader.BitReversement(31);
-            }
+            bitReader.ReadStringFromUnalignedBytes(4); // Humn, Comp
         }
 
-        // skip to the hero skin attribute section
-        for (; ;)
+        //bitReader.ReadUnalignedBytes(10);
+        //bitReader.ReadBits(1);
+
+        //if (bitReader.ReadStringFromUnalignedBytes(4) != "Humn") throw new StormParseException($"{_exceptionHeader}: not 'Humn'");
+        //if (bitReader.ReadStringFromUnalignedBytes(4) != "Comp") throw new StormParseException($"{_exceptionHeader}: not 'Comp'");
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
         {
-            List<string> items = new();
-            if (bitReader.ReadStringFromBits(32) == "But3") // 3tuB
-            {
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                string ko = bitReader.ReadStringFromBits(32);
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                string ko2 = bitReader.ReadStringFromBits(32);
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                string ko3 = bitReader.ReadStringFromBits(32);
-
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                string ko4 = bitReader.ReadStringFromBits(32);
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                string ko5 = bitReader.ReadStringFromBits(32);
-
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                string ko6 = bitReader.ReadStringFromBits(32);
-
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
-                bitReader.BitReversement(32);
-
-                bitReader.BitReversement(12);
-                uint heroSkinAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-
-                for (int i = 0; i < heroSkinAttributeSizeS1; i++) // 1564
-                {
-                    items.Add(bitReader.ReadStringFromBits(32));
-                    if (bitReader.ReadBoolean())
-                        bitReader.ReadBits(28);
-                    else
-                        bitReader.ReadBits(5);
-                }
-
-                // finder
-                //for (int i = 1; i < 999; i++)
-                //{
-                //    bitReader.ReadBits(i);
-                //    string xvcdvcx = bitReader.ReadStringFromBits(32);
-                //    bitReader.BitReversement(32);
-                //    bitReader.BitReversement(i);
-                //}
-
-                break;
-            }
-            else
-            {
-                bitReader.BitReversement(31);
-            }
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
         }
 
-        // skip to the third hero attribute section
-        for (; ;)
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // team attributes section 3 - Team 1 -> Team 9, repeat, etc...
+        List<string> teamAttributesS3 = new();
+
+        uint teamS3Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamS3Length; i++)
         {
-            List<string> items = new();
-            if (bitReader.ReadStringFromBits(32) == "Abat") // tabA [BE - 1096966516] 0x41626174
-            {
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
-                bitReader.BitReversement(32);
-
-                bitReader.BitReversement(12);
-                uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-
-                for (int i = 0; i < heroAttributeSizeS1; i++)
-                {
-                    items.Add(bitReader.ReadStringFromBits(32));
-                    bitReader.ReadBits(29);
-                }
-
-                break;
-            }
-            else
-            {
-                bitReader.BitReversement(31);
-            }
+            teamAttributesS3.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
         }
 
-        // skip to the fourth hero attribute section
-        for (; ;)
+        bitReader.ReadUnalignedBytes(28);
+        bitReader.ReadBits(1);
+
+        if (bitReader.ReadStringFromUnalignedBytes(4) != "Part") throw new StormParseException($"{_exceptionHeader}: not 'Part'"); // Participant
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // hero attribute section 3
+        List<string> heroAttributesS3 = new();
+
+        uint heroAttributeS3Length = bitReader.ReadBits(12);
+        for (int i = 0; i < heroAttributeS3Length; i++)
         {
-            List<string> items = new();
-            if (bitReader.ReadStringFromBits(32) == "Abat") // tabA [BE - 1096966516] 0x41626174
-            {
-                bitReader.BitReversement(32);
+            heroAttributesS3.Add(bitReader.ReadStringFromBits(32));
+            bitReader.ReadBits(29);
+        }
 
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
+        bitReader.ReadUnalignedBytes(14);
 
-                bitReader.ReadStringFromBits(32); // first actual item is \0\0\0\0
-                bitReader.BitReversement(32);
+        if (bitReader.ReadStringFromUnalignedBytes(4) != "drft") throw new StormParseException($"{_exceptionHeader}: not 'drft'"); // Draft
 
-                bitReader.BitReversement(12);
-                uint heroAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
+        bitReader.ReadUnalignedBytes(17);
+        bitReader.ReadBits(4);
 
-                for (int i = 0; i < heroAttributeSizeS1; i++)
-                {
-                    items.Add(bitReader.ReadStringFromBits(32));
-                    bitReader.ReadBits(29);
-                }
+        // hero attribute section 4
+        List<string> heroAttributesS4 = new();
 
-                break;
-            }
-            else
-            {
-                bitReader.BitReversement(31);
-            }
+        uint heroAttributeS4Length = bitReader.ReadBits(12);
+        for (int i = 0; i < heroAttributeS4Length; i++)
+        {
+            heroAttributesS4.Add(bitReader.ReadStringFromBits(32));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(13);
+        bitReader.ReadBits(8);
+
+        //for (int i = 0; i < 16; i++)
+        //{
+        //    bitReader.BitReversement(i);
+        //    uint kasd = bitReader.ReadBits(i);
+        //}
+
+        if (bitReader.ReadStringFromUnalignedBytes(4) != "drft") throw new StormParseException($"{_exceptionHeader}: not 'drft'"); // Draft
+
+        bitReader.ReadUnalignedBytes(19);
+        bitReader.BitReversement(12);
+
+        // 22, 0 -> 15 attributes 
+        List<string> zeroTo15Attributes = new();
+
+        uint zeroTo15AttributeLength = bitReader.ReadBits(12);
+        for (int i = 0; i < zeroTo15AttributeLength; i++)
+        {
+            zeroTo15Attributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(13);
+        bitReader.ReadBits(8);
+
+        //for (int i = 0; i < 16; i++)
+        //{
+        //    bitReader.BitReversement(i);
+        //    uint kasd = bitReader.ReadBits(i);
+        //}
+
+        if (bitReader.ReadStringFromUnalignedBytes(4) != "Open") throw new StormParseException($"{_exceptionHeader}: not 'Open'");
+        if (bitReader.ReadStringFromUnalignedBytes(4) != "Clsd") throw new StormParseException($"{_exceptionHeader}: not 'Clsd'");
+        if (bitReader.ReadStringFromUnalignedBytes(4) != "Humn") throw new StormParseException($"{_exceptionHeader}: not 'Humn'");
+        if (bitReader.ReadStringFromUnalignedBytes(4) != "Comp") throw new StormParseException($"{_exceptionHeader}: not 'Comp'");
+
+        bitReader.ReadUnalignedBytes(49);
+        bitReader.ReadBits(6);
+
+        List<string> items333 = new();
+        for (int i = 0; i < 9999; i++)
+        {
+            items333.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.BitReversement(31);
         }
 
         // skip to the voiceline attribute section
