@@ -20,8 +20,8 @@ internal static class ReplayServerBattlelobby
         }
 
         // repeat s2ma cache handles for the above
-        uint s2maCacheHandlesLength = bitReader.ReadBits(6);
-        for (int i = 0; i < s2maCacheHandlesLength; i++)
+        uint s2maCacheHandleLength = bitReader.ReadBits(6);
+        for (int i = 0; i < s2maCacheHandleLength; i++)
         {
             if (bitReader.ReadStringFromAlignedBytes(4) != "s2ma")
                 throw new StormParseException($"{_exceptionHeader}: s2ma cache");
@@ -29,21 +29,28 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadAlignedBytes(36);
         }
 
-        bitReader.ReadUnalignedBytes(9);
-        bitReader.ReadBits(1);
+        //bitReader.ReadUnalignedBytes(9);
 
-        uint unknown1length = bitReader.ReadBits(12);
+        bitReader.ReadBits(9);
+        //bitReader.ReadUnalignedBytes(1);
+        //bitReader.ReadBits(1);
 
-        for (int i = 0; i < unknown1length; i++)
+        int sl = bitReader.ReadInt32Unaligned();
+       // bitReader.ReadBits(1);
+
+        bitReader.ReadBits(32);
+        uint attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
         {
-            bitReader.ReadStringFromUnalignedBytes(4);
+            bitReader.ReadStringFromUnalignedBytes(4); // Part, Watch - Participant, Watcher
             bitReader.ReadBits(29);
         }
 
         bitReader.ReadUnalignedBytes(12);
         bitReader.ReadBits(4);
 
-        uint attributeLength = bitReader.ReadBits(12);
+        attributeLength = bitReader.ReadBits(12);
 
         for (int i = 0; i < attributeLength; i++)
         {
@@ -56,8 +63,8 @@ internal static class ReplayServerBattlelobby
         // player typer attributes - closed, human, etc...
         List<string> playerTypeAttributes = new();
 
-        uint playerTypeAttributesLength = bitReader.ReadBits(12);
-        for (int i = 0; i < playerTypeAttributesLength; i++)
+        uint playerTypeAttributeLength = bitReader.ReadBits(12);
+        for (int i = 0; i < playerTypeAttributeLength; i++)
         {
             playerTypeAttributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
             bitReader.ReadBits(29);
@@ -69,8 +76,8 @@ internal static class ReplayServerBattlelobby
         // hero roles - tank, healer, ranged assassin, etc...
         List<string> heroRoleAttributes = new();
 
-        uint heroRoleAttributesLength = bitReader.ReadBits(12);
-        for (int i = 0; i < heroRoleAttributesLength; i++)
+        uint heroRoleAttributeLength = bitReader.ReadBits(12);
+        for (int i = 0; i < heroRoleAttributeLength; i++)
         {
             heroRoleAttributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
             bitReader.ReadBits(29);
@@ -92,8 +99,8 @@ internal static class ReplayServerBattlelobby
         // team attributes section 1 - Team 1, Team 2, Team 3, repeat, etc...
         List<string> teamAttributesS1 = new();
 
-        uint teamS1Length = bitReader.ReadBits(12);
-        for (int i = 0; i < teamS1Length; i++)
+        uint teamAttributesS1Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamAttributesS1Length; i++)
         {
             teamAttributesS1.Add(bitReader.ReadStringFromUnalignedBytes(4));
             bitReader.ReadBits(29);
@@ -184,8 +191,8 @@ internal static class ReplayServerBattlelobby
         // team attributes section 2 - Team 1 -> Team 10, repeat, etc...
         List<string> teamAttributesS2 = new();
 
-        uint teamS2Length = bitReader.ReadBits(12);
-        for (int i = 0; i < teamS2Length; i++)
+        uint teamAttributesS2Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamAttributesS2Length; i++)
         {
             teamAttributesS2.Add(bitReader.ReadStringFromUnalignedBytes(4));
             bitReader.ReadBits(29);
@@ -304,12 +311,6 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadStringFromUnalignedBytes(4); // Humn, Comp
         }
 
-        //bitReader.ReadUnalignedBytes(10);
-        //bitReader.ReadBits(1);
-
-        //if (bitReader.ReadStringFromUnalignedBytes(4) != "Humn") throw new StormParseException($"{_exceptionHeader}: not 'Humn'");
-        //if (bitReader.ReadStringFromUnalignedBytes(4) != "Comp") throw new StormParseException($"{_exceptionHeader}: not 'Comp'");
-
         bitReader.ReadUnalignedBytes(8);
         bitReader.ReadBits(5);
 
@@ -326,17 +327,22 @@ internal static class ReplayServerBattlelobby
         // team attributes section 3 - Team 1 -> Team 9, repeat, etc...
         List<string> teamAttributesS3 = new();
 
-        uint teamS3Length = bitReader.ReadBits(12);
-        for (int i = 0; i < teamS3Length; i++)
+        uint teamAttributesS3Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamAttributesS3Length; i++)
         {
             teamAttributesS3.Add(bitReader.ReadStringFromUnalignedBytes(4));
             bitReader.ReadBits(29);
         }
 
-        bitReader.ReadUnalignedBytes(28);
-        bitReader.ReadBits(1);
+        bitReader.ReadUnalignedBytes(26);
+        bitReader.ReadBits(5);
 
-        if (bitReader.ReadStringFromUnalignedBytes(4) != "Part") throw new StormParseException($"{_exceptionHeader}: not 'Part'"); // Participant
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
+        }
 
         bitReader.ReadUnalignedBytes(40);
         bitReader.ReadBits(5);
@@ -351,9 +357,15 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBits(29);
         }
 
-        bitReader.ReadUnalignedBytes(14);
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
 
-        if (bitReader.ReadStringFromUnalignedBytes(4) != "drft") throw new StormParseException($"{_exceptionHeader}: not 'drft'"); // Draft
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // drft - Draft
+        }
 
         bitReader.ReadUnalignedBytes(17);
         bitReader.ReadBits(4);
@@ -368,21 +380,20 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBits(29);
         }
 
-        bitReader.ReadUnalignedBytes(13);
-        bitReader.ReadBits(8);
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
 
-        //for (int i = 0; i < 16; i++)
-        //{
-        //    bitReader.BitReversement(i);
-        //    uint kasd = bitReader.ReadBits(i);
-        //}
+        attributeLength = bitReader.ReadBits(12);
 
-        if (bitReader.ReadStringFromUnalignedBytes(4) != "drft") throw new StormParseException($"{_exceptionHeader}: not 'drft'"); // Draft
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // drft - Draft
+        }
 
         bitReader.ReadUnalignedBytes(19);
         bitReader.BitReversement(12);
 
-        // 22, 0 -> 15 attributes 
+        // 22, 0 -> 15 attributes
         List<string> zeroTo15Attributes = new();
 
         uint zeroTo15AttributeLength = bitReader.ReadBits(12);
@@ -392,67 +403,437 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBits(29);
         }
 
-        bitReader.ReadUnalignedBytes(13);
-        bitReader.ReadBits(8);
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
 
-        //for (int i = 0; i < 16; i++)
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Open, Clsd, Humn, Comp
+        }
+
+        bitReader.ReadUnalignedBytes(46);
+        bitReader.ReadBits(30);
+
+        // Hmmr, 0 -> 15 attributes
+        // same length as the one above?
+        List<string> zeroTo15HmmrAttritbute = new();
+
+        for (int i = 0; i < zeroTo15AttributeLength; i++)
+        {
+            zeroTo15HmmrAttritbute.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // drft, tour - Draft, Tournamnet Draft
+        }
+
+        bitReader.ReadUnalignedBytes(17);
+        bitReader.ReadBits(4);
+
+        // team attributes section 4 - Team 1 -> Team 8, repeat, etc...
+        List<string> teamAttributesS4 = new();
+
+        uint teamAttributesS4Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamAttributesS4Length; i++)
+        {
+            teamAttributesS4.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(26);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
+        }
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // met / unmet attributes
+        List<string> unmetAttributes = new();
+
+        uint unmetAttributesLength = bitReader.ReadBits(12);
+        for (int i = 0; i < unmetAttributesLength; i++)
+        {
+            unmetAttributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(44);
+        bitReader.ReadBits(4);
+
+        // hero general roles - warrior, assassin, etc...
+        List<string> heroGeneralRoleAttributes = new();
+
+        uint heroGeneralRoleAttributeLength = bitReader.ReadBits(12);
+        for (int i = 0; i < heroGeneralRoleAttributeLength; i++)
+        {
+            heroGeneralRoleAttributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Humn
+        }
+
+        bitReader.ReadUnalignedBytes(48);
+        bitReader.ReadBits(14);
+
+        bitReader.BitReversement(29);
+        bitReader.BitReversement(32);
+
+        bitReader.BitReversement(12);
+
+        // HMT attributes
+        List<string> hmtAttributes = new();
+
+        uint hmtAttributesLength = bitReader.ReadBits(12);
+        for (int i = 0; i < hmtAttributesLength; i++)
+        {
+            hmtAttributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Humn, Comp
+        }
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // tcXX attributes
+        List<string> tcAttributes = new();
+
+        uint tcAttributesLength = bitReader.ReadBits(12);
+        for (int i = 0; i < tcAttributesLength; i++)
+        {
+            tcAttributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Dflt - Default
+        }
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Humn, Comp
+        }
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
+        }
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        // 22, 0 -> 15 attributes
+        List<string> zeroTo15Attributes2 = new();
+
+        uint zeroTo15AttributeLength2 = bitReader.ReadBits(12);
+        for (int i = 0; i < zeroTo15AttributeLength2; i++)
+        {
+            zeroTo15Attributes2.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(37);
+
+        // team attributes section 5 - Team 1 -> Team 2, repeat, etc...
+        List<string> teamAttributesS5 = new();
+
+        uint teamAttributeS5Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamAttributeS5Length; i++)
+        {
+            teamAttributesS5.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // \06v6
+        }
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
+        }
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // voiceline attributes
+        List<string> voicelineAttributes = new();
+
+        uint voicelineAttributeLength = bitReader.ReadBits(12);
+        for (int i = 0; i < voicelineAttributeLength; i++)
+        {
+            voicelineAttributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
+
+            if (bitReader.ReadBoolean())
+                bitReader.ReadBits(28);
+            else
+                bitReader.ReadBits(5);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Dflt - Default
+        }
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Humn, Comp
+        }
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
+        }
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // team attributes section 6 - Team 1 -> Team 2
+        List<string> teamAttributesS6 = new();
+
+        uint teamAttributeS6Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamAttributeS6Length; i++)
+        {
+            teamAttributesS6.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(21);
+        bitReader.ReadBits(3);
+
+        // team attributes section 7 - Team 1 -> Team 2, repeat, etc...
+        List<string> teamAttributesS7 = new();
+
+        uint teamAttributeS7Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamAttributeS7Length; i++)
+        {
+            teamAttributesS7.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // \03v3
+        }
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
+        }
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // evry, team - everyone, team
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4);
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(21);
+        bitReader.ReadBits(3);
+
+        // team attributes section 8 - Team 1 -> Team 7, repeat, etc...
+        List<string> teamAttributesS8 = new();
+
+        uint teamAttributeS8Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamAttributeS8Length; i++)
+        {
+            teamAttributesS8.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(26);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
+        }
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // team attributes section 9 - Team 1 -> Team 2, repeat, etc...
+        List<string> teamAttributesS9 = new();
+
+        uint teamAttributeS9Length = bitReader.ReadBits(12);
+        for (int i = 0; i < teamAttributeS9Length; i++)
+        {
+            teamAttributesS9.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // \02v2
+        }
+
+        bitReader.ReadUnalignedBytes(8);
+        bitReader.ReadBits(5);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // Part - Participant
+        }
+
+        bitReader.ReadUnalignedBytes(40);
+        bitReader.ReadBits(5);
+
+        // draft ban mode attributes
+        List<string> draftBanModeAttributes = new();
+
+        uint draftBanModeAttributesLength = bitReader.ReadBits(12);
+        for (int i = 0; i < draftBanModeAttributesLength; i++)
+        {
+            draftBanModeAttributes.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(12);
+        bitReader.ReadBits(4);
+
+        attributeLength = bitReader.ReadBits(12);
+
+        for (int i = 0; i < attributeLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4); // drft, tour - Draft, Tournamnet Draft
+        }
+
+        bitReader.ReadUnalignedBytes(17);
+        bitReader.ReadBits(4);
+
+        // met / unmet attributes
+        List<string> unmetAttributes2 = new();
+
+        uint unmetAttributesLength2 = bitReader.ReadBits(12);
+        for (int i = 0; i < unmetAttributesLength2; i++)
+        {
+            unmetAttributes2.Add(bitReader.ReadStringFromUnalignedBytes(4));
+            bitReader.ReadBits(29);
+        }
+
+        bitReader.ReadUnalignedBytes(46);
+        //attributeLength = bitReader.ReadBits(12);
+
+        //for (int i = 0; i < attributeLength; i++)
         //{
-        //    bitReader.BitReversement(i);
-        //    uint kasd = bitReader.ReadBits(i);
+        //    bitReader.ReadStringFromUnalignedBytes(4);
+        //    bitReader.ReadBits(29);
         //}
 
-        if (bitReader.ReadStringFromUnalignedBytes(4) != "Open") throw new StormParseException($"{_exceptionHeader}: not 'Open'");
-        if (bitReader.ReadStringFromUnalignedBytes(4) != "Clsd") throw new StormParseException($"{_exceptionHeader}: not 'Clsd'");
-        if (bitReader.ReadStringFromUnalignedBytes(4) != "Humn") throw new StormParseException($"{_exceptionHeader}: not 'Humn'");
-        if (bitReader.ReadStringFromUnalignedBytes(4) != "Comp") throw new StormParseException($"{_exceptionHeader}: not 'Comp'");
+        //bitReader.BitReversement(29);
+        //bitReader.BitReversement(32);
 
-        bitReader.ReadUnalignedBytes(49);
-        bitReader.ReadBits(6);
+        //bitReader.ReadStringFromUnalignedBytes(4);
 
+        //bitReader.ReadBits(29);
+        //bitReader.ReadStringFromUnalignedBytes(4); // assn
+
+
+
+        //  bitReader.ReadStringFromUnalignedBytes(4);
+        // bitReader.ReadBits(29);
+        // bitReader.ReadStringFromUnalignedBytes(4);
         List<string> items333 = new();
         for (int i = 0; i < 9999; i++)
         {
             items333.Add(bitReader.ReadStringFromUnalignedBytes(4));
             bitReader.BitReversement(31);
-        }
-
-        // skip to the voiceline attribute section
-        for (; ;)
-        {
-            List<string> items = new();
-            if (bitReader.ReadStringFromBits(32) == "AB01")
-            {
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                string ko = bitReader.ReadStringFromBits(32);
-                bitReader.BitReversement(32);
-
-                // back to get the first item
-                bitReader.BitReversement(29);
-                bitReader.BitReversement(32);
-
-                string ko2 = bitReader.ReadStringFromBits(32); // \0\0\0\0
-                bitReader.BitReversement(32);
-
-                bitReader.BitReversement(12);
-                uint voicelineAttributeSizeS1 = bitReader.ReadBits(12); // get collection size
-
-                for (int i = 0; i < voicelineAttributeSizeS1; i++) // 1564
-                {
-                    items.Add(bitReader.ReadStringFromBits(32));
-                    bitReader.ReadBits(29);
-                }
-
-                break;
-            }
-            else
-            {
-                bitReader.BitReversement(31);
-            }
         }
 
         // skip to the fifth hero attribute section
