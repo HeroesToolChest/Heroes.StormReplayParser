@@ -3,29 +3,29 @@
 [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "No need")]
 internal enum ReplayAttributeEventType
 {
-    PlayerTypeAttribute = 500,
+    PlayerType = 500,
     Rules = 1000,
     IsPremadeGame = 1001,
 
     /* 2000 - 2024 are related to team sizes */
 
-    TeamSizeAttribute = 2001,
-    PlayerTeam1v1Attribute = 2002,
-    PlayerTeam2v2Attribute = 2003,
-    PlayerTeam3v3Attribute = 2004,
-    PlayerTeam4v4Attribute = 2005,
-    PlayerTeamFFAAttribute = 2006,
+    TeamSize = 2001,
+    PlayerTeam1v1 = 2002,
+    PlayerTeam2v2 = 2003,
+    PlayerTeam3v3 = 2004,
+    PlayerTeam4v4 = 2005,
+    PlayerTeamFFA = 2006,
 
-    GameSpeedAttribute = 3000,
-    PlayerRaceAttribute = 3001,
-    TeamColorIndexAttribute = 3002,
-    PlayerHandicapAttribute = 3003,
-    DifficultyLevelAttribute = 3004,
+    GameSpeed = 3000,
+    PlayerRace = 3001,
+    TeamColorIndex = 3002,
+    PlayerHandicap = 3003,
+    DifficultyLevel = 3004,
     ComputerRace = 3005,
     LobbyDelay = 3006,
     ParticipantRole = 3007,
     WatcherType = 3008,
-    GameModeAttribute = 3009,
+    GameMode = 3009,
     LockedAlliances = 3010,
     PlayerLogo = 3011,
     TandemLeader = 3012,
@@ -38,11 +38,11 @@ internal enum ReplayAttributeEventType
     PrivacyOption = 4000,
     UsingCustomObserverUI = 4001,
     HeroAttributeId = 4002,
-    SkinAndSkinTintAttributeId = 4003,
-    MountAndMountTintAttributeId = 4004,
+    SkinAndSkinTint = 4003,
+    MountAndMountTint = 4004,
     Ready = 4005,
     HeroType = 4006,
-    HeroRole = 4007,
+    HeroGeneralRole = 4007,
     HeroLevel = 4008,
     CanReady = 4009,
     LobbyMode = 4010,
@@ -65,10 +65,10 @@ internal enum ReplayAttributeEventType
     DraftTeam1Ban2 = 4025,
     DraftTeam1Ban2LockedIn = 4026,
 
-    BannerAttributeId = 4032,
-    SprayAttributeId = 4033,
-    VoiceLineAttributeId = 4034,
-    AnnouncerAttributeId = 4035,
+    Banner = 4032,
+    Spray = 4033,
+    VoiceLine = 4034,
+    Announcer = 4035,
 
     /* 4036 - 4042 ??? */
 
@@ -84,6 +84,8 @@ internal enum ReplayAttributeEventType
     DraftTeam2Ban3LockedIn = 4046,
 
     /* 4047 - 4053 ??? */
+
+    HeroSpecificRole = 4053,
 
     /* 4100 - 4200 are related to Artifacts, no longer in the game */
 }

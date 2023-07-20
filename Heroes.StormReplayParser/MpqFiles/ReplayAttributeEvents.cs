@@ -38,7 +38,7 @@ internal static class ReplayAttributeEvents
 
             switch (attribute)
             {
-                case ReplayAttributeEventType.PlayerTypeAttribute:
+                case ReplayAttributeEventType.PlayerType:
                     {
                         if (upperValue.SequenceEqual("COMP") || upperValue.SequenceEqual("HUMN"))
                         {
@@ -57,13 +57,13 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.TeamSizeAttribute:
+                case ReplayAttributeEventType.TeamSize:
                     {
                         replay.TeamSize = value.Trim('\0').ToString();
                         break;
                     }
 
-                case ReplayAttributeEventType.DifficultyLevelAttribute:
+                case ReplayAttributeEventType.DifficultyLevel:
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
@@ -80,7 +80,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.GameSpeedAttribute:
+                case ReplayAttributeEventType.GameSpeed:
                     {
                         replay.GameSpeed = upperValue switch
                         {
@@ -95,7 +95,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.GameModeAttribute:
+                case ReplayAttributeEventType.GameMode:
                     {
                         switch (upperValue)
                         {
@@ -125,7 +125,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.SkinAndSkinTintAttributeId:
+                case ReplayAttributeEventType.SkinAndSkinTint:
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
@@ -137,7 +137,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.MountAndMountTintAttributeId:
+                case ReplayAttributeEventType.MountAndMountTint:
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
@@ -146,7 +146,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.BannerAttributeId:
+                case ReplayAttributeEventType.Banner:
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
@@ -155,7 +155,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.SprayAttributeId:
+                case ReplayAttributeEventType.Spray:
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
@@ -164,7 +164,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.VoiceLineAttributeId:
+                case ReplayAttributeEventType.VoiceLine:
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
@@ -173,7 +173,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.AnnouncerAttributeId:
+                case ReplayAttributeEventType.Announcer:
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
@@ -249,6 +249,10 @@ internal static class ReplayAttributeEvents
                             break;
                     }
 
+                    break;
+
+                default:
+                    string ds = value.ToString();
                     break;
             }
         }
