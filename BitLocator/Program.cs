@@ -18,7 +18,7 @@ if (args is not null && args.Length == 1 && File.Exists(args[0]))
         string? inputBits;
         string? inputIsBigEndian;
 
-        uint valueToFind = 0;
+        long valueToFind = 0;
         int bitsToRead = 0;
         bool isBigEndianFormat = true;
 
@@ -27,7 +27,7 @@ if (args is not null && args.Length == 1 && File.Exists(args[0]))
             Console.Write("Numerical value to find: ");
             inputValue = Console.ReadLine();
         }
-        while (!uint.TryParse(inputValue, out valueToFind));
+        while (!long.TryParse(inputValue, out valueToFind));
 
         do
         {
@@ -47,7 +47,12 @@ if (args is not null && args.Length == 1 && File.Exists(args[0]))
 
         while (bitReader.Index < buffer.Length && (bitReader.Index + (bitsToRead / 8)) < buffer.Length)
         {
-            uint value = bitReader.ReadBits(bitsToRead);
+            long value;
+
+            if (bitsToRead < 33)
+                value = bitReader.ReadBits(bitsToRead);
+            else
+                value = bitReader.ReadLongBits(bitsToRead);
 
             if (value == valueToFind)
                 Console.WriteLine($"End Index: {bitReader.Index}");
