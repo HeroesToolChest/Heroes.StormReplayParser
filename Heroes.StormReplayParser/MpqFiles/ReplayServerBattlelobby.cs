@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Heroes.StormReplayParser.Pregame.Player;
 
 namespace Heroes.StormReplayParser.MpqFiles;
 
@@ -8,9 +8,12 @@ internal static class ReplayServerBattlelobby
 
     public static string FileName { get; } = "replay.server.battlelobby";
 
-    public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
+    public static void Parse(StormReplayPregame replay, ReadOnlySpan<byte> source)
     {
-        List<StormBattleLobbyAttribute> stormBattleLobbyAttributes = new();
+        for (int i = 0; i < 16; i++)
+            replay.ClientListByUserID[i] = new();
+
+        Dictionary<ReplayAttributeEventType, StormBattleLobbyAttribute> lobbyAttributesByAttributeEventType = new();
 
         BitReader bitReader = new(source, EndianType.BigEndian);
 
@@ -23,12 +26,10 @@ internal static class ReplayServerBattlelobby
 
         // repeat s2ma cache handles for the above
         uint s2maCacheHandleLength = bitReader.ReadBits(6);
+
         for (int i = 0; i < s2maCacheHandleLength; i++)
         {
-            if (bitReader.ReadStringFromAlignedBytes(4) != "s2ma")
-                throw new StormParseException($"{_exceptionHeader}: s2ma cache");
-
-            bitReader.ReadAlignedBytes(36);
+            _ = new StormS2mFiles(ref bitReader);
         }
 
         /* Attribute section */
@@ -58,7 +59,7 @@ internal static class ReplayServerBattlelobby
                     }
 
                     bitReader.ReadBits(6); // NewField6
-                    stormBattleLobbyAttributeValue.Id = bitReader.ReadInt16Unaligned(); // word - id for s2ml xml
+                    stormBattleLobbyAttributeValue.FirstId = bitReader.ReadInt16Unaligned(); // word - id for s2ml xml
                 }
 
                 if (bitReader.ReadBoolean()) // second
@@ -69,7 +70,7 @@ internal static class ReplayServerBattlelobby
                     }
 
                     bitReader.ReadBits(6); // NewField6
-                    bitReader.ReadBits(16); // word - id for s2ml xml
+                    stormBattleLobbyAttributeValue.SecondId = bitReader.ReadInt16Unaligned(); // word - id for s2ml xml
                 }
 
                 if (bitReader.ReadBoolean()) // f70
@@ -100,15 +101,16 @@ internal static class ReplayServerBattlelobby
 
                     bitReader.ReadInt32Unaligned(); // namespace
 
-                    _ = (ReplayAttributeEventType)bitReader.ReadInt32Unaligned(); // should be still the same
+                    stormBattleLobbyAttribute.ReplayAttributeEnabledEventType = (ReplayAttributeEventType)bitReader.ReadInt32Unaligned();
 
-                    attributeCount = (int)bitReader.ReadBits(12);
+                    int enabledAttributeCount = (int)bitReader.ReadBits(12);
 
-                    for (int j = 0; j < attributeCount; j++)
+                    for (int j = 0; j < enabledAttributeCount; j++)
                     {
-                        StormBattleLobbyEnabledAttributeValue stormBattleLobbyEnabledAttributeValue = new();
-
-                        stormBattleLobbyEnabledAttributeValue.Value = bitReader.ReadStringFromUnalignedBytes(4);  // attribute value
+                        StormBattleLobbyEnabledAttributeValue stormBattleLobbyEnabledAttributeValue = new()
+                        {
+                            Value = bitReader.ReadStringFromUnalignedBytes(4), // attribute value
+                        };
 
                         stormBattleLobbyAttribute.EnabledValueAttributes.Add(stormBattleLobbyEnabledAttributeValue);
                     }
@@ -122,8 +124,8 @@ internal static class ReplayServerBattlelobby
 
             bitReader.ReadBits(32); // newfield
 
-            uint a170 = bitReader.ReadBits(8);
-            for (int y = 0; y < a170; y++)
+            uint a170Length = bitReader.ReadBits(8);
+            for (int y = 0; y < a170Length; y++)
             {
                 bitReader.ReadBitArray(5); // b5
                 bitReader.ReadBitArray(165); // b165
@@ -135,7 +137,8 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBits(1); // f1
             bitReader.ReadBits(9); // b9
 
-            stormBattleLobbyAttributes.Add(stormBattleLobbyAttribute);
+            if (!lobbyAttributesByAttributeEventType.TryAdd(stormBattleLobbyAttribute.ReplayAttributeEventType, stormBattleLobbyAttribute))
+                throw new StormParseException($"{_exceptionHeader}: duplicate attribute");
         }
 
         /* Player attribute selections */
@@ -150,9 +153,9 @@ internal static class ReplayServerBattlelobby
         {
             bitReader.ReadInt32Unaligned(); // namespace
 
-            _ = (ReplayAttributeEventType)bitReader.ReadInt32Unaligned();
+            ReplayAttributeEventType attributeEventType = (ReplayAttributeEventType)bitReader.ReadInt32Unaligned();
 
-            PlayerAttributeChoice(ref bitReader);
+            PlayerSelectedAttributeChoice(ref bitReader, replay, lobbyAttributesByAttributeEventType[attributeEventType]);
         }
 
         /* Locales section */
@@ -161,10 +164,7 @@ internal static class ReplayServerBattlelobby
 
         for (int i = 0; i < s2mvCacheHandlesLength; i++)
         {
-            if (bitReader.ReadStringFromAlignedBytes(4) != "s2mv")
-                throw new StormParseException($"{_exceptionHeader}: s2mv");
-
-            bitReader.ReadAlignedBytes(36);
+            _ = new StormS2mFiles(ref bitReader);
         }
 
         uint localesLength = bitReader.ReadBits(5); // number of locales
@@ -177,10 +177,7 @@ internal static class ReplayServerBattlelobby
 
             for (int j = 0; j < s2mlSize; j++)
             {
-                if (bitReader.ReadStringFromAlignedBytes(4) != "s2ml")
-                    throw new StormParseException($"{_exceptionHeader}: s2ml");
-
-                bitReader.ReadAlignedBytes(36);
+                _ = new StormS2mFiles(ref bitReader);
             }
         }
 
@@ -220,10 +217,7 @@ internal static class ReplayServerBattlelobby
 
             for (int j = 0; j < s2mvCacheHandlesLength2; j++)
             {
-                if (bitReader.ReadStringFromAlignedBytes(4) != "s2mv")
-                    throw new StormParseException($"{_exceptionHeader}: s2mv");
-
-                bitReader.ReadAlignedBytes(36);
+                _ = new StormS2mFiles(ref bitReader);
             }
 
             bitReader.ReadBitArray(1); // flag
@@ -232,9 +226,7 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBits(8); // region
             bitReader.ReadStringFromUnalignedBytes(4); // programId
             bitReader.ReadBits(32); // realm
-
-            int idLength = (int)bitReader.ReadBits(7) + 2;
-            bitReader.ReadStringFromAlignedBytes(idLength); // m_globalName
+            bitReader.ReadBlobAsString(7, 2);  // m_globalName
 
             // toon
             bitReader.ReadBits(8); // region
@@ -369,19 +361,16 @@ internal static class ReplayServerBattlelobby
 
         for (int i = 0; i < s2mhCacheHandlesLength; i++)
         {
-            if (bitReader.ReadStringFromAlignedBytes(4) != "s2mh")
-                throw new StormParseException($"{_exceptionHeader}: s2mh");
-
-            bitReader.ReadAlignedBytes(36);
+            _ = new StormS2mFiles(ref bitReader);
         }
 
-
         /* Skin collection */
+
         uint skinCollectionLength = bitReader.ReadBits(16);
 
         for (int i = 0; i < skinCollectionLength; i++)
         {
-            bitReader.ReadStringFromUnalignedBytes(8);
+            bitReader.ReadAlignedBytes(8);
         }
 
         uint hasSkinCollectionLength = bitReader.ReadBits(32);
@@ -392,62 +381,49 @@ internal static class ReplayServerBattlelobby
             for (int j = 0; j < 16; j++)
             {
                 bitReader.ReadAlignedByte();
-                bitReader.ReadAlignedByte(); // more likely a boolean to get the value
-
-                if (replay.ReplayBuild < 55929)
-                {
-                    // when the identifier is a string, set the value to the appropriate array index
-                }
+                bitReader.ReadAlignedByte();
             }
         }
 
+        /* init data section */
+        if (replay.ReplayBuild >= 85027)
+        {
+            // m_disabledHeroList
+            uint disabledHeroListLength = bitReader.ReadBits(8);
 
-        /* filler */
-        //if (replay.ReplayBuild >= 85027)
-        //{
-        //    // m_disabledHeroList
-        //    uint disabledHeroListLength = bitReader.ReadBits(8);
+            for (int i = 0; i < disabledHeroListLength; i++)
+            {
+                replay.DisabledHeroAttributeIdList.Add(bitReader.ReadStringFromBits(32));
+            }
+        }
 
-        //    bitReader.EndianType = EndianType.LittleEndian;
+        replay.RandomValue = bitReader.ReadBits(32); // m_randomSeed
 
-        //    for (int i = 0; i < disabledHeroListLength; i++)
-        //    {
-        //        string disabledHeroAttributeId = bitReader.ReadStringFromBits(32);
-
-        //        if (replay.DisabledHeroAttributeIdList.Count == 0)
-        //            replay.DisabledHeroAttributeIdList.Add(disabledHeroAttributeId);
-        //    }
-
-        //    bitReader.EndianType = EndianType.BigEndian;
-        //}
-
-        //replay.RandomValue = bitReader.ReadBits(32); // m_randomSeed
-
-        bitReader.ReadBitArray(72);
-        //bitReader.ReadBitArray(32);
-
+        bitReader.ReadBitArray(32);
 
         uint playersLength = bitReader.ReadBits(5);
 
         for (int i = 0; i < playersLength; i++)
         {
-            // m_Unk1
             bitReader.ReadBitArray(32); // m_Unk1
-            uint slotId = bitReader.ReadBits(5);
+
+            uint playerIndex = bitReader.ReadBits(5); // m_userId
+
+            StormPregamePlayer player = replay.ClientListByUserID[playerIndex];
+            ToonHandle playerToonHandle = player.ToonHandle ??= new();
 
             // toon handle
-            bitReader.ReadBits(8); // region
-            bitReader.ReadStringFromUnalignedBytes(4); // programId
-            bitReader.ReadBits(32); // realm
-            bitReader.ReadLongBits(64); // id
+            playerToonHandle.Region = (int)bitReader.ReadBits(8); // m_region
+            playerToonHandle.ProgramId = bitReader.ReadInt32Unaligned(); // m_programId
+            playerToonHandle.Realm = (int)bitReader.ReadBits(32); // m_realm
+            playerToonHandle.Id = bitReader.ReadInt64Unaligned(); // m_id
 
             // string toon T:xxxxxxxx
             bitReader.ReadBits(8); // region
-            bitReader.ReadStringFromUnalignedBytes(4); // programId
+            if (bitReader.ReadStringFromUnalignedBytes(4) != "Hero") throw new StormParseException($"{_exceptionHeader}: Not Hero"); // programId
             bitReader.ReadBits(32); // realm
 
-            int idLength = (int)bitReader.ReadBits(7) + 2;
-            bitReader.ReadStringFromAlignedBytes(idLength); // m_globalName
+            playerToonHandle.ShortcutId = bitReader.ReadBlobAsString(7, 2); // region global id
 
             bitReader.ReadBitArray(1); // m_flags
             bitReader.ReadBitArray(2); // m_Unk4
@@ -456,13 +432,11 @@ internal static class ReplayServerBattlelobby
             {
                 bitReader.ReadBitArray(2); // m_Unk1
 
-                // string toon T:xxxxxxxx
+                // repeat string toon T:xxxxxxxx
                 bitReader.ReadBits(8); // region
-                bitReader.ReadStringFromUnalignedBytes(4); // programId
+                if (bitReader.ReadStringFromUnalignedBytes(4) != "Hero") throw new StormParseException($"{_exceptionHeader}: Not Hero"); // programId
                 bitReader.ReadBits(32); // realm
-
-                int idLength2 = (int)bitReader.ReadBits(7) + 2;
-                bitReader.ReadStringFromAlignedBytes(idLength2); // m_globalName
+                bitReader.ReadBlobAsString(7, 2); // region global id
 
                 bitReader.ReadBitArray(1); // m_flags
             }
@@ -470,65 +444,83 @@ internal static class ReplayServerBattlelobby
             // m_Unk2
             bitReader.ReadBitArray(198);
 
-            // m_Unk3
+            // m_unk3
             if (bitReader.ReadBoolean())
-            {
                 bitReader.ReadBitArray(64);
+
+            // m_unk4
+            bitReader.ReadBitArray(2); // m_UnkFlags1
+
+            bitReader.ReadBitArray(2); // m_Unk1
+            uint build = bitReader.ReadBits(32); // build?
+            // bitReader.ReadBitArray(35); // m_Unk1
+            bitReader.ReadBitArray(1); // 1 bit left
+
+            player.IsSilenced = bitReader.ReadBoolean(); // m_hasSilencePenalty
+
+            if (replay.ReplayBuild >= 61718)
+            {
+                bitReader.ReadBoolean();
+                player.IsVoiceSilenced = bitReader.ReadBoolean(); // m_hasVoiceSilencePenalty
             }
 
-            // m_Unk4
-            bitReader.ReadBitArray(2); // m_UnkFlags1
-            bitReader.ReadBitArray(35); // m_Unk1
-
-            bitReader.ReadBitArray(4); // m_Skins2
+            if (replay.ReplayBuild >= 66977)
+                player.IsBlizzardStaff = bitReader.ReadBoolean(); // m_isBlizzardStaff
 
             // m_PartyInfo
+            if (bitReader.ReadBoolean()) // is player in party
+                player.PartyValue = bitReader.ReadLongBits(64); // players in same party will have the same exact 8 bytes of data
+
             if (bitReader.ReadBoolean())
             {
-                bitReader.ReadBitArray(64);
+                player.BattleTagName = bitReader.ReadBlobAsString(7);
+
+                int poundIndex = player.BattleTagName.IndexOf('#');
+
+                if (!string.IsNullOrEmpty(player.BattleTagName) && poundIndex < 0)
+                    throw new StormParseException($"{_exceptionHeader}: Invalid battletag");
             }
 
-            // m_TagInfo
-            if (bitReader.ReadBoolean())
-            {
-                string battleTagName = bitReader.ReadBlobAsString(7);
-            }
+            if (replay.ReplayBuild >= 52860 || replay.ReplayBuild >= 51978)
+                player.AccountLevel = (int)bitReader.ReadBits(32);  // in custom games, this is a 0
 
-            int playerLevel = (int)bitReader.ReadBits(32);  // in custom games, this is a 0
-
-            // m_UnkFlags
-            bitReader.ReadBitArray(1);
+            if (replay.ReplayBuild >= 69947)
+                player.HasActiveBoost = bitReader.ReadBoolean(); // m_hasActiveBoost
         }
 
         /* _end */
 
-        bitReader.ReadBitArray(62); // sss
+        bitReader.ReadBitArray(64); // sss
 
-        // m_toon
-        ChoiceSection3(ref bitReader);
+        // game mode toon
+        AmmIdToonChoice(replay, ref bitReader);
 
+        bitReader.ReadBits(32);
         bitReader.ReadBitArray(87); // b87
 
-        uint length = bitReader.ReadBits(5) + 1;
+        uint a38Length = bitReader.ReadBits(4) + 1;
 
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < a38Length; i++)
         {
             bitReader.ReadBitArray(38);
         }
 
-        // Neut
-        length = bitReader.ReadBits(4) + 1;
+        bitReader.ReadBits(1); // unk
 
-        for (int i = 0; i < length; i++)
+        // Neut
+        uint neutLength = bitReader.ReadBits(4) + 1;
+
+        for (int i = 0; i < neutLength; i++)
         {
             bitReader.ReadBitArray(32);
         }
 
+        // hero
         uint heroLength2 = bitReader.ReadBits(5);
 
         for (int i = 0; i < heroLength2; i++)
         {
-            bitReader.ReadBits(32);
+            bitReader.ReadBits(32); // b32
 
             uint heroIconLength = bitReader.ReadBits(11);
 
@@ -537,270 +529,49 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadStringFromUnalignedBytes(4); // HERO
                 bitReader.ReadStringFromUnalignedBytes(4); // ICON
 
-                bitReader.ReadBits(32);
+                bitReader.ReadBits(32); // b32
             }
 
             bitReader.ReadBitArray(11); // b11
         }
 
         // CSTM
+        uint cstmLength = bitReader.ReadBits(6);
 
+        for (int i = 0; i < cstmLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4);
+        }
 
-        return;
+        uint a48Length = bitReader.ReadBits(5);
 
-        #region
-        //    uint collectionSize;
+        for (int i = 0; i < a48Length; i++)
+        {
+            bitReader.ReadBitArray(32); // b32
+            bitReader.ReadBits(16); // b16
+        }
 
-        //    // strings gone starting with build (ptr) 55929
-        //    if (replay.ReplayBuild >= 48027)
-        //        collectionSize = bitReader.ReadBits(16);
-        //    else
-        //        collectionSize = bitReader.ReadBits(32);
+        bitReader.ReadBitArray(23); // b23
+        bitReader.ReadBitArray(32); // b32
 
-        //    for (uint i = 0; i < collectionSize; i++)
-        //    {
-        //        if (replay.ReplayBuild >= 55929)
-        //            bitReader.ReadAlignedBytes(8); // most likey an identifier for the item; first six bytes are 0x00
-        //        else
-        //            bitReader.ReadStringFromAlignedBytes(bitReader.ReadAlignedByte());
-        //    }
+        bitReader.ReadBitArray(10); // endFiller
 
-        //    // use to determine if the collection item is usable by the player (owns/free to play/internet cafe)
-        //    if (bitReader.ReadBits(32) != collectionSize)
-        //        throw new StormParseException($"{_exceptionHeader}: collection difference");
+        bitReader.ReadBitArray(32); // b32
 
-        //    for (int i = 0; i < collectionSize; i++)
-        //    {
-        //        // 16 is total player slots
-        //        for (int j = 0; j < 16; j++)
-        //        {
-        //            bitReader.ReadAlignedByte();
-        //            bitReader.ReadAlignedByte(); // more likely a boolean to get the value
+        uint allHeroesLength = bitReader.ReadBits(10);
 
-        //            if (replay.ReplayBuild < 55929)
-        //            {
-        //                // when the identifier is a string, set the value to the appropriate array index
-        //            }
-        //        }
-        //    }
+        for (int i = 0; i < allHeroesLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4);
+            bitReader.ReadBitArray(5); // b5
+            bitReader.ReadBitArray(128); // b128
+        }
 
-        //    // Player info
-
-        //    if (replay.ReplayBuild <= 47479 || replay.ReplayBuild == 47801 || replay.ReplayBuild == 47903)
-        //    {
-        //        // Builds that are not yet supported for detailed parsing
-        //        // build 47801 is a ptr build that had new data in the battletag section, the data was changed in 47944 (patch for 47801)
-        //        // GetBattleTags(replay, source);
-        //        return;
-        //    }
-
-        //    if (replay.ReplayBuild >= 85027)
-        //    {
-        //        // m_disabledHeroList
-        //        uint disabledHeroListLength = bitReader.ReadBits(8);
-
-        //        bitReader.EndianType = EndianType.LittleEndian;
-
-        //        for (int i = 0; i < disabledHeroListLength; i++)
-        //        {
-        //            string disabledHeroAttributeId = bitReader.ReadStringFromBits(32);
-
-        //            if (replay.DisabledHeroAttributeIdList.Count == 0)
-        //                replay.DisabledHeroAttributeIdList.Add(disabledHeroAttributeId);
-        //        }
-
-        //        bitReader.EndianType = EndianType.BigEndian;
-        //    }
-
-        //    replay.RandomValue = bitReader.ReadBits(32); // m_randomSeed
-
-        //    bitReader.ReadAlignedBytes(4);
-
-        //    uint playerListLength = bitReader.ReadBits(5);
-
-        //    if (replay.PlayersWithObserversCount != playerListLength)
-        //        throw new StormParseException($"{_exceptionHeader}: mismatch on player list length - {playerListLength} to {replay.PlayersWithObserversCount}");
-        #endregion
-        //    for (uint i = 0; i < playerListLength; i++)
-        //    {
-        //        bitReader.ReadBits(32);
-
-        //        uint playerIndex = bitReader.ReadBits(5); // player index
-
-        //        StormPlayer player = replay.ClientListByUserID[playerIndex];
-
-        //        // toon handle
-        //        uint playerRegion = bitReader.ReadBits(8); // m_region
-
-        //        bitReader.EndianType = EndianType.LittleEndian;
-        //        if (bitReader.ReadBits(32) != 1869768008) // m_programId
-        //            throw new StormParseException($"{_exceptionHeader}: Not Hero");
-        //        bitReader.EndianType = EndianType.BigEndian;
-
-        //        uint playerRealm = bitReader.ReadBits(32); // m_realm
-        //        long playerId = bitReader.ReadLongBits(64); // m_id
-
-        //        if (player.PlayerType == PlayerType.Human)
-        //        {
-        //            if (player.ToonHandle!.Region != playerRegion)
-        //                throw new StormParseException($"{_exceptionHeader}: Mismatch on player region");
-        //            if (player.ToonHandle.Realm != playerRealm)
-        //                throw new StormParseException($"{_exceptionHeader}: Mismatch on player realm");
-        //            if (player.ToonHandle.Id != playerId)
-        //                throw new StormParseException($"{_exceptionHeader}: Mismatch on player id");
-        //        }
-        //        else if (player.PlayerType == PlayerType.Observer || player.PlayerType == PlayerType.Unknown)
-        //        {
-        //            // observers don't have the information carried over to the details file and sometimes not the initdata file
-        //            player.ToonHandle ??= new ToonHandle();
-
-        //            player.ToonHandle.Region = (int)playerRegion;
-        //            player.ToonHandle.ProgramId = 1869768008;
-        //            player.ToonHandle.Realm = (int)playerRealm;
-        //            player.ToonHandle.Id = (int)playerId;
-        //            player.PlayerType = PlayerType.Observer;
-        //            player.Team = StormTeam.Observer;
-        //        }
-
-        //        // toon handle again but with T_ shortcut
-        //        bitReader.ReadBits(8); // m_region
-
-        //        bitReader.EndianType = EndianType.LittleEndian;
-        //        if (bitReader.ReadBits(32) != 1869768008) // m_programId (Hero)
-        //            throw new StormParseException($"{_exceptionHeader}: Not Hero");
-        //        bitReader.EndianType = EndianType.BigEndian;
-
-        //        bitReader.ReadBits(32); // m_realm
-
-        //        int idLength = (int)bitReader.ReadBits(7) + 2;
-
-        //        player.ToonHandle ??= new ToonHandle();
-        //        player.ToonHandle.ShortcutId = bitReader.ReadStringFromAlignedBytes(idLength);
-
-        //        bitReader.ReadBits(6);
-
-        //        if (replay.ReplayBuild <= 47479)
-        //        {
-        //            // toon handle repeat again with T_ shortcut
-        //            bitReader.ReadBits(8); // m_region
-        //            if (bitReader.ReadStringFromBits(32) != "Hero") // m_programId
-        //                throw new StormParseException($"{_exceptionHeader}: Not Hero");
-        //            bitReader.ReadBits(32); // m_realm
-
-        //            idLength = (int)bitReader.ReadBits(7) + 2;
-        //            if (player.ToonHandle.ShortcutId != bitReader.ReadStringFromAlignedBytes(idLength))
-        //                throw new StormParseException($"{_exceptionHeader}: Duplicate shortcut id does not match");
-
-        //            bitReader.ReadBits(6);
-        //        }
-
-        //        bitReader.ReadBits(2);
-        //        bitReader.ReadUnalignedBytes(25);
-        //        bitReader.ReadBits(24);
-
-        //        // ai games have 8 more bytes somewhere around here
-        //        if (replay.GameMode == StormGameMode.Cooperative)
-        //            bitReader.ReadUnalignedBytes(8);
-
-        //        bitReader.ReadBits(7);
-
-        //        if (!bitReader.ReadBoolean())
-        //        {
-        //            // repeat of the collection section above
-        //            if (replay.ReplayBuild > 51609 || replay.ReplayBuild == 47903 || replay.ReplayBuild == 47479)
-        //            {
-        //                bitReader.ReadBitArray(bitReader.ReadBits(12));
-        //            }
-        //            else if (replay.ReplayBuild > 47219)
-        //            {
-        //                // each byte has a max value of 0x7F (127)
-        //                bitReader.ReadUnalignedBytes((int)bitReader.ReadBits(15) * 2);
-        //            }
-        //            else
-        //            {
-        //                bitReader.ReadBitArray(bitReader.ReadBits(9));
-        //            }
-
-        //            bitReader.ReadBoolean();
-        //        }
-
-        //        bool isSilenced = bitReader.ReadBoolean(); // m_hasSilencePenalty
-        //        if (player.PlayerType == PlayerType.Observer)
-        //            player.IsSilenced = isSilenced;
-
-        //        if (replay.ReplayBuild >= 61718)
-        //        {
-        //            bitReader.ReadBoolean();
-        //            bool isVoiceSilenced = bitReader.ReadBoolean(); // m_hasVoiceSilencePenalty
-        //            if (player.PlayerType == PlayerType.Observer)
-        //                player.IsVoiceSilenced = isVoiceSilenced;
-        //        }
-
-        //        if (replay.ReplayBuild >= 66977)
-        //        {
-        //            bool isBlizzardStaff = bitReader.ReadBoolean(); // m_isBlizzardStaff
-        //            if (player.PlayerType == PlayerType.Observer)
-        //                player.IsBlizzardStaff = isBlizzardStaff;
-        //        }
-
-        //        if (bitReader.ReadBoolean()) // is player in party
-        //            player.PartyValue = bitReader.ReadLongBits(64); // players in same party will have the same exact 8 bytes of data
-
-        //        bitReader.ReadBoolean();
-
-        //        string battleTagName = bitReader.ReadBlobAsString(7);
-        //        int poundIndex = battleTagName.IndexOf('#');
-
-        //        if (!string.IsNullOrEmpty(battleTagName) && poundIndex < 0)
-        //            throw new StormParseException($"{_exceptionHeader}: Invalid battletag");
-
-        //        // check if there is no tag number
-        //        if (poundIndex >= 0)
-        //        {
-        //            ReadOnlySpan<char> namePart = battleTagName.AsSpan(0, poundIndex);
-        //            if (!namePart.SequenceEqual(player.Name))
-        //                throw new StormParseException($"{_exceptionHeader}: Mismatch on battletag name with player name");
-        //        }
-
-        //        player.BattleTagName = battleTagName;
-
-        //        if (replay.ReplayBuild >= 52860 || (replay.ReplayVersion.Major == 2 && replay.ReplayBuild >= 51978))
-        //            player.AccountLevel = (int)bitReader.ReadBits(32);  // in custom games, this is a 0
-
-        //        if (replay.ReplayBuild >= 69947)
-        //        {
-        //            bool hasActiveBoost = bitReader.ReadBoolean(); // m_hasActiveBoost
-        //            if (player.PlayerType == PlayerType.Observer)
-        //                player.HasActiveBoost = hasActiveBoost;
-        //        }
-        //    }
-
-        //    replay.IsBattleLobbyPlayerInfoParsed = true;
-
-
-        //    // skip to the optional 8th Abat attribute
-        //    //for (; ; )
-        //    //{
-        //    //    if (bitReader.ReadStringFromBits(32) == "tabA") // Abat 1096966516 0x41626174
-        //    //    {
-        //    //        List<string> itemsss = new();
-        //    //        for (int i = 0; i < 100; i++)
-        //    //        {
-        //    //            bitReader.ReadBits(29); // no
-        //    //            itemsss.Add(bitReader.ReadStringFromBits(32));
-        //    //        }
-
-        //    //        break;
-        //    //    }
-        //    //    else
-        //    //    {
-        //    //        bitReader.BitReversement(31);
-        //    //    }
-        //    //}
+        bitReader.ReadBitArray(2);
     }
 
     // ('_choice', [(0,8),{0:('GlobalValue',6256),1:('ByPlayerValue',6260)}]), #6261
-    private static void PlayerAttributeChoice(ref BitReader bitReader)
+    private static void PlayerSelectedAttributeChoice(ref BitReader bitReader, StormReplayPregame replay, StormBattleLobbyAttribute attribute)
     {
         switch (bitReader.ReadBits(8))
         {
@@ -814,12 +585,14 @@ internal static class ReplayServerBattlelobby
 
             case 1: // ByPlayerValue
                 {
-                    uint count = bitReader.ReadBits(5);
+                    uint totalPlayerSlots = bitReader.ReadBits(5);
 
-                    for (int i = 0; i < count; i++)
+                    for (int playerSlotIndex = 0; playerSlotIndex < totalPlayerSlots; playerSlotIndex++)
                     {
-                        bitReader.ReadBitArray(11); // ValueIndex
+                        int attributeValueIndex = (int)bitReader.ReadBits(11); // ValueIndex
                         bitReader.ReadBitArray(1); // IsSet
+
+                        SetAttributeEvent(replay, attribute, playerSlotIndex, attributeValueIndex);
                     }
 
                     break;
@@ -827,6 +600,90 @@ internal static class ReplayServerBattlelobby
 
             default:
                 throw new NotImplementedException();
+        }
+    }
+
+    private static void SetAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int playerSlotIndex, int attributeValueIndex)
+    {
+        switch (attribute.ReplayAttributeEventType)
+        {
+            case ReplayAttributeEventType.PlayerType:
+                {
+                    PlayerType playerType = attribute.AttributeValues[attributeValueIndex].Value switch
+                    {
+                        "Clsd" => PlayerType.Closed,
+                        "Open" => PlayerType.Open,
+                        "Humn" => PlayerType.Human,
+                        "Comp" => PlayerType.Computer,
+
+                        _ => PlayerType.Unknown,
+                    };
+
+                    replay.ClientListByUserID[playerSlotIndex].PlayerType = playerType;
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.SkinAndSkinTint:
+                {
+                    replay.ClientListByUserID[playerSlotIndex].PlayerLoadout.SkinAndSkinTintAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.Banner:
+                {
+                    replay.ClientListByUserID[playerSlotIndex].PlayerLoadout.BannerAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.VoiceLine:
+                {
+                    replay.ClientListByUserID[playerSlotIndex].PlayerLoadout.VoiceLineAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.Spray:
+                {
+                    replay.ClientListByUserID[playerSlotIndex].PlayerLoadout.SprayAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.MountAndMountTint:
+                {
+                    replay.ClientListByUserID[playerSlotIndex].PlayerLoadout.MountAndMountTintAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.Announcer:
+                {
+                    replay.ClientListByUserID[playerSlotIndex].PlayerLoadout.AnnouncerPackAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.HeroAttributeId:
+                {
+                    replay.ClientListByUserID[playerSlotIndex].PlayerHero ??= new();
+
+                    replay.ClientListByUserID[playerSlotIndex].PlayerHero!.HeroAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.HeroLevel:
+                {
+                    replay.ClientListByUserID[playerSlotIndex].PlayerHero!.HeroLevel = int.Parse(attribute.AttributeValues[attributeValueIndex].Value);
+
+                    break;
+                }
+
+            default:
+                break;
         }
     }
 
@@ -877,7 +734,7 @@ internal static class ReplayServerBattlelobby
     }
 
     // ('_choice', [(0,1),{0:('filler',6437),1:('m_toon',6442)}]), #6443
-    private static void ChoiceSection3(ref BitReader bitReader)
+    private static void AmmIdToonChoice(StormReplayPregame replay, ref BitReader bitReader)
     {
         switch (bitReader.ReadBits(1))
         {
@@ -885,17 +742,18 @@ internal static class ReplayServerBattlelobby
                 {
                     bitReader.ReadBitArray(16);
 
+                    break;
+                }
+
+            case 1:
+                {
                     // toon handle
                     bitReader.ReadBits(8); // region
                     bitReader.ReadStringFromUnalignedBytes(4); // programId
                     bitReader.ReadBits(32); // realm
-                    bitReader.ReadLongBits(64); // id
 
-                    break;
-                }
+                    replay.GameMode = ReplayInitData.GetGameMode(ref bitReader); // m_ammId
 
-            case 1: // None
-                {
                     break;
                 }
 

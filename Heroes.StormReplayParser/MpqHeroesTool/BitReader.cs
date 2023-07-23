@@ -323,17 +323,18 @@ public ref struct BitReader
     }
 
     /// <summary>
-    /// Reads a number of bits from the read-only span as a UTF-8 string.
+    /// Reads a number of bits to obtain the number of aligned bytes to read from the read-only span as a UTF-8 string.
     /// </summary>
-    /// <param name="numberOfBits">The number of bits to read.</param>
+    /// <param name="numberOfBits">The number of bits to read to obtain the number of bytes to additional read.</param>
+    /// <param name="additionalBytesToRead">Adds an additional number of bytes to read.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="numberOfBits"/> is less than 1.</exception>
     /// <returns>A string.</returns>
-    public string ReadBlobAsString(int numberOfBits)
+    public string ReadBlobAsString(int numberOfBits, int? additionalBytesToRead = null)
     {
         if (numberOfBits < 1)
             throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
-        return Encoding.UTF8.GetString(ReadBlob(numberOfBits));
+        return Encoding.UTF8.GetString(ReadBlob(numberOfBits, additionalBytesToRead));
     }
 
     /// <summary>
@@ -448,7 +449,7 @@ public ref struct BitReader
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static string GetUTF8StringBaseOnMachineEndiness(byte[] bytes)
+    internal static string GetUTF8StringBaseOnMachineEndiness(byte[] bytes)
     {
         if (BitConverter.IsLittleEndian)
             Array.Reverse(bytes);
@@ -493,15 +494,22 @@ public ref struct BitReader
         return value;
     }
 
-    private ReadOnlySpan<byte> ReadBlob(int numberOfBits)
+    private ReadOnlySpan<byte> ReadBlob(int numberOfBits, int? additionalBytes = null)
     {
         if (numberOfBits < 1)
             throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
+        int length;
+
         if (numberOfBits < 33)
-            return ReadAlignedBytes((int)ReadBits(numberOfBits));
+            length = (int)ReadBits(numberOfBits);
         else
-            return ReadAlignedBytes((int)ReadULongBits(numberOfBits));
+            length = (int)ReadULongBits(numberOfBits);
+
+        if (additionalBytes.HasValue)
+            length += additionalBytes.Value;
+
+        return ReadAlignedBytes(length);
     }
 
     private ulong GetULongValueFromBits(int numberOfBits)

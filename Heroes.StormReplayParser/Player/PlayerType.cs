@@ -24,4 +24,14 @@ public enum PlayerType
     /// Indicates a non-player who is spectating.
     /// </summary>
     Observer = 2,
+
+    /// <summary>
+    /// Indicates a closed slot.
+    /// </summary>
+    Closed = 3,
+
+    /// <summary>
+    /// Indicates an opened slot.
+    /// </summary>
+    Open = 4,
 }

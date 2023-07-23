@@ -87,20 +87,8 @@ internal static class ReplayInitData
 
         if (replay.ReplayBuild >= 43905 && bitReader.ReadBoolean())
         {
-            replay.GameMode = bitReader.ReadInt32Unaligned() switch // m_ammId
-            {
-                50001 => StormGameMode.QuickMatch,
-                50021 => StormGameMode.Cooperative,
-                50031 => StormGameMode.Brawl,
-                50041 => StormGameMode.Practice,
-                50051 => StormGameMode.UnrankedDraft,
-                50061 => StormGameMode.HeroLeague,
-                50071 => StormGameMode.TeamLeague,
-                50091 => StormGameMode.StormLeague,
-                50101 => StormGameMode.ARAM,
-
-                _ => StormGameMode.Unknown,
-            };
+            // m_ammId
+            replay.GameMode = GetGameMode(ref bitReader);
         }
 
         bitReader.ReadBits(3); // m_gameSpeed
@@ -341,4 +329,19 @@ internal static class ReplayInitData
         bitReader.ReadBits(6); // m_defaultDifficulty
         bitReader.ReadBits(7); // m_defaultAIBuild
     }
+
+    internal static StormGameMode GetGameMode(ref BitReader bitReader) => bitReader.ReadInt32Unaligned() switch // m_ammId
+    {
+        50001 => StormGameMode.QuickMatch,
+        50021 => StormGameMode.Cooperative,
+        50031 => StormGameMode.Brawl,
+        50041 => StormGameMode.Practice,
+        50051 => StormGameMode.UnrankedDraft,
+        50061 => StormGameMode.HeroLeague,
+        50071 => StormGameMode.TeamLeague,
+        50091 => StormGameMode.StormLeague,
+        50101 => StormGameMode.ARAM,
+
+        _ => StormGameMode.Unknown,
+    };
 }
