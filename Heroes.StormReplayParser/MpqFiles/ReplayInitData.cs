@@ -264,17 +264,17 @@ internal static class ReplayInitData
                 bitReader.ReadBits(32); // m_commanderLevel - So far, always 0
             }
 
-            if (bitReader.ReadBoolean() && userId.HasValue) // m_hasSilencePenalty
-                replay.ClientListByUserID[userId.Value].IsSilenced = true;
+            if (userId.HasValue)
+                replay.ClientListByUserID[userId.Value].IsSilenced = bitReader.ReadBoolean(); // m_hasSilencePenalty
 
-            if (replay.ReplayBuild >= 61718 && bitReader.ReadBoolean() && userId.HasValue) // m_hasVoiceSilencePenalty
-                replay.ClientListByUserID[userId.Value].IsVoiceSilenced = true;
+            if (replay.ReplayBuild >= 61718 && userId.HasValue)
+                replay.ClientListByUserID[userId.Value].IsVoiceSilenced = bitReader.ReadBoolean();  // m_hasVoiceSilencePenalty
 
-            if (replay.ReplayBuild >= 66977 && bitReader.ReadBoolean() && userId.HasValue) // m_isBlizzardStaff
-                replay.ClientListByUserID[userId.Value].IsBlizzardStaff = true;
+            if (replay.ReplayBuild >= 66977 && userId.HasValue)
+                replay.ClientListByUserID[userId.Value].IsBlizzardStaff = bitReader.ReadBoolean();  // m_isBlizzardStaff
 
-            if (replay.ReplayBuild >= 69947 && bitReader.ReadBoolean() && userId.HasValue) // m_hasActiveBoost
-                replay.ClientListByUserID[userId.Value].HasActiveBoost = true;
+            if (replay.ReplayBuild >= 69947 && userId.HasValue)
+                replay.ClientListByUserID[userId.Value].HasActiveBoost = bitReader.ReadBoolean();  // m_hasActiveBoost
 
             if (replay.ReplayVersion.Major >= 2)
             {
