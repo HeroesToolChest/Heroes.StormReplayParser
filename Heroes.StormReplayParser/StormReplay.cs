@@ -83,7 +83,7 @@ public partial class StormReplay
     /// <summary>
     /// Gets a collection of observer players.
     /// </summary>
-    public IEnumerable<StormPlayer> StormObservers => ClientListByUserID.Where(x => x?.PlayerType == PlayerType.Observer);
+    public IEnumerable<StormPlayer> StormObservers => ClientListByUserID.Where(ObserversFunc());
 
     /// <summary>
     /// Gets the total number of playing players (no observers, has AI).
@@ -98,7 +98,7 @@ public partial class StormReplay
     /// <summary>
     /// Gets the total number of observers in the game.
     /// </summary>
-    public int PlayersObserversCount => StormObservers.Count();
+    public int PlayersObserversCount => ClientListByUserID.Count(x => x?.PlayerType == PlayerType.Observer);
 
     /// <summary>
     /// Gets the region of this replay.
@@ -263,4 +263,6 @@ public partial class StormReplay
         else
             return null;
     }
+
+    private static Func<StormPlayer, bool> ObserversFunc() => x => x?.PlayerType == PlayerType.Observer;
 }

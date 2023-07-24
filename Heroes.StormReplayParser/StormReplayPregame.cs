@@ -34,47 +34,47 @@ public class StormReplayPregame
     /// <summary>
     /// Gets a collection of playing players (no observers, has AI).
     /// </summary>
-    //public IEnumerable<StormPregamePlayer> StormPlayers => Players.Where(x => x is not null);
+    public IEnumerable<StormPregamePlayer> StormPlayers => ClientListByUserID.Where(PlayersFunc());
 
     /// <summary>
     /// Gets a collection of players (no AI, has observers).
     /// </summary>
-    //public IEnumerable<StormPregamePlayer> StormPlayersWithObservers => ClientListByUserID.Where(x => x.PlayerType != PlayerType.Closed);
+    public IEnumerable<StormPregamePlayer> StormPlayersWithObservers => ClientListByUserID.Where(PlayersWithObserversFunc());
 
     /// <summary>
     /// Gets a collection of observer players.
     /// </summary>
-    public IEnumerable<StormPregamePlayer> StormObservers => ClientListByUserID.Where(x => x?.PlayerType == PlayerType.Observer);
+    public IEnumerable<StormPregamePlayer> StormObservers => ClientListByUserID.Where(ObserversFunc());
 
     /// <summary>
     /// Gets the total number of playing players (no observers, has AI).
     /// </summary>
-    //public int PlayersCount => Players.Count(x => x is not null);
+    public int PlayersCount => ClientListByUserID.Count(PlayersFunc());
 
     /// <summary>
     /// Gets the total number of playing players in the game (no AI, has observers).
     /// </summary>
-    public int PlayersWithObserversCount => ClientListByUserID.Count(x => x is not null);
+    public int PlayersWithObserversCount => ClientListByUserID.Count(PlayersWithObserversFunc());
 
     /// <summary>
     /// Gets the total number of observers in the game.
     /// </summary>
-    public int PlayersObserversCount => StormObservers.Count();
+    public int PlayersObserversCount => ClientListByUserID.Count(ObserversFunc());
 
     /// <summary>
     /// Gets the region of this replay.
     /// </summary>
-    //public StormRegion Region
-    //{
-    //    get
-    //    {
-    //        StormPregamePlayer? player = StormPlayersWithObservers.FirstOrDefault();
-    //        if (player is not null && player.ToonHandle is not null)
-    //            return player.ToonHandle.StormRegion;
-    //        else
-    //            return StormRegion.Unknown;
-    //    }
-    //}
+    public StormRegion Region
+    {
+        get
+        {
+            StormPregamePlayer? player = StormPlayersWithObservers.FirstOrDefault();
+            if (player is not null && player.ToonHandle is not null)
+                return player.ToonHandle.StormRegion;
+            else
+                return StormRegion.Unknown;
+        }
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the battle lobby data was parsed successfully.
@@ -89,4 +89,10 @@ public class StormReplayPregame
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<string> DisabledHeroAttributeIdList { get; private set; } = new List<string>();
+
+    private static Func<StormPregamePlayer, bool> PlayersFunc() => x => x?.PlayerType != PlayerType.Observer && (x?.PlayerSlotType == PlayerSlotType.Human || x?.PlayerSlotType == PlayerSlotType.Computer);
+
+    private static Func<StormPregamePlayer, bool> PlayersWithObserversFunc() => x => x?.PlayerSlotType == PlayerSlotType.Human;
+
+    private static Func<StormPregamePlayer, bool> ObserversFunc() => x => x?.PlayerType == PlayerType.Observer && x.PlayerSlotType == PlayerSlotType.Human;
 }
