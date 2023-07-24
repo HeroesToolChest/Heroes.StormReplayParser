@@ -252,7 +252,9 @@ internal static class ReplayAttributeEvents
                     break;
 
                 default:
-                    string ds = value.ToString();
+#if DEBUG
+                    string valueString = value.ToString();
+#endif
                     break;
             }
         }
