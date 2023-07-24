@@ -6,8 +6,7 @@
 public class PregamePlayerHero
 {
     /// <summary>
-    /// Gets or sets the hero attribute id. Not recommended to use an identifier for certain brawl maps as
-    /// this will be set as the pre-selected hero.
+    /// Gets or sets the hero attribute id. For certain Brawl maps and ARAM this is the pre-selected hero.
     /// </summary>
     public string HeroAttributeId { get; set; } = string.Empty;
 
