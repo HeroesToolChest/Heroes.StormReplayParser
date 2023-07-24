@@ -1,5 +1,8 @@
 ﻿namespace Heroes.StormReplayParser.Pregame.Player;
 
+/// <summary>
+/// Contains the properties for a player during the pregame.
+/// </summary>
 public class StormPregamePlayer
 {
     private int? _accountLevel = null;

@@ -1,5 +1,8 @@
 ﻿namespace Heroes.StormReplayParser.Pregame.Player;
 
+/// <summary>
+/// Contains the information for a player's hero during the pregame.
+/// </summary>
 public class PregamePlayerHero
 {
     /// <summary>

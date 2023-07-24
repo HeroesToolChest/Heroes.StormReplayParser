@@ -4,7 +4,7 @@ global using Heroes.StormReplayParser.MessageEvent;
 global using Heroes.StormReplayParser.MpqFiles;
 global using Heroes.StormReplayParser.MpqHeroesTool;
 global using Heroes.StormReplayParser.Player;
-global using Heroes.StormReplayParser.Pregame;
+global using Heroes.StormReplayParser.Pregame.Player;
 global using Heroes.StormReplayParser.Replay;
 global using System.Buffers;
 global using System.Buffers.Binary;

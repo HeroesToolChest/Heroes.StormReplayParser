@@ -13,7 +13,12 @@ public class StormMapInfo
     /// <summary>
     /// Gets or sets the map id name.
     /// </summary>
-    public string? MapId { get; set; } = null;
+    public string? MapId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the map link, which can be used to determine the map.
+    /// </summary>
+    public string? MapLink { get; set; }
 
     /// <summary>
     /// Gets or sets the map size.

@@ -1,4 +1,4 @@
-﻿using Heroes.StormReplayParser.Pregame.Player;
+﻿using System.Text.Json;
 
 namespace Heroes.StormReplayParser.MpqFiles;
 
@@ -14,6 +14,8 @@ internal static class ReplayServerBattlelobby
             replay.ClientListByUserID[i] = new();
 
         Dictionary<ReplayAttributeEventType, StormBattleLobbyAttribute> lobbyAttributesByAttributeEventType = new();
+        List<StormS2mFiles> s2mFiles = new();
+        List<string> battleNetCachePaths = new();
 
         BitReader bitReader = new(source, EndianType.BigEndian);
 
@@ -21,7 +23,7 @@ internal static class ReplayServerBattlelobby
 
         for (int i = 0; i < dependenciesLength; i++)
         {
-            bitReader.ReadBlobAsString(10);
+            battleNetCachePaths.Add(bitReader.ReadBlobAsString(10));
         }
 
         // repeat s2ma cache handles for the above
@@ -164,7 +166,7 @@ internal static class ReplayServerBattlelobby
 
         for (int i = 0; i < s2mvCacheHandlesLength; i++)
         {
-            _ = new StormS2mFiles(ref bitReader);
+            s2mFiles.Add(new StormS2mFiles(ref bitReader));
         }
 
         uint localesLength = bitReader.ReadBits(5); // number of locales
@@ -337,7 +339,7 @@ internal static class ReplayServerBattlelobby
 
                 for (int x = 0; x < heroLength; x++)
                 {
-                    bitReader.ReadBitArray(32); // b32
+                    bitReader.ReadStringFromUnalignedBytes(4); // Hero
                 }
 
                 bitReader.ReadBitArray(23); // b23
@@ -450,10 +452,8 @@ internal static class ReplayServerBattlelobby
 
             // m_unk4
             bitReader.ReadBitArray(2); // m_UnkFlags1
-
             bitReader.ReadBitArray(2); // m_Unk1
-            uint build = bitReader.ReadBits(32); // build?
-            // bitReader.ReadBitArray(35); // m_Unk1
+            replay.ReplayBuild = bitReader.ReadInt32Unaligned(); // client base build
             bitReader.ReadBitArray(1); // 1 bit left
 
             player.IsSilenced = bitReader.ReadBoolean(); // m_hasSilencePenalty
@@ -568,6 +568,8 @@ internal static class ReplayServerBattlelobby
         }
 
         bitReader.ReadBitArray(2);
+
+        replay.MapLink = GetMapLink(battleNetCachePaths.Last(), s2mFiles.Last());
     }
 
     // ('_choice', [(0,8),{0:('GlobalValue',6256),1:('ByPlayerValue',6260)}]), #6261
@@ -759,6 +761,59 @@ internal static class ReplayServerBattlelobby
 
             default:
                 throw new NotImplementedException();
+        }
+    }
+
+    private static string? GetMapLink(string battleNetCachePath, StormS2mFiles mapFile)
+    {
+        ReadOnlySpan<char> firstTwo = mapFile.FileName.AsSpan(0, 2);
+        ReadOnlySpan<char> nextTwo = mapFile.FileName.AsSpan(2, 2);
+
+        int lastSeparatorIndex = battleNetCachePath.LastIndexOf(Path.DirectorySeparatorChar) - 6; // 6 is the two parent directories
+        if (lastSeparatorIndex < 0)
+            throw new ArgumentException("Invalid file path.");
+
+        ReadOnlySpan<char> battleNetCachePathSpan = battleNetCachePath.AsSpan(0, lastSeparatorIndex + 1);
+
+        Span<char> filePathBuffer = stackalloc char[battleNetCachePathSpan.Length + firstTwo.Length + nextTwo.Length + mapFile.FileName.Length + mapFile.FileType.Length + 3]; // 3 = directory seperators + extension .
+
+        // base path
+        battleNetCachePathSpan.CopyTo(filePathBuffer);
+
+        // first two directory
+        firstTwo.CopyTo(filePathBuffer[battleNetCachePathSpan.Length..]);
+        filePathBuffer[battleNetCachePathSpan.Length + 2] = Path.DirectorySeparatorChar;
+
+        // next two directory
+        nextTwo.CopyTo(filePathBuffer[(battleNetCachePathSpan.Length + 3)..]);
+        filePathBuffer[battleNetCachePathSpan.Length + 5] = Path.DirectorySeparatorChar;
+
+        // file with extension
+        mapFile.FileName.CopyTo(filePathBuffer[(battleNetCachePathSpan.Length + 6)..]);
+        filePathBuffer[^5] = '.';
+        mapFile.FileType.CopyTo(filePathBuffer[^4..]);
+
+        try
+        {
+            using FileStream fileStream = File.Open(filePathBuffer.ToString(), FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            using JsonDocument jsonDocument = JsonDocument.Parse(fileStream);
+
+            JsonElement root = jsonDocument.RootElement;
+
+            if (root.TryGetProperty("MapInfo", out JsonElement mapInfoElement) &&
+                mapInfoElement.TryGetProperty("Properties", out JsonElement propertiesElement) &&
+                propertiesElement.TryGetProperty("Loading", out JsonElement loadingElement) &&
+                loadingElement.TryGetProperty("MapLink", out JsonElement mapLinkElement))
+            {
+               return mapLinkElement.GetString();
+            }
+
+            return null;
+        }
+        catch
+        {
+            return null;
         }
     }
 }

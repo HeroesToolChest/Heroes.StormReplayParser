@@ -1,5 +1,8 @@
-﻿namespace Heroes.StormReplayParser.Pregame;
+﻿namespace Heroes.StormReplayParser.Pregame.Player;
 
+/// <summary>
+/// Contains a player's loadout during the pregame.
+/// </summary>
 public class PlayerPregameLoadout
 {
     /// <summary>
