@@ -53,9 +53,9 @@ public class MissingWorkSetSlotId1ReplayParserTests
         Assert.AreEqual("KaelthasRobotVar1", player0.PlayerLoadout.SkinAndSkinTint);
         Assert.AreEqual("RainbowUnicornGreen", player0.PlayerLoadout.MountAndMountTint);
         Assert.IsFalse(player0.IsSilenced);
-        Assert.IsNull(player0.IsVoiceSilenced);
-        Assert.IsNull(player0.IsBlizzardStaff);
-        Assert.IsNull(player0.HasActiveBoost);
+        Assert.IsFalse(player0.IsVoiceSilenced);
+        Assert.IsFalse(player0.IsBlizzardStaff);
+        Assert.IsFalse(player0.HasActiveBoost);
         Assert.AreEqual("BannerWCAllianceRare", player0.PlayerLoadout.Banner);
         Assert.AreEqual(6, player0.HeroMasteryTiersCount);
         Assert.AreEqual(PlayerType.Human, player0.PlayerType);
@@ -65,9 +65,9 @@ public class MissingWorkSetSlotId1ReplayParserTests
         Assert.AreEqual("ZagaraInsectoidBlue", player8.PlayerLoadout.SkinAndSkinTint);
         Assert.AreEqual("ZagaraWings", player8.PlayerLoadout.MountAndMountTint);
         Assert.IsFalse(player8.IsSilenced);
-        Assert.IsNull(player8.IsVoiceSilenced);
-        Assert.IsNull(player8.IsBlizzardStaff);
-        Assert.IsNull(player8.HasActiveBoost);
+        Assert.IsFalse(player8.IsVoiceSilenced);
+        Assert.IsFalse(player8.IsBlizzardStaff);
+        Assert.IsFalse(player8.HasActiveBoost);
         Assert.AreEqual("BannerDefault", player8.PlayerLoadout.Banner);
         Assert.AreEqual(1, player8.HeroMasteryTiersCount);
         Assert.AreEqual(PlayerType.Human, player8.PlayerType);

@@ -25,7 +25,7 @@ public class HanamuraTemple2ReplayParserTests
         StormPlayer player0 = players[0];
 
         Assert.IsFalse(player0.IsSilenced);
-        Assert.IsNull(player0.IsVoiceSilenced);
+        Assert.IsFalse(player0.IsVoiceSilenced);
         Assert.IsTrue(player0.IsBlizzardStaff!.Value);
         Assert.IsNull(player0.HasActiveBoost);
     }

@@ -146,7 +146,7 @@ public partial class StormReplay
     public IReadOnlyList<StormDraftPick> DraftPicks => DraftPicksInternal;
 
     /// <summary>
-    /// Gets or sets a value indicating whether if the player info of the battle lobby data was parsed.
+    /// Gets or sets a value indicating whether battle lobby data was parsed successfully.
     /// </summary>
     public bool IsBattleLobbyPlayerInfoParsed { get; set; }
 

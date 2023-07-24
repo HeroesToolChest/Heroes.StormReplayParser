@@ -29,6 +29,11 @@ public class StormPregamePlayer
     public ToonHandle? ToonHandle { get; set; } = null;
 
     /// <summary>
+    /// Gets or sets the slot type.
+    /// </summary>
+    public PlayerSlotType PlayerSlotType { get; set; } = PlayerSlotType.Unknown;
+
+    /// <summary>
     /// Gets or sets the player's control type.
     /// </summary>
     public PlayerType PlayerType { get; set; } = PlayerType.Unknown;

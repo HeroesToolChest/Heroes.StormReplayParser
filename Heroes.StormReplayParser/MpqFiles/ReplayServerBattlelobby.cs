@@ -10,6 +10,10 @@ internal static class ReplayServerBattlelobby
 
     public static void Parse(StormReplayPregame replay, ReadOnlySpan<byte> source)
     {
+        // just return if too old
+        if (replay.ReplayBuild <= 61718)
+            return;
+
         for (int i = 0; i < 16; i++)
             replay.ClientListByUserID[i] = new();
 
@@ -377,6 +381,9 @@ internal static class ReplayServerBattlelobby
 
         uint hasSkinCollectionLength = bitReader.ReadBits(32);
 
+        if (skinCollectionLength != hasSkinCollectionLength)
+            throw new StormParseException($"{_exceptionHeader}: skin collection lengths do not match: {skinCollectionLength} != {hasSkinCollectionLength}");
+
         for (int i = 0; i < hasSkinCollectionLength; i++)
         {
             // 16 is total player slots
@@ -452,9 +459,23 @@ internal static class ReplayServerBattlelobby
 
             // m_unk4
             bitReader.ReadBitArray(2); // m_UnkFlags1
-            bitReader.ReadBitArray(2); // m_Unk1
-            replay.ReplayBuild = bitReader.ReadInt32Unaligned(); // client base build
-            bitReader.ReadBitArray(1); // 1 bit left
+
+            if (replay.ReplayBuild > 68509)
+            {
+                bitReader.ReadBitArray(2); // m_Unk1
+                replay.ReplayBuild = bitReader.ReadInt32Unaligned(); // client base build
+                bitReader.ReadBitArray(1); // 1 bit left
+            }
+            else
+            {
+                bitReader.ReadBitArray(35); // m_Unk1
+            }
+
+            if (replay.ReplayBuild <= 65006)
+            {
+                bitReader.ReadBitArray(bitReader.ReadBits(12));
+                bitReader.ReadBits(1);
+            }
 
             player.IsSilenced = bitReader.ReadBoolean(); // m_hasSilencePenalty
 
@@ -495,7 +516,6 @@ internal static class ReplayServerBattlelobby
         // game mode toon
         AmmIdToonChoice(replay, ref bitReader);
 
-        bitReader.ReadBits(32);
         bitReader.ReadBitArray(87); // b87
 
         uint a38Length = bitReader.ReadBits(4) + 1;
@@ -548,7 +568,11 @@ internal static class ReplayServerBattlelobby
         for (int i = 0; i < a48Length; i++)
         {
             bitReader.ReadBitArray(32); // b32
-            bitReader.ReadBits(16); // b16
+
+            if (replay.ReplayBuild > 70200)
+                bitReader.ReadBits(16); // b16
+            else
+                bitReader.ReadBits(9);
         }
 
         bitReader.ReadBitArray(23); // b23
@@ -557,6 +581,10 @@ internal static class ReplayServerBattlelobby
         bitReader.ReadBitArray(10); // endFiller
 
         bitReader.ReadBitArray(32); // b32
+
+        // temp fix
+        if (replay.ReplayBuild == 75589 && replay.GameMode == StormGameMode.Cooperative)
+            bitReader.BitReversement(7);
 
         uint allHeroesLength = bitReader.ReadBits(10);
 
@@ -567,9 +595,12 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBitArray(128); // b128
         }
 
-        bitReader.ReadBitArray(2);
+        if (replay.ReplayBuild > 68509)
+            bitReader.ReadBitArray(2);
 
         replay.MapLink = GetMapLink(battleNetCachePaths.Last(), s2mFiles.Last());
+
+        replay.IsBattleLobbyPlayerInfoParsed = true;
     }
 
     // ('_choice', [(0,8),{0:('GlobalValue',6256),1:('ByPlayerValue',6260)}]), #6261
@@ -611,12 +642,27 @@ internal static class ReplayServerBattlelobby
         {
             case ReplayAttributeEventType.PlayerType:
                 {
+                    PlayerSlotType playerSlotType = attribute.AttributeValues[attributeValueIndex].Value switch
+                    {
+                        "Clsd" => PlayerSlotType.Closed,
+                        "Open" => PlayerSlotType.Open,
+                        "Humn" => PlayerSlotType.Human,
+                        "Comp" => PlayerSlotType.Computer,
+
+                        _ => PlayerSlotType.Unknown,
+                    };
+
+                    replay.ClientListByUserID[playerSlotIndex].PlayerSlotType = playerSlotType;
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.ParticipantRole:
+                {
                     PlayerType playerType = attribute.AttributeValues[attributeValueIndex].Value switch
                     {
-                        "Clsd" => PlayerType.Closed,
-                        "Open" => PlayerType.Open,
-                        "Humn" => PlayerType.Human,
-                        "Comp" => PlayerType.Computer,
+                        "Part" => PlayerType.Human,
+                        "Watc" => PlayerType.Observer,
 
                         _ => PlayerType.Unknown,
                     };
@@ -755,6 +801,8 @@ internal static class ReplayServerBattlelobby
                     bitReader.ReadBits(32); // realm
 
                     replay.GameMode = ReplayInitData.GetGameMode(ref bitReader); // m_ammId
+
+                    bitReader.ReadBits(32);
 
                     break;
                 }

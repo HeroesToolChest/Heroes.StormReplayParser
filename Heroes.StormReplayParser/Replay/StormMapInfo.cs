@@ -16,11 +16,6 @@ public class StormMapInfo
     public string? MapId { get; set; }
 
     /// <summary>
-    /// Gets or sets the map link, which can be used to determine the map.
-    /// </summary>
-    public string? MapLink { get; set; }
-
-    /// <summary>
     /// Gets or sets the map size.
     /// </summary>
     public Point MapSize { get; set; }

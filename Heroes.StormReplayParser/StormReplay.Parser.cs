@@ -188,7 +188,10 @@ public partial class StormReplay
         Span<byte> buffer = new Span<byte>(poolBuffer)[..size];
         _stormMpqArchive.DecompressEntry(entry, buffer);
 
-        StormReplayPregame replayPregame = new();
+        StormReplayPregame replayPregame = new()
+        {
+            ReplayBuild = stormReplay.ReplayBuild,
+        };
 
         ReplayServerBattlelobby.Parse(replayPregame, buffer);
 

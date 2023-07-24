@@ -48,7 +48,7 @@ public class CustomHGC2018BattlefieldofEternity1ReplayParserTests
     }
 
     [TestMethod]
-    public void BattleLobbyDataTest()
+    public void BattleLobbyPlayerDataTest()
     {
         List<StormPlayer> players = _stormReplay.StormPlayersWithObservers.ToList();
 
@@ -62,7 +62,7 @@ public class CustomHGC2018BattlefieldofEternity1ReplayParserTests
         Assert.IsTrue(players[0].BattleTagName.EndsWith("41"));
 
         Assert.AreEqual(485855, players[0].ToonHandle!.Id);
-        Assert.AreEqual(1869768008, players[0].ToonHandle!.ProgramId);
+        Assert.AreEqual(1214607983, players[0].ToonHandle!.ProgramId);
         Assert.AreEqual(1, players[0].ToonHandle!.Realm);
         Assert.AreEqual(98, players[0].ToonHandle!.Region);
         Assert.AreEqual(StormRegion.XX, players[0].ToonHandle!.StormRegion);

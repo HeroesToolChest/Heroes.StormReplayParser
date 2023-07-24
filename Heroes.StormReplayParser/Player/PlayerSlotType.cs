@@ -1,9 +1,9 @@
 ﻿namespace Heroes.StormReplayParser.Player;
 
 /// <summary>
-/// Specifies the type of player.
+/// Specifies the slot type.
 /// </summary>
-public enum PlayerType
+public enum PlayerSlotType
 {
     /// <summary>
     /// Indicates an unknown type of player.
@@ -11,17 +11,22 @@ public enum PlayerType
     Unknown = -1,
 
     /// <summary>
-    /// Indicates a human player.
+    /// Indicates a human slot.
     /// </summary>
     Human = 0,
 
     /// <summary>
-    /// Indicates an AI player.
+    /// Indicates an AI slot.
     /// </summary>
     Computer = 1,
 
     /// <summary>
-    /// Indicates a non-player who is spectating.
+    /// Indicates a closed slot.
     /// </summary>
-    Observer = 2,
+    Closed = 2,
+
+    /// <summary>
+    /// Indicates an opened slot.
+    /// </summary>
+    Open = 3,
 }

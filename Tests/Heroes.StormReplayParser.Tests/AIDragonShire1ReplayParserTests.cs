@@ -58,7 +58,7 @@ public class AIDragonShire1ReplayParserTests
         Assert.AreEqual(1, player0.ToonHandle!.Region);
         Assert.AreEqual(1, player0.ToonHandle.Realm);
         Assert.AreEqual(1527252, player0.ToonHandle.Id);
-        Assert.AreEqual(1869768008, player0.ToonHandle.ProgramId);
+        Assert.AreEqual(1214607983, player0.ToonHandle.ProgramId);
         Assert.AreEqual(1, player0.ToonHandle.Realm);
         Assert.AreEqual(StormTeam.Blue, player0.Team);
         Assert.IsTrue(player0.IsWinner);

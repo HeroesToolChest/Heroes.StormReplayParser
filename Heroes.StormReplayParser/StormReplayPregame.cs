@@ -19,7 +19,7 @@ public class StormReplayPregame
     /// <summary>
     /// Gets or sets the game mode.
     /// </summary>
-    public StormGameMode GameMode { get; set; } = StormGameMode.TryMe;
+    public StormGameMode GameMode { get; set; } = StormGameMode.Unknown;
 
     /// <summary>
     /// Gets or sets the map link, which can be used to determine the map.
@@ -39,7 +39,7 @@ public class StormReplayPregame
     /// <summary>
     /// Gets a collection of players (no AI, has observers).
     /// </summary>
-    public IEnumerable<StormPregamePlayer> StormPlayersWithObservers => ClientListByUserID.Where(x => x.PlayerType != PlayerType.Closed);
+    //public IEnumerable<StormPregamePlayer> StormPlayersWithObservers => ClientListByUserID.Where(x => x.PlayerType != PlayerType.Closed);
 
     /// <summary>
     /// Gets a collection of observer players.
@@ -64,17 +64,22 @@ public class StormReplayPregame
     /// <summary>
     /// Gets the region of this replay.
     /// </summary>
-    public StormRegion Region
-    {
-        get
-        {
-            StormPregamePlayer? player = StormPlayersWithObservers.FirstOrDefault();
-            if (player is not null && player.ToonHandle is not null)
-                return player.ToonHandle.StormRegion;
-            else
-                return StormRegion.Unknown;
-        }
-    }
+    //public StormRegion Region
+    //{
+    //    get
+    //    {
+    //        StormPregamePlayer? player = StormPlayersWithObservers.FirstOrDefault();
+    //        if (player is not null && player.ToonHandle is not null)
+    //            return player.ToonHandle.StormRegion;
+    //        else
+    //            return StormRegion.Unknown;
+    //    }
+    //}
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the battle lobby data was parsed successfully.
+    /// </summary>
+    public bool IsBattleLobbyPlayerInfoParsed { get; set; }
 
     /// <summary>
     /// Gets the list of all players connected to the game, using 'm_userId' as index.

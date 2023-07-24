@@ -5,12 +5,16 @@
 /// </summary>
 public class VersionedDecoder
 {
+    private EndianType _endianType;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="VersionedDecoder"/> class.
     /// </summary>
     /// <param name="bitReader">The <see cref="BitReader"/> containg the bytes to read.</param>
     public VersionedDecoder(ref BitReader bitReader)
     {
+        _endianType = bitReader.EndianType;
+
         DataType = bitReader.ReadAlignedByte();
 
         switch (DataType)
@@ -117,7 +121,7 @@ public class VersionedDecoder
             0x04 => throw new InvalidOperationException("Invalid call, use OptionalData"),
             0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
             0x06 => Value is not null ? Value[0] : throw new InvalidOperationException("No value available"),
-            0x07 => BinaryPrimitives.ReadUInt32LittleEndian(Value),
+            0x07 => _endianType == EndianType.BigEndian ? BinaryPrimitives.ReadUInt32BigEndian(Value) : BinaryPrimitives.ReadUInt32LittleEndian(Value),
             0x08 => throw new ArithmeticException("Incorrect conversion. Use Int64 method instead."),
             0x09 => Get32UIntFromVInt(),
 
@@ -143,7 +147,7 @@ public class VersionedDecoder
             0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
             0x06 => throw new ArithmeticException("Incorrect conversion. Use Int32 method instead."),
             0x07 => throw new ArithmeticException("Incorrect conversion. Use Int32 method instead."),
-            0x08 => (long)BinaryPrimitives.ReadUInt64LittleEndian(Value),
+            0x08 => _endianType == EndianType.BigEndian ? (long)BinaryPrimitives.ReadUInt64BigEndian(Value) : (long)BinaryPrimitives.ReadUInt64LittleEndian(Value),
             0x09 => Get64IntFromVInt(),
 
             _ => throw new NotImplementedException(),
@@ -167,8 +171,8 @@ public class VersionedDecoder
             0x04 => OptionalData?.ToString(),
             0x05 => Structure is not null ? $"{{{string.Join(", ", Structure.Select(i => i?.ToString()))}}}" : null,
             0x06 => Value?[0].ToString(),
-            0x07 => BinaryPrimitives.ReadUInt32LittleEndian(Value).ToString(),
-            0x08 => BinaryPrimitives.ReadUInt64LittleEndian(Value).ToString(),
+            0x07 => _endianType == EndianType.BigEndian ? BinaryPrimitives.ReadUInt32BigEndian(Value).ToString() : BinaryPrimitives.ReadUInt32LittleEndian(Value).ToString(),
+            0x08 => _endianType == EndianType.BigEndian ? BinaryPrimitives.ReadUInt64BigEndian(Value).ToString() : BinaryPrimitives.ReadUInt64LittleEndian(Value).ToString(),
             0x09 => BinaryPrimitivesExtensions.ReadVIntLittleEndian(Value).ToString(),
 
             _ => string.Empty,
