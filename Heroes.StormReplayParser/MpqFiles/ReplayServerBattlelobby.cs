@@ -817,33 +817,18 @@ internal static class ReplayServerBattlelobby
         ReadOnlySpan<char> firstTwo = mapFile.FileName.AsSpan(0, 2);
         ReadOnlySpan<char> nextTwo = mapFile.FileName.AsSpan(2, 2);
 
-        int lastSeparatorIndex = battleNetCachePath.LastIndexOf(Path.DirectorySeparatorChar) - 6; // 6 is the two parent directories
-        if (lastSeparatorIndex < 0)
-            throw new ArgumentException("Invalid file path.");
+        string? directory = Path.GetDirectoryName(battleNetCachePath);
+        if (directory is null)
+            return null;
 
-        ReadOnlySpan<char> battleNetCachePathSpan = battleNetCachePath.AsSpan(0, lastSeparatorIndex + 1);
-
-        Span<char> filePathBuffer = stackalloc char[battleNetCachePathSpan.Length + firstTwo.Length + nextTwo.Length + mapFile.FileName.Length + mapFile.FileType.Length + 3]; // 3 = directory seperators + extension .
-
-        // base path
-        battleNetCachePathSpan.CopyTo(filePathBuffer);
-
-        // first two directory
-        firstTwo.CopyTo(filePathBuffer[battleNetCachePathSpan.Length..]);
-        filePathBuffer[battleNetCachePathSpan.Length + 2] = Path.DirectorySeparatorChar;
-
-        // next two directory
-        nextTwo.CopyTo(filePathBuffer[(battleNetCachePathSpan.Length + 3)..]);
-        filePathBuffer[battleNetCachePathSpan.Length + 5] = Path.DirectorySeparatorChar;
-
-        // file with extension
-        mapFile.FileName.CopyTo(filePathBuffer[(battleNetCachePathSpan.Length + 6)..]);
-        filePathBuffer[^5] = '.';
-        mapFile.FileType.CopyTo(filePathBuffer[^4..]);
+        string finalPath = Path.Join(directory.AsSpan(0, directory.Length - 6), firstTwo, nextTwo, Path.ChangeExtension(mapFile.FileName, mapFile.FileType));
 
         try
         {
-            using FileStream fileStream = File.Open(filePathBuffer.ToString(), FileMode.Open, FileAccess.Read, FileShare.Read);
+            if (!File.Exists(finalPath))
+                return null;
+
+            using FileStream fileStream = File.Open(finalPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
             using JsonDocument jsonDocument = JsonDocument.Parse(fileStream);
 
