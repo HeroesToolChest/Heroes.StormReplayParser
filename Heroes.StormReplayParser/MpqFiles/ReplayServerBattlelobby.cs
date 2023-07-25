@@ -517,6 +517,13 @@ internal static class ReplayServerBattlelobby
         // game mode toon
         AmmIdToonChoice(replay, ref bitReader);
 
+        // older, just end here
+        if (replay.ReplayBuild < 89754)
+        {
+            replay.IsBattleLobbyPlayerInfoParsed = true;
+            return;
+        }
+
         bitReader.ReadBitArray(87); // b87
 
         uint a38Length = bitReader.ReadBits(4) + 1;
@@ -582,10 +589,6 @@ internal static class ReplayServerBattlelobby
         bitReader.ReadBitArray(10); // endFiller
 
         bitReader.ReadBitArray(32); // b32
-
-        // temp fix
-        if (replay.ReplayBuild == 75589 && replay.GameMode == StormGameMode.Cooperative)
-            bitReader.BitReversement(7);
 
         uint allHeroesLength = bitReader.ReadBits(10);
 
