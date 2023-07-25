@@ -6,16 +6,17 @@ internal static class PregameMapper
     {
         replay.IsBattleLobbyPlayerInfoParsed = pregameReplay.IsBattleLobbyPlayerInfoParsed;
 
-        for (int i = 0; i < pregameReplay.ClientListByUserID.Length; i++)
+        for (int i = 0; i < pregameReplay.ClientListByWorkingSetSlotID.Length; i++)
         {
-            StormPregamePlayer? stormPregamePlayer = pregameReplay.ClientListByUserID[i];
+            StormPregamePlayer? stormPregamePlayer = pregameReplay.ClientListByWorkingSetSlotID[i];
             if (stormPregamePlayer is null)
                 continue;
 
             if ((stormPregamePlayer.PlayerType == PlayerType.Observer && stormPregamePlayer.PlayerSlotType == PlayerSlotType.Human) ||
                 stormPregamePlayer.PlayerSlotType == PlayerSlotType.Human)
             {
-                StormPlayer stormPlayer = replay.ClientListByUserID[i];
+                StormPlayer? stormPlayer = replay.ClientListByWorkingSetSlotID[i];
+                stormPlayer ??= replay.ClientListByUserID[i];
 
                 stormPlayer.PartyValue = stormPregamePlayer.PartyValue;
                 stormPlayer.AccountLevel = stormPregamePlayer.AccountLevel;

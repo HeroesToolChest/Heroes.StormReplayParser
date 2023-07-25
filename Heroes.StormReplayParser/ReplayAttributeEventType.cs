@@ -70,8 +70,6 @@ internal enum ReplayAttributeEventType
     VoiceLine = 4034,
     Announcer = 4035,
 
-    /* 4036 - 4042 ??? */
-
     DraftTeam1Ban3 = 4043,
     DraftTeam1Ban3LockedIn = 4044,
 

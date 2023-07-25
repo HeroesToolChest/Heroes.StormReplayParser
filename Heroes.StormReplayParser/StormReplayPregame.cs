@@ -27,6 +27,11 @@ public class StormReplayPregame
     public string? MapLink { get; set; }
 
     /// <summary>
+    /// Gets or sets the speed the game was played at.
+    /// </summary>
+    public StormGameSpeed GameSpeed { get; set; } = StormGameSpeed.Unknown;
+
+    /// <summary>
     /// Gets a collection of disabled heroes as attributeIds.
     /// </summary>
     public IReadOnlyCollection<string> DisabledHeroes => DisabledHeroAttributeIdList;
@@ -34,32 +39,32 @@ public class StormReplayPregame
     /// <summary>
     /// Gets a collection of playing players (no observers, has AI).
     /// </summary>
-    public IEnumerable<StormPregamePlayer> StormPlayers => ClientListByUserID.Where(PlayersFunc());
+    public IEnumerable<StormPregamePlayer> StormPlayers => ClientListByWorkingSetSlotID.Where(PlayersFunc());
 
     /// <summary>
     /// Gets a collection of players (no AI, has observers).
     /// </summary>
-    public IEnumerable<StormPregamePlayer> StormPlayersWithObservers => ClientListByUserID.Where(PlayersWithObserversFunc());
+    public IEnumerable<StormPregamePlayer> StormPlayersWithObservers => ClientListByWorkingSetSlotID.Where(PlayersWithObserversFunc());
 
     /// <summary>
     /// Gets a collection of observer players.
     /// </summary>
-    public IEnumerable<StormPregamePlayer> StormObservers => ClientListByUserID.Where(ObserversFunc());
+    public IEnumerable<StormPregamePlayer> StormObservers => ClientListByWorkingSetSlotID.Where(ObserversFunc());
 
     /// <summary>
     /// Gets the total number of playing players (no observers, has AI).
     /// </summary>
-    public int PlayersCount => ClientListByUserID.Count(PlayersFunc());
+    public int PlayersCount => ClientListByWorkingSetSlotID.Count(PlayersFunc());
 
     /// <summary>
     /// Gets the total number of playing players in the game (no AI, has observers).
     /// </summary>
-    public int PlayersWithObserversCount => ClientListByUserID.Count(PlayersWithObserversFunc());
+    public int PlayersWithObserversCount => ClientListByWorkingSetSlotID.Count(PlayersWithObserversFunc());
 
     /// <summary>
     /// Gets the total number of observers in the game.
     /// </summary>
-    public int PlayersObserversCount => ClientListByUserID.Count(ObserversFunc());
+    public int PlayersObserversCount => ClientListByWorkingSetSlotID.Count(ObserversFunc());
 
     /// <summary>
     /// Gets the region of this replay.
@@ -82,13 +87,28 @@ public class StormReplayPregame
     public bool IsBattleLobbyPlayerInfoParsed { get; set; }
 
     /// <summary>
-    /// Gets the list of all players connected to the game, using 'm_userId' as index.
+    /// Gets the list of all players connected to the game, using 'm_workingSetSlotId' as index.
     /// </summary>
-    /// <remarks>Contains observers. No AI.</remarks>
-    internal StormPregamePlayer[] ClientListByUserID { get; private set; } = new StormPregamePlayer[16];
+    /// <remarks>Contains AI. No observers.</remarks>
+    internal StormPregamePlayer[] ClientListByWorkingSetSlotID { get; private set; } = new StormPregamePlayer[16];
+
+    internal string?[][] TeamHeroAttributeIdBans { get; private set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<string> DisabledHeroAttributeIdList { get; private set; } = new List<string>();
+
+    /// <summary>
+    /// Gets a collection of a team's bans (as attribute ids).
+    /// </summary>
+    /// <param name="stormTeam">The <see cref="StormTeam"/> to obtain the bans for.</param>
+    /// <returns>A collection of hero bans as attribute ids.</returns>
+    public IReadOnlyList<string?> GetTeamBans(StormTeam stormTeam)
+    {
+        if (!(stormTeam == StormTeam.Blue || stormTeam == StormTeam.Red))
+            return new List<string>();
+
+        return TeamHeroAttributeIdBans[(int)stormTeam];
+    }
 
     private static Func<StormPregamePlayer, bool> PlayersFunc() => x => x?.PlayerType != PlayerType.Observer && (x?.PlayerSlotType == PlayerSlotType.Human || x?.PlayerSlotType == PlayerSlotType.Computer);
 

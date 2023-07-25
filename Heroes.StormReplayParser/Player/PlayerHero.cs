@@ -7,7 +7,7 @@ public class PlayerHero
 {
     /// <summary>
     /// Gets or sets the hero id. Not recommended to use an identifier as certain Brawl maps and ARAM will have
-    /// this set to be the pre-selected hero.
+    /// this set to be the pre-selected hero. For AI games, this will be empty.
     /// </summary>
     public string HeroId { get; set; } = string.Empty;
 
@@ -23,7 +23,7 @@ public class PlayerHero
 
     /// <summary>
     /// Gets or sets the hero attribute id. Not recommended to use an identifier as certain Brawl maps and ARAM will have
-    /// this set to be the pre-selected hero.
+    /// this set to be the pre-selected hero. For AI games, this will be empty.
     /// </summary>
     public string HeroAttributeId { get; set; } = string.Empty;
 
