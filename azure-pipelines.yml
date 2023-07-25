@@ -51,11 +51,6 @@ jobs:
         packageType: sdk
         version: 7.0.x
         installationPath: $(Agent.ToolsDirectory)\dotnet
-        
-    - task: NuGetToolInstaller@1
-      displayName: nuget installer 6.1.0
-      inputs:
-        versionSpec: '6.1.0'
 
     - powershell: |
         $csproj = get-content Heroes.StormReplayParser\Heroes.StormReplayParser.csproj
@@ -82,18 +77,12 @@ jobs:
     - powershell: dotnet pack $env:MAIN_PROJECT -c release --no-build -o $env:NUPKG_PATH -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg     
       displayName: Nuget pack
 
-    - task: NuGetCommand@2
+    - powershell: dotnet nuget sign $(nupkg_path)Heroes.StormReplayParser.*.nupkg --certificate-path $(Agent.TempDirectory)\certificate --certificate-password $(cert_password) --timestamper http://ts.ssl.com/legacy      
       displayName: Sign nuget pack
-      inputs:
-        command: 'custom'
-        arguments: 'sign $(nupkg_path)Heroes.StormReplayParser.*.nupkg -CertificatePath $(Agent.TempDirectory)\certificate -CertificatePassword $(cert_password) -Timestamper http://ts.ssl.com'
 
-    - task: NuGetCommand@2
+    - powershell: dotnet nuget sign $(nupkg_path)Heroes.StormReplayParser.*.snupkg --certificate-path $(Agent.TempDirectory)\certificate --certificate-password $(cert_password) --timestamper http://ts.ssl.com/legacy      
       displayName: Sign symbol pack
-      inputs:
-        command: 'custom'
-        arguments: 'sign $(nupkg_path)Heroes.StormReplayParser.*.snupkg -CertificatePath $(Agent.TempDirectory)\certificate -CertificatePassword $(cert_password) -Timestamper http://ts.ssl.com'
-        
+              
     - powershell: |
         $s = get-content $env:MAIN_PROJECT | select-string -pattern "<Version>"
         $s -match "<Version>(?<content>.*)</Version>"
