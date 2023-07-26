@@ -86,4 +86,14 @@ public class CustomHGC2018BattlefieldofEternity1ReplayParserTests
         Assert.IsNotNull(players[5].ScoreResult);
         Assert.IsNotNull(players[6].ScoreResult);
     }
+
+    [TestMethod]
+    public void AttributeTest()
+    {
+        Assert.AreEqual(StormBanMode.ThreeBan, _stormReplay.BanMode);
+        Assert.AreEqual(StormFirstDraftTeam.Team1, _stormReplay.FirstDraftTeam);
+        Assert.AreEqual(StormGamePrivacy.Normal, _stormReplay.GamePrivacy);
+        Assert.AreEqual(StormLobbyMode.TournamentDraft, _stormReplay.LobbyMode);
+        Assert.AreEqual(StormReadyMode.FCFS, _stormReplay.ReadyMode);
+    }
 }

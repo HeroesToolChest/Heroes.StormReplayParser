@@ -18,8 +18,6 @@ internal static class ReplayAttributeEvents
 
         ReplayAttributeEventType attribute;
         int playerId;
-        Span<char> value = stackalloc char[4];
-        Span<char> upperValue = stackalloc char[4];
 
         for (int i = 0; i < count; i++)
         {
@@ -27,39 +25,33 @@ internal static class ReplayAttributeEvents
 
             attribute = (ReplayAttributeEventType)bitReader.ReadUInt32Aligned(); // attrid
             playerId = bitReader.ReadAlignedByte();
-            Encoding.UTF8.GetChars(bitReader.ReadBytes(4), value);
 
-            value.Reverse();
-
-            for (int j = 0; j < value.Length; j++)
-            {
-                upperValue[j] = char.ToUpperInvariant(value[j]);
-            }
+            string value = bitReader.ReadStringFromAlignedBytes(4);
 
             switch (attribute)
             {
                 case ReplayAttributeEventType.PlayerType:
                     {
-                        if (upperValue.SequenceEqual("COMP") || upperValue.SequenceEqual("HUMN"))
+                        if (value == "Comp" || value == "Humn")
                         {
                             replay.PlayersWithOpenSlots[playerId - 1] = replay.Players[playerId - replayPlayersWithOpenSlotsIndex];
                         }
 
-                        if (upperValue.SequenceEqual("COMP"))
+                        if (value == "Comp")
                             replay.PlayersWithOpenSlots[playerId - 1].PlayerType = PlayerType.Computer;
-                        else if (upperValue.SequenceEqual("HUMN"))
+                        else if (value == "Humn")
                             replay.PlayersWithOpenSlots[playerId - 1].PlayerType = PlayerType.Human;
-                        else if (upperValue.SequenceEqual("OPEN"))
+                        else if (value == "Open")
                             replayPlayersWithOpenSlotsIndex++; // Less than 10 players in a Custom game
                         else
-                            throw new StormParseException($"Unexpected value for PlayerTypeAttribute: {value.ToString()}");
+                            throw new StormParseException($"Unexpected value for PlayerTypeAttribute: {value}");
 
                         break;
                     }
 
                 case ReplayAttributeEventType.TeamSize:
                     {
-                        replay.TeamSize = value.Trim('\0').ToString();
+                        replay.TeamSize = value;
                         break;
                     }
 
@@ -67,47 +59,31 @@ internal static class ReplayAttributeEvents
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                        player.PlayerDifficulty = value.ToString() switch
-                        {
-                            "VyEy" => PlayerDifficulty.Beginner,
-                            "Easy" => PlayerDifficulty.Recruit,
-                            "Medi" => PlayerDifficulty.Adept,
-                            "HdVH" => PlayerDifficulty.Veteran,
-                            "VyHd" => PlayerDifficulty.Elite,
-                            _ => PlayerDifficulty.Unknown,
-                        };
+                        player.PlayerDifficulty = GetDifficultyLevel(value);
 
                         break;
                     }
 
                 case ReplayAttributeEventType.GameSpeed:
                     {
-                        replay.GameSpeed = upperValue switch
-                        {
-                            Span<char> _ when upperValue.SequenceEqual("SLOR") => StormGameSpeed.Slower,
-                            Span<char> _ when upperValue.SequenceEqual("SLOW") => StormGameSpeed.Slow,
-                            Span<char> _ when upperValue.SequenceEqual("NORM") => StormGameSpeed.Normal,
-                            Span<char> _ when upperValue.SequenceEqual("FAST") => StormGameSpeed.Fast,
-                            Span<char> _ when upperValue.SequenceEqual("FASR") => StormGameSpeed.Faster,
-                            _ => StormGameSpeed.Unknown,
-                        };
+                        replay.GameSpeed = GetGameSpeed(value);
 
                         break;
                     }
 
                 case ReplayAttributeEventType.GameMode:
                     {
-                        switch (upperValue)
+                        switch (value)
                         {
-                            case Span<char> _ when upperValue.SequenceEqual("PRIV"):
+                            case "Priv":
                                 replay.GameMode = StormGameMode.Custom;
                                 break;
-                            case Span<char> _ when upperValue[1..4].SequenceEqual("AMM"):
+                            case "Amm":
                                 if (replay.ReplayBuild < 33684)
                                     replay.GameMode = StormGameMode.QuickMatch;
                                 break;
                             default:
-                                throw new StormParseException($"Unexpected GameTypeAttribute: {value.ToString()}");
+                                throw new StormParseException($"Unexpected GameMode attribute: {value}");
                         }
 
                         break;
@@ -118,9 +94,9 @@ internal static class ReplayAttributeEvents
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
                         if (!player.IsAutoSelect)
-                            player.IsAutoSelect = upperValue.SequenceEqual("RAND");
+                            player.IsAutoSelect = value == "rand";
 
-                        player.PlayerHero!.HeroAttributeId = value.Trim('\0').ToString();
+                        player.PlayerHero!.HeroAttributeId = value;
 
                         break;
                     }
@@ -130,9 +106,9 @@ internal static class ReplayAttributeEvents
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
                         if (!player.IsAutoSelect)
-                            player.IsAutoSelect = upperValue.SequenceEqual("RAND");
+                            player.IsAutoSelect = value == "rand";
 
-                        player.PlayerLoadout.SkinAndSkinTintAttributeId = value.Trim('\0').ToString();
+                        player.PlayerLoadout.SkinAndSkinTintAttributeId = value;
 
                         break;
                     }
@@ -141,7 +117,7 @@ internal static class ReplayAttributeEvents
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                        player.PlayerLoadout.MountAndMountTintAttributeId = value.Trim('\0').ToString();
+                        player.PlayerLoadout.MountAndMountTintAttributeId = value;
 
                         break;
                     }
@@ -150,7 +126,7 @@ internal static class ReplayAttributeEvents
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                        player.PlayerLoadout.BannerAttributeId = value.Trim('\0').ToString();
+                        player.PlayerLoadout.BannerAttributeId = value;
 
                         break;
                     }
@@ -159,7 +135,7 @@ internal static class ReplayAttributeEvents
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                        player.PlayerLoadout.SprayAttributeId = value.Trim('\0').ToString();
+                        player.PlayerLoadout.SprayAttributeId = value;
 
                         break;
                     }
@@ -168,7 +144,7 @@ internal static class ReplayAttributeEvents
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                        player.PlayerLoadout.VoiceLineAttributeId = value.Trim('\0').ToString();
+                        player.PlayerLoadout.VoiceLineAttributeId = value;
 
                         break;
                     }
@@ -177,7 +153,7 @@ internal static class ReplayAttributeEvents
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                        player.PlayerLoadout.AnnouncerPackAttributeId = value.Trim('\0').ToString();
+                        player.PlayerLoadout.AnnouncerPackAttributeId = value;
 
                         break;
                     }
@@ -198,17 +174,17 @@ internal static class ReplayAttributeEvents
                     {
                         if (replay.ReplayBuild < 43905 && replay.GameMode != StormGameMode.Custom)
                         {
-                            switch (value)
+                            replay.GameMode = value switch
                             {
-                                case Span<char> _ when upperValue.SequenceEqual("STAN"):
-                                    replay.GameMode = StormGameMode.QuickMatch;
-                                    break;
-                                case Span<char> _ when upperValue.SequenceEqual("DRFT"):
-                                    replay.GameMode = StormGameMode.HeroLeague;
-                                    break;
-                                default:
-                                    break;
-                            }
+                                "stan" => StormGameMode.QuickMatch,
+                                "drft" => StormGameMode.HeroLeague,
+
+                                _ => StormGameMode.Unknown,
+                            };
+                        }
+                        else
+                        {
+                            replay.LobbyMode = GetLobbyMode(value);
                         }
 
                         break;
@@ -216,8 +192,11 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.ReadyMode:
                     {
-                        if (replay.ReplayBuild < 43905 && replay.GameMode == StormGameMode.HeroLeague && upperValue.SequenceEqual("FCFS"))
+                        if (replay.ReplayBuild < 43905 && replay.GameMode == StormGameMode.HeroLeague && value == "fcfs")
                             replay.GameMode = StormGameMode.TeamLeague;
+                        else
+                            replay.ReadyMode = GetReadyMode(value);
+
                         break;
                     }
 
@@ -230,33 +209,136 @@ internal static class ReplayAttributeEvents
                     switch (attribute)
                     {
                         case ReplayAttributeEventType.DraftTeam1Ban1:
-                            replay.TeamHeroAttributeIdBans[0][0] = value.Trim('\0').ToString();
+                            replay.TeamHeroAttributeIdBans[0][0] = value;
                             break;
                         case ReplayAttributeEventType.DraftTeam1Ban2:
-                            replay.TeamHeroAttributeIdBans[0][1] = value.Trim('\0').ToString();
+                            replay.TeamHeroAttributeIdBans[0][1] = value;
                             break;
                         case ReplayAttributeEventType.DraftTeam1Ban3:
-                            replay.TeamHeroAttributeIdBans[0][2] = value.Trim('\0').ToString();
+                            replay.TeamHeroAttributeIdBans[0][2] = value;
                             break;
                         case ReplayAttributeEventType.DraftTeam2Ban1:
-                            replay.TeamHeroAttributeIdBans[1][0] = value.Trim('\0').ToString();
+                            replay.TeamHeroAttributeIdBans[1][0] = value;
                             break;
                         case ReplayAttributeEventType.DraftTeam2Ban2:
-                            replay.TeamHeroAttributeIdBans[1][1] = value.Trim('\0').ToString();
+                            replay.TeamHeroAttributeIdBans[1][1] = value;
                             break;
                         case ReplayAttributeEventType.DraftTeam2Ban3:
-                            replay.TeamHeroAttributeIdBans[1][2] = value.Trim('\0').ToString();
+                            replay.TeamHeroAttributeIdBans[1][2] = value;
                             break;
                     }
 
                     break;
 
+                case ReplayAttributeEventType.FirstReadyingTeam:
+                    {
+                        replay.FirstDraftTeam = GetFirstReadyingTeam(value);
+
+                        break;
+                    }
+
+                case ReplayAttributeEventType.PrivacyOption:
+                    {
+                        replay.GamePrivacy = GetPrivacyOption(value);
+
+                        break;
+                    }
+
+                case ReplayAttributeEventType.DraftBanMode:
+                    {
+                        replay.BanMode = GetDraftBanMode(value);
+
+                        break;
+                    }
+
                 default:
-#if DEBUG
-                    string valueString = value.ToString();
-#endif
                     break;
             }
         }
     }
+
+    internal static StormLobbyMode GetLobbyMode(string value) => value switch
+    {
+        "stan" => StormLobbyMode.Standard,
+        "drft" => StormLobbyMode.Draft,
+        "tour" => StormLobbyMode.TournamentDraft,
+
+        _ => StormLobbyMode.Unknown,
+    };
+
+    internal static StormGameSpeed GetGameSpeed(string value) => value switch
+    {
+        "Slor" => StormGameSpeed.Slower,
+        "Slow" => StormGameSpeed.Slow,
+        "Norm" => StormGameSpeed.Normal,
+        "Fast" => StormGameSpeed.Fast,
+        "Fasr" => StormGameSpeed.Faster,
+
+        _ => StormGameSpeed.Unknown,
+    };
+
+    internal static StormGamePrivacy GetPrivacyOption(string value) => value switch
+    {
+        "Norm" => StormGamePrivacy.Normal,
+        "NoMH" => StormGamePrivacy.NoMatchHistory,
+
+        _ => StormGamePrivacy.Unknown,
+    };
+
+    internal static StormReadyMode GetReadyMode(string value) => value switch
+    {
+        "fcfs" => StormReadyMode.FCFS,
+        "pred" => StormReadyMode.Predetermined,
+
+        _ => StormReadyMode.Unknown,
+    };
+
+    internal static StormBanMode GetDraftBanMode(string value) => value switch
+    {
+        "" => StormBanMode.NotUsingBans,
+        "1ban" => StormBanMode.OneBan,
+        "2ban" => StormBanMode.TwoBan,
+        "Mban" => StormBanMode.MidBan,
+        "3ban" => StormBanMode.ThreeBan,
+
+        _ => StormBanMode.Unknown,
+    };
+
+    internal static StormFirstDraftTeam GetFirstReadyingTeam(string value) => value switch
+    {
+        "" => StormFirstDraftTeam.CoinToss,
+        "T1" => StormFirstDraftTeam.Team1,
+        "T2" => StormFirstDraftTeam.Team2,
+
+        _ => StormFirstDraftTeam.Unknown,
+    };
+
+    internal static PlayerSlotType GetPlayerType(string value) => value switch
+    {
+        "Clsd" => PlayerSlotType.Closed,
+        "Open" => PlayerSlotType.Open,
+        "Humn" => PlayerSlotType.Human,
+        "Comp" => PlayerSlotType.Computer,
+
+        _ => PlayerSlotType.Unknown,
+    };
+
+    internal static PlayerType GetParticipantRole(string value) => value switch
+    {
+        "Part" => PlayerType.Human,
+        "Watc" => PlayerType.Observer,
+
+        _ => PlayerType.Unknown,
+    };
+
+    internal static PlayerDifficulty GetDifficultyLevel(string value) => value switch
+    {
+        "VyEy" => PlayerDifficulty.Beginner,
+        "Easy" => PlayerDifficulty.Recruit,
+        "Medi" => PlayerDifficulty.Adept,
+        "HdVH" => PlayerDifficulty.Veteran,
+        "VyHd" => PlayerDifficulty.Elite,
+
+        _ => PlayerDifficulty.Unknown,
+    };
 }

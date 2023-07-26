@@ -18,6 +18,9 @@ internal static class PregameMapper
                 StormPlayer? stormPlayer = replay.ClientListByWorkingSetSlotID[i];
                 stormPlayer ??= replay.ClientListByUserID[i];
 
+                if (stormPregamePlayer.Name != stormPlayer.Name && stormPregamePlayer.ToonHandle!.Id != stormPlayer.ToonHandle?.Id)
+                    throw new StormParseException("Mismatch on data transfer from pregame to replay");
+
                 stormPlayer.PartyValue = stormPregamePlayer.PartyValue;
                 stormPlayer.AccountLevel = stormPregamePlayer.AccountLevel;
                 stormPlayer.BattleTagName = stormPregamePlayer.BattleTagName;

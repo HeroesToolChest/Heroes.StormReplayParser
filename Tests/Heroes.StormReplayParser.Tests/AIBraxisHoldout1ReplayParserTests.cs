@@ -123,4 +123,14 @@ public class AIBraxisHoldout1ReplayParserTests
         Assert.AreEqual(0, messages.Count);
         Assert.IsTrue(messages.All(x => !string.IsNullOrEmpty(x.Message)));
     }
+
+    [TestMethod]
+    public void AttributeTest()
+    {
+        Assert.AreEqual(StormBanMode.NotUsingBans, _stormReplay.BanMode);
+        Assert.AreEqual(StormFirstDraftTeam.CoinToss, _stormReplay.FirstDraftTeam);
+        Assert.AreEqual(StormGamePrivacy.Normal, _stormReplay.GamePrivacy);
+        Assert.AreEqual(StormLobbyMode.Standard, _stormReplay.LobbyMode);
+        Assert.AreEqual(StormReadyMode.FCFS, _stormReplay.ReadyMode);
+    }
 }

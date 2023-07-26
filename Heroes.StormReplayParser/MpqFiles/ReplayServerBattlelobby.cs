@@ -644,20 +644,13 @@ internal static class ReplayServerBattlelobby
 
     private static void SetGlobalAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int attributeValueIndex)
     {
+        string value = attribute.AttributeValues[attributeValueIndex].Value.Trim('\0');
+
         switch (attribute.ReplayAttributeEventType)
         {
             case ReplayAttributeEventType.GameSpeed:
                 {
-                    replay.GameSpeed = attribute.AttributeValues[attributeValueIndex].Value switch
-                    {
-                        "Slor" => StormGameSpeed.Slower,
-                        "Slow" => StormGameSpeed.Slow,
-                        "Norm" => StormGameSpeed.Normal,
-                        "Fast" => StormGameSpeed.Fast,
-                        "Fasr" => StormGameSpeed.Faster,
-
-                        _ => StormGameSpeed.Unknown,
-                    };
+                    replay.GameSpeed = ReplayAttributeEvents.GetGameSpeed(value);
 
                     break;
                 }
@@ -671,26 +664,61 @@ internal static class ReplayServerBattlelobby
                 switch (attribute.ReplayAttributeEventType)
                 {
                     case ReplayAttributeEventType.DraftTeam1Ban1:
-                        replay.TeamHeroAttributeIdBans[0][0] = attribute.AttributeValues[attributeValueIndex].Value;
+                        replay.TeamHeroAttributeIdBans[0][0] = value;
                         break;
                     case ReplayAttributeEventType.DraftTeam1Ban2:
-                        replay.TeamHeroAttributeIdBans[0][1] = attribute.AttributeValues[attributeValueIndex].Value;
+                        replay.TeamHeroAttributeIdBans[0][1] = value;
                         break;
                     case ReplayAttributeEventType.DraftTeam1Ban3:
-                        replay.TeamHeroAttributeIdBans[0][2] = attribute.AttributeValues[attributeValueIndex].Value;
+                        replay.TeamHeroAttributeIdBans[0][2] = value;
                         break;
                     case ReplayAttributeEventType.DraftTeam2Ban1:
-                        replay.TeamHeroAttributeIdBans[1][0] = attribute.AttributeValues[attributeValueIndex].Value;
+                        replay.TeamHeroAttributeIdBans[1][0] = value;
                         break;
                     case ReplayAttributeEventType.DraftTeam2Ban2:
-                        replay.TeamHeroAttributeIdBans[1][1] = attribute.AttributeValues[attributeValueIndex].Value;
+                        replay.TeamHeroAttributeIdBans[1][1] = value;
                         break;
                     case ReplayAttributeEventType.DraftTeam2Ban3:
-                        replay.TeamHeroAttributeIdBans[1][2] = attribute.AttributeValues[attributeValueIndex].Value;
+                        replay.TeamHeroAttributeIdBans[1][2] = value;
                         break;
                 }
 
                 break;
+
+            case ReplayAttributeEventType.PrivacyOption:
+                {
+                    replay.GamePrivacy = ReplayAttributeEvents.GetPrivacyOption(value);
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.ReadyMode:
+                {
+                    replay.ReadyMode = ReplayAttributeEvents.GetReadyMode(value);
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.LobbyMode:
+                {
+                    replay.LobbyMode = ReplayAttributeEvents.GetLobbyMode(value);
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.DraftBanMode:
+                {
+                    replay.BanMode = ReplayAttributeEvents.GetDraftBanMode(value);
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.FirstReadyingTeam:
+                {
+                    replay.FirstDraftTeam = ReplayAttributeEvents.GetFirstReadyingTeam(value);
+
+                    break;
+                }
 
             default:
                 break;
@@ -699,78 +727,62 @@ internal static class ReplayServerBattlelobby
 
     private static void SetPlayerAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int playerSlotIndex, int attributeValueIndex)
     {
+        string value = attribute.AttributeValues[attributeValueIndex].Value.Trim('\0');
+
         switch (attribute.ReplayAttributeEventType)
         {
             case ReplayAttributeEventType.PlayerType:
                 {
-                    PlayerSlotType playerSlotType = attribute.AttributeValues[attributeValueIndex].Value switch
-                    {
-                        "Clsd" => PlayerSlotType.Closed,
-                        "Open" => PlayerSlotType.Open,
-                        "Humn" => PlayerSlotType.Human,
-                        "Comp" => PlayerSlotType.Computer,
-
-                        _ => PlayerSlotType.Unknown,
-                    };
-
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerSlotType = playerSlotType;
+                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerSlotType = ReplayAttributeEvents.GetPlayerType(value);
 
                     break;
                 }
 
             case ReplayAttributeEventType.ParticipantRole:
                 {
-                    PlayerType playerType = attribute.AttributeValues[attributeValueIndex].Value switch
-                    {
-                        "Part" => PlayerType.Human,
-                        "Watc" => PlayerType.Observer,
-
-                        _ => PlayerType.Unknown,
-                    };
-
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerType = playerType;
+                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerType = ReplayAttributeEvents.GetParticipantRole(value);
 
                     break;
                 }
 
             case ReplayAttributeEventType.SkinAndSkinTint:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.SkinAndSkinTintAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.SkinAndSkinTintAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.Banner:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.BannerAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.BannerAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.VoiceLine:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.VoiceLineAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.VoiceLineAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.Spray:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.SprayAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.SprayAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.MountAndMountTint:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.MountAndMountTintAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.MountAndMountTintAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.Announcer:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.AnnouncerPackAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.AnnouncerPackAttributeId = value;
 
                     break;
                 }
@@ -779,21 +791,37 @@ internal static class ReplayServerBattlelobby
                 {
                     replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerHero ??= new();
 
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerHero!.HeroAttributeId = attribute.AttributeValues[attributeValueIndex].Value;
+                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerHero!.HeroAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.HeroLevel:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerHero!.HeroLevel = int.Parse(attribute.AttributeValues[attributeValueIndex].Value);
+                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerHero!.HeroLevel = int.Parse(value);
 
                     break;
                 }
 
-            case ReplayAttributeEventType.TandemLeader:
-            case ReplayAttributeEventType.Commander:
+            case ReplayAttributeEventType.DifficultyLevel:
                 {
+                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerDifficulty = ReplayAttributeEvents.GetDifficultyLevel(value);
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.HeroMasteryRingTier:
+                {
+                    if (value == string.Empty)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if (int.TryParse(value[^1..], out int tierLevel))
+                            replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerHero!.HeroMasteryTier = tierLevel;
+                    }
+
                     break;
                 }
 

@@ -15,6 +15,11 @@ public class PregamePlayerHero
     /// </summary>
     public int HeroLevel { get; set; } = 0;
 
+    /// <summary>
+    /// Gets or sets the hero's mastery tier level.
+    /// </summary>
+    public int? HeroMasteryTier { get; set; }
+
     /// <inheritdoc/>
     public override string ToString() => HeroAttributeId;
 }

@@ -86,4 +86,9 @@ public class StormPregamePlayer
     /// Gets or sets the player's party value. Those in the same party have the same value.
     /// </summary>
     public long? PartyValue { get; set; } = null;
+
+    /// <summary>
+    /// Gets or sets the computer player difficulty.
+    /// </summary>
+    public PlayerDifficulty PlayerDifficulty { get; set; } = PlayerDifficulty.Unknown;
 }

@@ -81,8 +81,7 @@ internal enum ReplayAttributeEventType
     DraftTeam2Ban3 = 4045,
     DraftTeam2Ban3LockedIn = 4046,
 
-    /* 4047 - 4053 ??? */
-
+    HeroMasteryRingTier = 4051,
     HeroSpecificRole = 4053,
 
     /* 4100 - 4200 are related to Artifacts, no longer in the game */

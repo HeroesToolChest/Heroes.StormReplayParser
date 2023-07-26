@@ -32,6 +32,31 @@ public class StormReplayPregame
     public StormGameSpeed GameSpeed { get; set; } = StormGameSpeed.Unknown;
 
     /// <summary>
+    /// Gets or sets the game privacy setting (appears in match history or not).
+    /// </summary>
+    public StormGamePrivacy GamePrivacy { get; set; } = StormGamePrivacy.Unknown;
+
+    /// <summary>
+    /// Gets or sets the ready mode. This is the player order for selecting a hero in draft.
+    /// </summary>
+    public StormReadyMode ReadyMode { get; set; } = StormReadyMode.Unknown;
+
+    /// <summary>
+    /// Gets or sets the lobby mode. This determines the type of draft or no draft.
+    /// </summary>
+    public StormLobbyMode LobbyMode { get; set; } = StormLobbyMode.Unknown;
+
+    /// <summary>
+    /// Gets or sets the ban mode.
+    /// </summary>
+    public StormBanMode BanMode { get; set; } = StormBanMode.Unknown;
+
+    /// <summary>
+    /// Gets or sets the first draft team.
+    /// </summary>
+    public StormFirstDraftTeam FirstDraftTeam { get; set; } = StormFirstDraftTeam.Unknown;
+
+    /// <summary>
     /// Gets a collection of disabled heroes as attributeIds.
     /// </summary>
     public IReadOnlyCollection<string> DisabledHeroes => DisabledHeroAttributeIdList;
