@@ -7,7 +7,7 @@ Heroes Storm Replay Parser is a .NET library that parses the Heroes of the Storm
 
 To see this library in action check out [Heroes Decode](https://github.com/HeroesToolChest/HeroesDecode).
 
-This library is based on [Heroes.ReplayParser](https://github.com/barrett777/Heroes.ReplayParser)
+This library is based on [Heroes.ReplayParser](https://github.com/barrett777/Heroes.ReplayParser).
 
 ## Replay File Usage
 To parse a replay file use `StormReplay.Parse(string fileName)` by providing the `.StormReplay` file. It will return a `StormReplayResult` object that will have the result of the parsing as well as the `StormReplay` object that will contain all the data parsed.
@@ -106,7 +106,7 @@ else
 Besides providing the file name of the replay, `ParsePregameOptions()` may also be passed in. By default PTR parsing is enabled. Parsing a PTR battlelobby will result in a `StormReplayParseStatus` of `PTRRegion`.
 
 ## Data References
-Some data returned will be references to the game data, such as `PlayerHero.HeroAttributeId`. Such data can be obtained from [HeroesDataParser](https://github.com/HeroesToolChest/HeroesDataParser). From there other resources links can be found.
+Some data returned will be references to the game data, such as `PlayerHero.HeroAttributeId`. Such data can be obtained from [HeroesDataParser](https://github.com/HeroesToolChest/HeroesDataParser). From there other resource links can be found.
 
 ## Developing
 To build and compile the code, it is recommended to use the latest version of [Visual Studio 2022 or Visual Studio Code](https://visualstudio.microsoft.com/downloads/).
