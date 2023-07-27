@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <Version>1.0.0</Version>
     <Authors>Kevin Oliva</Authors>
-    <Copyright>Copyright © 2020 - 2022 Kevin Oliva</Copyright>
+    <Copyright>Copyright © 2020 - 2023 Kevin Oliva</Copyright>
     <Description>Library to parse Heroes of the Storm replay files (.StormReplay).</Description>
     <PackageProjectUrl>https://github.com/HeroesToolChest/Heroes.StormReplayParser</PackageProjectUrl>
     <RepositoryUrl>https://github.com/HeroesToolChest/Heroes.StormReplayParser</RepositoryUrl>
