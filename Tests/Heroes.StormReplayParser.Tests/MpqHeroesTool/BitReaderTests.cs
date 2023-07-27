@@ -22,6 +22,32 @@ public class BitReaderTests
     }
 
     [TestMethod]
+    public void ReadsBitsCompareBigEndianTest()
+    {
+        Span<byte> buffer = stackalloc byte[4] { 8, 130, 67, 58 };
+        BitReader bitReader = new(buffer, EndianType.BigEndian);
+        int resultBig = bitReader.ReadInt32Aligned();
+
+        BitReader bitReader2 = new(buffer, EndianType.BigEndian);
+        int resultBig2 = (int)bitReader2.ReadBits(32);
+
+        Assert.AreEqual(resultBig, resultBig2);
+    }
+
+    [TestMethod]
+    public void ReadsBitsCompareLittleEndianTest()
+    {
+        Span<byte> buffer = stackalloc byte[4] { 8, 130, 67, 58 };
+        BitReader bitReader = new(buffer, EndianType.LittleEndian);
+        uint resultLittle = (uint)bitReader.ReadInt32Aligned();
+
+        BitReader bitReader2 = new(buffer, EndianType.LittleEndian);
+        uint resultLittle2 = bitReader2.ReadBits(32);
+
+        Assert.AreEqual(resultLittle, resultLittle2);
+    }
+
+    [TestMethod]
     public void BitReversementTest()
     {
         Span<byte> buffer = stackalloc byte[18] { 8, 130, 67, 58, 92, 80, 114, 102, 0, 1, 12, 13, 115, 23, 28, 56, 47, 35 };
@@ -62,51 +88,63 @@ public class BitReaderTests
     }
 
     [TestMethod]
-    public void ReadStringFromBitsAsBigEndian()
+    [DataRow("s2m", new byte[4] { 115, 50, 109, 0 })]
+    [DataRow("", new byte[4] { 0, 0, 0, 0 })]
+    [DataRow("s2mv", new byte[4] { 115, 50, 109, 118 })]
+    public void ReadStringFromBitsAsBigEndian(string result, byte[] bytes)
     {
-        Span<byte> buffer = stackalloc byte[4] { 115, 50, 109, 118 };
+        Span<byte> buffer = new(bytes);
 
         BitReader bitReader = new(buffer, EndianType.BigEndian);
 
         string value = bitReader.ReadStringFromBits(32);
 
-        Assert.AreEqual("s2mv", value);
+        Assert.AreEqual(result, value);
     }
 
     [TestMethod]
-    public void ReadStringFromBitsAsLittleEndian()
+    [DataRow("m2s", new byte[4] { 115, 50, 109, 0 })]
+    [DataRow("", new byte[4] { 0, 0, 0, 0 })]
+    [DataRow("vm2s", new byte[4] { 115, 50, 109, 118 })]
+    public void ReadStringFromBitsAsLittleEndian(string result, byte[] bytes)
     {
-        Span<byte> buffer = stackalloc byte[4] { 115, 50, 109, 118 };
+        Span<byte> buffer = new(bytes);
 
         BitReader bitReader = new(buffer, EndianType.LittleEndian);
 
         string value = bitReader.ReadStringFromBits(32);
 
-        Assert.AreEqual("vm2s", value);
+        Assert.AreEqual(result, value);
     }
 
     [TestMethod]
-    public void ReadStringFromAlignedBytesAsBigEndian()
+    [DataRow("s2m", new byte[4] { 115, 50, 109, 0 })]
+    [DataRow("", new byte[4] { 0, 0, 0, 0 })]
+    [DataRow("s2mv", new byte[4] { 115, 50, 109, 118 })]
+    public void ReadStringFromAlignedBytesAsBigEndian(string result, byte[] bytes)
     {
-        Span<byte> buffer = stackalloc byte[4] { 115, 50, 109, 118 };
+        Span<byte> buffer = new(bytes);
 
         BitReader bitReader = new(buffer, EndianType.BigEndian);
 
         string value = bitReader.ReadStringFromAlignedBytes(4);
 
-        Assert.AreEqual("s2mv", value);
+        Assert.AreEqual(result, value);
     }
 
     [TestMethod]
-    public void ReadStringFromAlignedBytesAsLittleEndian()
+    [DataRow("m2s", new byte[4] { 115, 50, 109, 0 })]
+    [DataRow("", new byte[4] { 0, 0, 0, 0 })]
+    [DataRow("vm2s", new byte[4] { 115, 50, 109, 118 })]
+    public void ReadStringFromAlignedBytesAsLittleEndian(string result, byte[] bytes)
     {
-        Span<byte> buffer = stackalloc byte[4] { 115, 50, 109, 118 };
+        Span<byte> buffer = new(bytes);
 
         BitReader bitReader = new(buffer, EndianType.LittleEndian);
 
         string value = bitReader.ReadStringFromAlignedBytes(4);
 
-        Assert.AreEqual("vm2s", value);
+        Assert.AreEqual(result, value);
     }
 
     [TestMethod]
