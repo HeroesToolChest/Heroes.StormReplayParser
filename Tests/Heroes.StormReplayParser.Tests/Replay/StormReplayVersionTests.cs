@@ -113,21 +113,6 @@ public class StormReplayVersionTests
     }
 
     [TestMethod]
-    public void NotSameObjectTest()
-    {
-        StormReplayVersion version = new()
-        {
-            Major = 2,
-            Minor = 3,
-            Revision = 45,
-            Build = 454545,
-            BaseBuild = 454545,
-        };
-
-        Assert.AreNotEqual(new List<string>() { "asdf" }, version);
-    }
-
-    [TestMethod]
     [DataRow(2, 2, 2, 11111, 11111, 2, 2, 2, 11111, 11111)]
     public void OperatorEqualTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)
     {

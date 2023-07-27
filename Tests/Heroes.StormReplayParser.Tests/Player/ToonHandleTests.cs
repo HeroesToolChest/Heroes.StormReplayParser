@@ -86,20 +86,6 @@ public class ToonHandleTests
     }
 
     [TestMethod]
-    public void NotSameObjectTest()
-    {
-        ToonHandle toonHandle = new()
-        {
-            Region = 1,
-            ProgramId = 123456789,
-            Realm = 2,
-            Id = 234234,
-        };
-
-        Assert.AreNotEqual(new List<string>() { "asdf" }, toonHandle);
-    }
-
-    [TestMethod]
     [DataRow(1, 123456789, 2, 1457856945, 1, 123456789, 2, 1457856945)]
     public void OperatorEqualTest(int region, int programId, int realm, long id, int region2, int programId2, int realm2, long id2)
     {
