@@ -9,7 +9,7 @@ internal static class ReplayServerBattlelobby
 
     public static string FileName { get; } = "replay.server.battlelobby";
 
-    public static void Parse(StormReplayPregame replay, ReadOnlySpan<byte> source)
+    public static void Parse(StormReplayPregame replay, ReadOnlySpan<byte> source, bool pregameMode = false)
     {
         // just return if too old
         if (replay.ReplayBuild <= 61718)
@@ -58,9 +58,11 @@ internal static class ReplayServerBattlelobby
                     Value = bitReader.ReadStringFromUnalignedBytes(4), // attribute value
                 };
 
-                if (bitReader.ReadBoolean()) // first
+                // first
+                if (bitReader.ReadBoolean())
                 {
-                    if (bitReader.ReadBoolean()) // f32
+                    // f32
+                    if (bitReader.ReadBoolean())
                     {
                         bitReader.ReadBits(32);
                     }
@@ -69,9 +71,11 @@ internal static class ReplayServerBattlelobby
                     stormBattleLobbyAttributeValue.FirstId = bitReader.ReadInt16Unaligned(); // word - id for s2ml xml
                 }
 
-                if (bitReader.ReadBoolean()) // second
+                // second
+                if (bitReader.ReadBoolean())
                 {
-                    if (bitReader.ReadBoolean()) // f32
+                    // f32
+                    if (bitReader.ReadBoolean())
                     {
                         bitReader.ReadBits(32);
                     }
@@ -80,7 +84,8 @@ internal static class ReplayServerBattlelobby
                     stormBattleLobbyAttributeValue.SecondId = bitReader.ReadInt16Unaligned(); // word - id for s2ml xml
                 }
 
-                if (bitReader.ReadBoolean()) // f70
+                // f70
+                if (bitReader.ReadBoolean())
                 {
                     bitReader.ReadBits(6); // NewField6
                     bitReader.ReadBits(32); // NewField32
@@ -602,7 +607,8 @@ internal static class ReplayServerBattlelobby
         if (replay.ReplayBuild > 68509)
             bitReader.ReadBitArray(2);
 
-        replay.MapLink = GetMapLink(battleNetCachePaths.Last(), s2mFiles.Last());
+        if (pregameMode)
+            replay.MapLink = GetMapLink(battleNetCachePaths.Last(), s2mFiles.Last());
 
         replay.IsBattleLobbyPlayerInfoParsed = true;
     }
@@ -644,7 +650,7 @@ internal static class ReplayServerBattlelobby
 
     private static void SetGlobalAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int attributeValueIndex)
     {
-        string value = attribute.AttributeValues[attributeValueIndex].Value.Trim('\0');
+        string value = attribute.AttributeValues[attributeValueIndex].Value;
 
         switch (attribute.ReplayAttributeEventType)
         {
@@ -937,7 +943,7 @@ internal static class ReplayServerBattlelobby
                 propertiesElement.TryGetProperty("Loading", out JsonElement loadingElement) &&
                 loadingElement.TryGetProperty("MapLink", out JsonElement mapLinkElement))
             {
-               return mapLinkElement.GetString();
+                return mapLinkElement.GetString();
             }
 
             return null;

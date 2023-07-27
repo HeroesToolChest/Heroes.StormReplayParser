@@ -4,7 +4,7 @@
 /// Contains the properties and methods for the battle lobby.
 /// Used to obtain data from the loading screen part of the match.
 /// </summary>
-public class StormReplayPregame
+public partial class StormReplayPregame
 {
     /// <summary>
     /// Gets or sets the replay build.

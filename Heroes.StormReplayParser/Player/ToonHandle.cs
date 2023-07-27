@@ -99,9 +99,12 @@ public class ToonHandle : IEquatable<ToonHandle>
     /// <inheritdoc/>
     public override string ToString()
     {
-        string programId = BitReader.GetUTF8StringBaseOnMachineEndiness(BitConverter.GetBytes(ProgramId));
+        Span<byte> bytes = stackalloc byte[8];
+        BitConverter.TryWriteBytes(bytes, ProgramId);
 
-        return $"{Region}-{programId.Trim('\0')}-{Realm}-{Id}";
+        string programId = BitReader.GetUTF8StringFromBytes(bytes);
+
+        return $"{Region}-{programId}-{Realm}-{Id}";
     }
 
     /// <inheritdoc/>
