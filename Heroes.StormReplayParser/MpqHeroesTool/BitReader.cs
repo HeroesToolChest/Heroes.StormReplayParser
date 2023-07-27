@@ -51,6 +51,17 @@ public ref struct BitReader
         if (numberOfBits < 0)
             throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than -1");
 
+        // check if we're using full bytes and in a middle of a byte
+        if (numberOfBits % 8 == 0 && (_bitIndex & 7) == 0)
+        {
+            int numberOfBytes = numberOfBits / 8;
+
+            if (numberOfBytes == 2)
+                return ReadUInt16Aligned();
+            else if (numberOfBytes == 4)
+                return ReadUInt32Aligned();
+        }
+
         return EndianType == EndianType.BigEndian ? GetValueFromBits(numberOfBits) : BinaryPrimitives.ReverseEndianness(GetValueFromBits(numberOfBits));
     }
 
@@ -67,6 +78,19 @@ public ref struct BitReader
         if (numberOfBits < 1)
             throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
+        // check if we're using full bytes and in a middle of a byte
+        if (numberOfBits % 8 == 0 && (_bitIndex & 7) == 0)
+        {
+            int numberOfBytes = numberOfBits / 8;
+
+            if (numberOfBytes == 2)
+                return ReadUInt16Aligned();
+            else if (numberOfBytes == 4)
+                return ReadUInt32Aligned();
+            else if (numberOfBytes == 8)
+                return ReadUInt64Aligned();
+        }
+
         return EndianType == EndianType.BigEndian ? GetULongValueFromBits(numberOfBits) : BinaryPrimitives.ReverseEndianness(GetULongValueFromBits(numberOfBits));
     }
 
@@ -82,6 +106,19 @@ public ref struct BitReader
             throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be less than 65");
         if (numberOfBits < 1)
             throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
+
+        // check if we're using full bytes and in a middle of a byte
+        if (numberOfBits % 8 == 0 && (_bitIndex & 7) == 0)
+        {
+            int numberOfBytes = numberOfBits / 8;
+
+            if (numberOfBytes == 2)
+                return ReadInt16Aligned();
+            else if (numberOfBytes == 4)
+                return ReadInt32Aligned();
+            else if (numberOfBytes == 8)
+                return ReadInt64Aligned();
+        }
 
         return EndianType == EndianType.BigEndian ? GetLongValueFromBits(numberOfBits) : BinaryPrimitives.ReverseEndianness(GetLongValueFromBits(numberOfBits));
     }
