@@ -15,9 +15,15 @@ public class StormReplayParserBenchmarks
     }
 
     [Benchmark]
+    public void ParseReplay1()
+    {
+        _ = StormReplay.Parse(Path.Join(_replaysFolder, _replayFile));
+    }
+
+    [Benchmark]
     public void ParseReplay10()
     {
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 10; i++)
         {
             _ = StormReplay.Parse(Path.Join(_replaysFolder, _replayFile));
         }
