@@ -9,10 +9,10 @@ To see this library in action check out [Heroes Decode](https://github.com/Heroe
 
 This library is based on [Heroes.ReplayParser](https://github.com/barrett777/Heroes.ReplayParser)
 
-## Usage
+## Replay File Usage
 To parse a replay file use `StormReplay.Parse(string fileName)` by providing the `.StormReplay` file. It will return a `StormReplayResult` object that will have the result of the parsing as well as the `StormReplay` object that will contain all the data parsed.
 
-Example
+Example:
 ```C#
 // parse the replay file
 StormReplayResult stormReplayResult = StormReplay.Parse(@"C:\<USER PATH>\Replays\Multiplayer\2020-06-29 20.08.13 Garden of Terror.StormReplay");
@@ -43,7 +43,7 @@ else
 }
 ```
 ### Parsing Options
-Besides providing the file name of the replay, `ParseOptions()` may also be passed in. This defines how much of the replay to parse. By default tracker, game, and message events are enabled and PTR parsing is diasabled. Parsing a PTR will result in a `StormReplayParseStatus` of `PTRRegion`.
+Besides providing the file name of the replay, `ParseOptions()` may also be passed in. This defines how much of the replay to parse. By default tracker, game, and message events are enabled and PTR parsing is disabled. Parsing a PTR replay will result in a `StormReplayParseStatus` of `PTRRegion`.
 
 Game Event parsing provides the following:
 - Hero names (localized)
@@ -63,6 +63,50 @@ Message Events provides the following:
 - All message types (chat, ping, player announce messages, etc...)
 
 The above provided are properties of classes that are automatically parsed out. `GameEvents`, `TrackerEvents`, and `Messages` are also properties that are available that can be used for obtaining specific data.
+
+## BattleLobby File Usage
+`replay.server.battlelobby` files can also be parsed to obtain data for pregame analysis tools. The `.battlelobby` file is created at the start of the loading screen.
+
+On Windows, the default location is `C:\<USER PATH>\AppData\Local\Temp\Heroes of the Storm\TempWriteReplayP1\replay.server.battlelobby`. The `\Heroes of the Storm` directory is removed after the match has finished.
+
+To parse a battlelobby file use `StormReplayPregame.Parse(string fileName)` by providing the `.battlelobby` file. It will return a `StormReplayPregameResult` object that will have the result of the parsing as well as the `StormReplayPregame` object that will contain all the data parsed.
+
+Example:
+```C#
+// parse the battlelobby file
+StormReplayPregameResult stormReplayPregameResult = StormReplayPregame.Parse(@"C:\<USER PATH>\AppData\Local\Temp\Heroes of the Storm\TempWriteReplayP1\replay.server.battlelobby");
+
+// get the result of the parsing
+StormReplayPregameParseStatus status = stormReplayPregameResult.Status;
+
+// check if it succeeded
+if (status == StormReplayPregameParseStatus.Success)
+{
+    // get the replay object
+    StormReplayPregame replay = stormReplayPregameResult.ReplayBattleLobby;
+
+    // version of the replay
+    int buildVersion = replay.ReplayBuild;
+
+    // player data
+    IEnumerable<StormPregamePlayer> players = replay.StormPlayers;
+}
+else
+{
+    // check if the status is an exception
+    if (status == StormReplayPregameParseStatus.Exception)
+    {
+        // the exception
+        StormParseException? stormParseException = stormReplayPregameResult.Exception;
+    }
+}
+```
+
+### Parsing Options
+Besides providing the file name of the replay, `ParsePregameOptions()` may also be passed in. By default PTR parsing is enabled. Parsing a PTR battlelobby will result in a `StormReplayParseStatus` of `PTRRegion`.
+
+## Data References
+Some data returned will be references to the game data, such as `PlayerHero.HeroAttributeId`. Such data can be obtained from [HeroesDataParser](https://github.com/HeroesToolChest/HeroesDataParser). From there other resources links can be found.
 
 ## Developing
 To build and compile the code, it is recommended to use the latest version of [Visual Studio 2022 or Visual Studio Code](https://visualstudio.microsoft.com/downloads/).
