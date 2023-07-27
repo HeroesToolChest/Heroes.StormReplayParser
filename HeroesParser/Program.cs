@@ -1,26 +1,18 @@
 ﻿using Heroes.StormReplayParser;
 
-namespace HeroesParser;
-
-public static class Program
+if (args is not null && args.Length == 1 && File.Exists(args[0]))
 {
-    public static void Main(string[] args)
+    StormReplayResult stormReplayResult = StormReplay.Parse(args[0], new ParseOptions()
     {
-        if (args is not null && args.Length == 1 && File.Exists(args[0]))
-        {
-            StormReplayResult stormReplayResult = StormReplay.Parse(args[0], new ParseOptions()
-            {
-                AllowPTR = true,
-                ShouldParseGameEvents = true,
-                ShouldParseMessageEvents = true,
-                ShouldParseTrackerEvents = true,
-            });
+        AllowPTR = true,
+        ShouldParseGameEvents = true,
+        ShouldParseMessageEvents = true,
+        ShouldParseTrackerEvents = true,
+    });
 
-            Console.WriteLine(stormReplayResult.Status);
-        }
-        else
-        {
-            Console.WriteLine("No file.");
-        }
-    }
+    Console.WriteLine(stormReplayResult.Status);
+}
+else
+{
+    Console.WriteLine("No file.");
 }
