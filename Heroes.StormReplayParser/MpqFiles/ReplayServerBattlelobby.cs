@@ -726,6 +726,14 @@ internal static class ReplayServerBattlelobby
                     break;
                 }
 
+            case ReplayAttributeEventType.GameMode:
+                {
+                    if (value == "Priv")
+                        replay.GameMode = StormGameMode.Custom;
+
+                    break;
+                }
+
             default:
                 break;
         }

@@ -82,6 +82,8 @@ internal static class ReplayAttributeEvents
                                 if (replay.ReplayBuild < 33684)
                                     replay.GameMode = StormGameMode.QuickMatch;
                                 break;
+                            case "Pub":
+                                break;
                             default:
                                 throw new StormParseException($"Unexpected GameMode attribute: {value}");
                         }
