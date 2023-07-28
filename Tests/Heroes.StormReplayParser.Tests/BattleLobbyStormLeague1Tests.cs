@@ -69,6 +69,9 @@ public class BattleLobbyStormLeague1Tests
 
         StormPregamePlayer player6 = _stormReplay.StormPlayers.ToList()[6];
         Assert.AreEqual(player5.PartyValue, player6.PartyValue);
+
+        StormPregamePlayer player3 = _stormReplay.StormPlayers.ToList()[3];
+        Assert.AreEqual(3, player3.PlayerHero!.HeroMasteryTier);
     }
 
     [TestMethod]

@@ -734,84 +734,85 @@ internal static class ReplayServerBattlelobby
     private static void SetPlayerAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int playerSlotIndex, int attributeValueIndex)
     {
         string value = attribute.AttributeValues[attributeValueIndex].Value.Trim('\0');
+        StormPregamePlayer player = replay.ClientListByWorkingSetSlotID[playerSlotIndex];
+
+        player.PlayerHero ??= new();
 
         switch (attribute.ReplayAttributeEventType)
         {
             case ReplayAttributeEventType.PlayerType:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerSlotType = ReplayAttributeEvents.GetPlayerType(value);
+                    player.PlayerSlotType = ReplayAttributeEvents.GetPlayerType(value);
 
                     break;
                 }
 
             case ReplayAttributeEventType.ParticipantRole:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerType = ReplayAttributeEvents.GetParticipantRole(value);
+                    player.PlayerType = ReplayAttributeEvents.GetParticipantRole(value);
 
                     break;
                 }
 
             case ReplayAttributeEventType.SkinAndSkinTint:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.SkinAndSkinTintAttributeId = value;
+                    player.PlayerLoadout.SkinAndSkinTintAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.Banner:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.BannerAttributeId = value;
+                    player.PlayerLoadout.BannerAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.VoiceLine:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.VoiceLineAttributeId = value;
+                    player.PlayerLoadout.VoiceLineAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.Spray:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.SprayAttributeId = value;
+                    player.PlayerLoadout.SprayAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.MountAndMountTint:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.MountAndMountTintAttributeId = value;
+                    player.PlayerLoadout.MountAndMountTintAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.Announcer:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerLoadout.AnnouncerPackAttributeId = value;
+                    player.PlayerLoadout.AnnouncerPackAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.HeroAttributeId:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerHero ??= new();
-
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerHero!.HeroAttributeId = value;
+                    player.PlayerHero!.HeroAttributeId = value;
 
                     break;
                 }
 
             case ReplayAttributeEventType.HeroLevel:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerHero!.HeroLevel = int.Parse(value);
+                    player.PlayerHero!.HeroLevel = int.Parse(value);
 
                     break;
                 }
 
             case ReplayAttributeEventType.DifficultyLevel:
                 {
-                    replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerDifficulty = ReplayAttributeEvents.GetDifficultyLevel(value);
+                    player.PlayerDifficulty = ReplayAttributeEvents.GetDifficultyLevel(value);
 
                     break;
                 }
@@ -825,7 +826,7 @@ internal static class ReplayServerBattlelobby
                     else
                     {
                         if (int.TryParse(value[^1..], out int tierLevel))
-                            replay.ClientListByWorkingSetSlotID[playerSlotIndex].PlayerHero!.HeroMasteryTier = tierLevel;
+                            player.PlayerHero!.HeroMasteryTier = tierLevel;
                     }
 
                     break;
