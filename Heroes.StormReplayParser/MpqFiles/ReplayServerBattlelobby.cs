@@ -376,21 +376,21 @@ internal static class ReplayServerBattlelobby
             _ = new StormS2mFiles(ref bitReader);
         }
 
-        /* Skin collection */
+        /* Collection section */
 
-        uint skinCollectionLength = bitReader.ReadBits(16);
+        uint ollectionLength = bitReader.ReadBits(16);
 
-        for (int i = 0; i < skinCollectionLength; i++)
+        for (int i = 0; i < ollectionLength; i++)
         {
             bitReader.ReadAlignedBytes(8);
         }
 
-        uint hasSkinCollectionLength = bitReader.ReadBits(32);
+        uint hasCollectionLength = bitReader.ReadBits(32);
 
-        if (skinCollectionLength != hasSkinCollectionLength)
-            throw new StormParseException($"{_exceptionHeader}: skin collection lengths do not match: {skinCollectionLength} != {hasSkinCollectionLength}");
+        if (ollectionLength != hasCollectionLength)
+            throw new StormParseException($"{_exceptionHeader}: skin collection lengths do not match: {ollectionLength} != {hasCollectionLength}");
 
-        for (int i = 0; i < hasSkinCollectionLength; i++)
+        for (int i = 0; i < hasCollectionLength; i++)
         {
             // 16 is total player slots
             for (int j = 0; j < 16; j++)
@@ -464,24 +464,14 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadBitArray(64);
 
             // m_unk4
-            bitReader.ReadBitArray(2); // m_UnkFlags1
+            bitReader.ReadBitArray(4);
 
             if (replay.ReplayBuild > 68509)
-            {
-                bitReader.ReadBitArray(2); // m_Unk1
                 replay.ReplayBuild = bitReader.ReadInt32Unaligned(); // client base build
-                bitReader.ReadBitArray(1); // 1 bit left
-            }
             else
-            {
-                bitReader.ReadBitArray(35); // m_Unk1
-            }
+                bitReader.ReadInt32Unaligned();
 
-            if (replay.ReplayBuild <= 65006)
-            {
-                bitReader.ReadBitArray(bitReader.ReadBits(12));
-                bitReader.ReadBits(1);
-            }
+            PlayerCollectionChoice(ref bitReader);
 
             player.IsSilenced = bitReader.ReadBoolean(); // m_hasSilencePenalty
 
@@ -508,7 +498,7 @@ internal static class ReplayServerBattlelobby
                     throw new StormParseException($"{_exceptionHeader}: Invalid battletag");
             }
 
-            if (replay.ReplayBuild >= 52860 || replay.ReplayBuild >= 51978)
+            if (replay.ReplayBuild >= 51978)
                 player.AccountLevel = (int)bitReader.ReadBits(32);  // in custom games, this is a 0
 
             if (replay.ReplayBuild >= 69947)
@@ -582,7 +572,7 @@ internal static class ReplayServerBattlelobby
         {
             bitReader.ReadBitArray(32); // b32
 
-            if (replay.ReplayBuild > 70200)
+            if (replay.ReplayBuild >= 77406)
                 bitReader.ReadBits(16); // b16
             else
                 bitReader.ReadBits(9);
@@ -604,7 +594,7 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBitArray(128); // b128
         }
 
-        if (replay.ReplayBuild > 68509)
+        if (replay.ReplayBuild >= 77406) // 68509
             bitReader.ReadBitArray(2);
 
         if (pregameMode)
@@ -890,6 +880,27 @@ internal static class ReplayServerBattlelobby
                     bitReader.ReadBitArray(160); // b160
                     bitReader.ReadBitArray(105); // b105
 
+                    break;
+                }
+
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
+    private static void PlayerCollectionChoice(ref BitReader bitReader)
+    {
+        switch (bitReader.ReadBits(1))
+        {
+            case 0:
+                {
+                    bitReader.ReadBitArray(bitReader.ReadBits(12));
+                    bitReader.ReadBoolean();
+                    break;
+                }
+
+            case 1:
+                {
                     break;
                 }
 
