@@ -734,6 +734,13 @@ internal static class ReplayServerBattlelobby
                     break;
                 }
 
+            case ReplayAttributeEventType.TeamSize:
+                {
+                    replay.TeamSize = value;
+
+                    break;
+                }
+
             default:
                 break;
         }
@@ -741,7 +748,7 @@ internal static class ReplayServerBattlelobby
 
     private static void SetPlayerAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int playerSlotIndex, int attributeValueIndex)
     {
-        string value = attribute.AttributeValues[attributeValueIndex].Value.Trim('\0');
+        string value = attribute.AttributeValues[attributeValueIndex].Value;
         StormPregamePlayer player = replay.ClientListByWorkingSetSlotID[playerSlotIndex];
 
         player.PlayerHero ??= new();

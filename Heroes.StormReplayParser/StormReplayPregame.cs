@@ -22,6 +22,11 @@ public partial class StormReplayPregame
     public StormGameMode GameMode { get; set; } = StormGameMode.Unknown;
 
     /// <summary>
+    /// Gets or sets the team size of the selected game type.
+    /// </summary>
+    public string TeamSize { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the map link, which can be used to determine the map.
     /// </summary>
     public string? MapLink { get; set; }

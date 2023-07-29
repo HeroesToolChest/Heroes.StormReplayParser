@@ -175,7 +175,7 @@ internal static class ReplayInitData
             uint? userId = null;
             uint? workingSetSlotID = null;
 
-            uint control = bitReader.ReadBits(8); // m_control
+            bitReader.ReadBits(8); // m_control
 
             if (bitReader.ReadBoolean())
                 userId = bitReader.ReadBits(4); // m_userId

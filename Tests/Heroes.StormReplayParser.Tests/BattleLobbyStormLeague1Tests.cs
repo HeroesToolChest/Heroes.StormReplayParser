@@ -43,6 +43,7 @@ public class BattleLobbyStormLeague1Tests
         Assert.AreEqual(StormReadyMode.FCFS, _stormReplay.ReadyMode);
         Assert.AreEqual(StormRegion.US, _stormReplay.Region);
         Assert.AreEqual(89566, _stormReplay.ReplayBuild);
+        Assert.AreEqual("5v5", _stormReplay.TeamSize);
     }
 
     [TestMethod]
