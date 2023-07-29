@@ -466,7 +466,7 @@ internal static class ReplayServerBattlelobby
             // m_unk4
             bitReader.ReadBitArray(4);
 
-            if (replay.ReplayBuild > 68509)
+            if (replay.ReplayBuild >= 69228)
                 replay.ReplayBuild = bitReader.ReadInt32Unaligned(); // client base build
             else
                 bitReader.ReadInt32Unaligned();
