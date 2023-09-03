@@ -74,7 +74,7 @@ jobs:
     - powershell: dotnet publish $env:MAIN_PROJECT -c release --no-restore -o $env:PUBLISH_ANY_PATH
       displayName: Publish release
 
-    - powershell: dotnet pack $env:MAIN_PROJECT -c release --no-build -o $env:NUPKG_PATH -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg     
+    - powershell: dotnet pack $env:MAIN_PROJECT -c release --no-build -o $env:NUPKG_PATH 
       displayName: Nuget pack
 
     - powershell: dotnet nuget sign $(nupkg_path)Heroes.StormReplayParser.*.nupkg --certificate-path $(Agent.TempDirectory)\certificate --certificate-password '$(cert_password)' --timestamper http://ts.ssl.com/legacy      
