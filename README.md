@@ -67,7 +67,7 @@ The above provided are properties of classes that are automatically parsed out. 
 ## BattleLobby File Usage
 `replay.server.battlelobby` files can also be parsed to obtain data for pregame analysis tools. The `.battlelobby` file is created at the start of the loading screen.
 
-On Windows, the default location is `C:\<USER PATH>\AppData\Local\Temp\Heroes of the Storm\TempWriteReplayP1\replay.server.battlelobby`. The `\Heroes of the Storm` directory is removed after the match has finished.
+On Windows, the default location is `C:\<USER PATH>\AppData\Local\Temp\Heroes of the Storm\TempWriteReplayP1\replay.server.battlelobby`. The `Temp\Heroes of the Storm` directory is deleted after the game has closed.
 
 To parse a battlelobby file use `StormReplayPregame.Parse(string fileName)` by providing the `.battlelobby` file. It will return a `StormReplayPregameResult` object that will have the result of the parsing as well as the `StormReplayPregame` object that will contain all the data parsed.
 
