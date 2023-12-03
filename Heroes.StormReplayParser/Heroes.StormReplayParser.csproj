@@ -12,7 +12,7 @@
     <RepositoryUrl>https://github.com/HeroesToolChest/Heroes.StormReplayParser</RepositoryUrl>
     <PackageReleaseNotes>https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageTags>C# dotnet</PackageTags>
+    <PackageTags>hots heroes-of-the-storm HeroesOfTheStorm blizzard replay stormReplay</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
