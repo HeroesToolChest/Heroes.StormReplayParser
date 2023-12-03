@@ -3,8 +3,6 @@
 namespace Heroes.StormReplayParser.Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net60)]
-[SimpleJob(RuntimeMoniker.Net70)]
 public class StormReplayParserBenchmarks
 {
     private readonly string _replaysFolder = "Replays";

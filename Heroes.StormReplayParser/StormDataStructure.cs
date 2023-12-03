@@ -21,8 +21,7 @@ public class StormDataStructure<T> : List<T>
     public StormDataStructure(IEnumerable<T> collection)
         : base(collection)
     {
-        if (collection is null)
-            throw new ArgumentNullException(nameof(collection));
+        ArgumentNullException.ThrowIfNull(collection);
     }
 
     /// <summary>
@@ -33,8 +32,7 @@ public class StormDataStructure<T> : List<T>
     public StormDataStructure(int capacity)
         : base(capacity)
     {
-        if (capacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(capacity));
+        ArgumentOutOfRangeException.ThrowIfNegative(capacity);
     }
 
     /// <summary>

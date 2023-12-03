@@ -5,7 +5,7 @@
 /// </summary>
 public class VersionedDecoder
 {
-    private EndianType _endianType;
+    private readonly EndianType _endianType;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VersionedDecoder"/> class.
@@ -58,7 +58,7 @@ public class VersionedDecoder
 
                 break;
             case 0x06: // u8
-                Value = new byte[] { bitReader.ReadAlignedByte() };
+                Value = [bitReader.ReadAlignedByte()];
                 break;
             case 0x07: // u32
                 Value = bitReader.ReadAlignedBytes(4).ToArray();

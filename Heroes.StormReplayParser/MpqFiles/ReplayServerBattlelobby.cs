@@ -19,8 +19,8 @@ internal static class ReplayServerBattlelobby
             replay.ClientListByWorkingSetSlotID[i] = new();
 
         Dictionary<ReplayAttributeEventType, StormBattleLobbyAttribute> lobbyAttributesByAttributeEventType = new();
-        List<StormS2mFiles> s2mFiles = new();
-        List<string> battleNetCachePaths = new();
+        List<StormS2mFiles> s2mFiles = [];
+        List<string> battleNetCachePaths = [];
 
         BitReader bitReader = new(source, EndianType.BigEndian);
 

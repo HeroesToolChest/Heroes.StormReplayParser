@@ -29,8 +29,7 @@ public partial class StormReplay
     /// <exception cref="ArgumentNullException"><paramref name="fileName"/> is null.</exception>
     public static StormReplayResult Parse(string fileName, ParseOptions? parseOptions = null)
     {
-        if (fileName is null)
-            throw new ArgumentNullException(nameof(fileName));
+        ArgumentNullException.ThrowIfNull(fileName);
 
         parseOptions ??= ParseOptions.DefaultParsing;
 
