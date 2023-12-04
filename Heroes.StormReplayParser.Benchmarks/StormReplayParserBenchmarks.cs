@@ -7,6 +7,7 @@ public class StormReplayParserBenchmarks
 {
     private readonly string _replaysFolder = "Replays";
     private readonly string _replayFile = "SilverCity1_85267.StormR";
+    private readonly string _replayFile2 = "LostCavernNonSingleUnit1_76517.StormR";
 
     public StormReplayParserBenchmarks()
     {
@@ -19,11 +20,8 @@ public class StormReplayParserBenchmarks
     }
 
     [Benchmark]
-    public void ParseReplay10()
+    public void ParseReplayNonSingleUnit()
     {
-        for (int i = 0; i < 10; i++)
-        {
-            _ = StormReplay.Parse(Path.Join(_replaysFolder, _replayFile));
-        }
+        _ = StormReplay.Parse(Path.Join(_replaysFolder, _replayFile2));
     }
 }

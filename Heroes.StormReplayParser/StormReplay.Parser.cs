@@ -5,6 +5,7 @@
 /// </summary>
 public partial class StormReplay
 {
+    private const int MaxStackAllocLimit = 2048;
     private static StormReplayParseStatus _stormReplayParseResult = StormReplayParseStatus.Incomplete;
     private static StormParseException? _failedReplayException = null;
 
@@ -57,11 +58,9 @@ public partial class StormReplay
 
     private void Parse(StormReplay stormReplay)
     {
-        _stormMpqArchive.AddListfileFileNames();
+        using MpqHeroesArchive stormMpqArchive = _stormMpqArchive;
 
-        Span<byte> headerBuffer = stackalloc byte[MpqHeroesArchive.HeaderSize];
-        _stormMpqArchive.GetHeaderBytes(headerBuffer);
-        StormReplayHeader.Parse(stormReplay, headerBuffer);
+        ParseReplayHeader(stormReplay);
 
         if (stormReplay.ReplayBuild < 32455)
         {
@@ -103,100 +102,162 @@ public partial class StormReplay
             ParseReplayMessageEvents(stormReplay, pool);
 
         ValidateResult(stormReplay);
+    }
 
-        _stormMpqArchive.Dispose();
+    private void ParseReplayHeader(StormReplay stormReplay)
+    {
+        Span<byte> headerBuffer = stackalloc byte[MpqHeroesArchive.HeaderSize];
+
+        _stormMpqArchive.GetHeaderBytes(headerBuffer);
+        StormReplayHeader.Parse(stormReplay, headerBuffer);
     }
 
     private void ParseReplayDetails(StormReplay stormReplay, ArrayPool<byte> pool)
     {
         MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayDetails.FileName);
+
         int size = (int)entry.FileSize;
         byte[] poolBuffer = pool.Rent(size);
-        Span<byte> buffer = new Span<byte>(poolBuffer)[..size];
-        _stormMpqArchive.DecompressEntry(entry, buffer);
-        ReplayDetails.Parse(stormReplay, buffer);
 
-        pool.Return(poolBuffer);
+        try
+        {
+            Span<byte> buffer = poolBuffer.AsSpan(..size);
+
+            _stormMpqArchive.DecompressEntry(entry, buffer);
+            ReplayDetails.Parse(stormReplay, buffer);
+        }
+        finally
+        {
+            pool.Return(poolBuffer);
+        }
     }
 
     private void ParseReplayInit(StormReplay stormReplay, ArrayPool<byte> pool)
     {
         MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayInitData.FileName);
+
         int size = (int)entry.FileSize;
         byte[] poolBuffer = pool.Rent(size);
-        Span<byte> buffer = new Span<byte>(poolBuffer)[..size];
-        _stormMpqArchive.DecompressEntry(entry, buffer);
-        ReplayInitData.Parse(stormReplay, buffer);
 
-        pool.Return(poolBuffer);
+        try
+        {
+            Span<byte> buffer = poolBuffer.AsSpan(..size);
+
+            _stormMpqArchive.DecompressEntry(entry, buffer);
+            ReplayInitData.Parse(stormReplay, buffer);
+        }
+        finally
+        {
+            pool.Return(poolBuffer);
+        }
     }
 
     private void ParseReplayAttributeEvents(StormReplay stormReplay, ArrayPool<byte> pool)
     {
         MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayAttributeEvents.FileName);
+
         int size = (int)entry.FileSize;
         byte[] poolBuffer = pool.Rent(size);
-        Span<byte> buffer = new Span<byte>(poolBuffer)[..size];
-        _stormMpqArchive.DecompressEntry(entry, buffer);
-        ReplayAttributeEvents.Parse(stormReplay, buffer);
 
-        pool.Return(poolBuffer);
+        try
+        {
+            Span<byte> buffer = poolBuffer.AsSpan(..size);
+
+            _stormMpqArchive.DecompressEntry(entry, buffer);
+            ReplayAttributeEvents.Parse(stormReplay, buffer);
+        }
+        finally
+        {
+            pool.Return(poolBuffer);
+        }
     }
 
     private void ParseReplayTrackerEvents(StormReplay stormReplay, ArrayPool<byte> pool)
     {
         MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayTrackerEvents.FileName);
+
         int size = (int)entry.FileSize;
         byte[] poolBuffer = pool.Rent(size);
-        Span<byte> buffer = new Span<byte>(poolBuffer)[..size];
-        _stormMpqArchive.DecompressEntry(entry, buffer);
-        ReplayTrackerEvents.Parse(stormReplay, buffer);
 
-        pool.Return(poolBuffer);
+        try
+        {
+            Span<byte> buffer = poolBuffer.AsSpan(..size);
+
+            _stormMpqArchive.DecompressEntry(entry, buffer);
+            ReplayTrackerEvents.Parse(stormReplay, buffer);
+        }
+        finally
+        {
+            pool.Return(poolBuffer);
+        }
     }
 
     private void ParseReplayMessageEvents(StormReplay stormReplay, ArrayPool<byte> pool)
     {
         MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayMessageEvents.FileName);
+
         int size = (int)entry.FileSize;
         byte[] poolBuffer = pool.Rent(size);
-        Span<byte> buffer = new Span<byte>(poolBuffer)[..size];
-        _stormMpqArchive.DecompressEntry(entry, buffer);
-        ReplayMessageEvents.Parse(stormReplay, buffer);
 
-        pool.Return(poolBuffer);
+        try
+        {
+            Span<byte> buffer = poolBuffer.AsSpan(..size);
+
+            _stormMpqArchive.DecompressEntry(entry, buffer);
+            ReplayMessageEvents.Parse(stormReplay, buffer);
+        }
+        finally
+        {
+            pool.Return(poolBuffer);
+        }
     }
 
     private void ParseReplayGameEvents(StormReplay stormReplay, ArrayPool<byte> pool)
     {
         MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayGameEvents.FileName);
+
         int size = (int)entry.FileSize;
         byte[] poolBuffer = pool.Rent(size);
-        Span<byte> buffer = new Span<byte>(poolBuffer)[..size];
-        _stormMpqArchive.DecompressEntry(entry, buffer);
-        ReplayGameEvents.Parse(stormReplay, buffer);
 
-        pool.Return(poolBuffer);
+        try
+        {
+            Span<byte> buffer = poolBuffer.AsSpan(..size);
+
+            _stormMpqArchive.DecompressEntry(entry, buffer);
+            ReplayGameEvents.Parse(stormReplay, buffer);
+        }
+        finally
+        {
+            pool.Return(poolBuffer);
+        }
     }
 
     private void ParseReplayServerBattlelobby(StormReplay stormReplay, ArrayPool<byte> pool)
     {
         MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayServerBattlelobby.FileName);
+
         int size = (int)entry.FileSize;
         byte[] poolBuffer = pool.Rent(size);
-        Span<byte> buffer = new Span<byte>(poolBuffer)[..size];
-        _stormMpqArchive.DecompressEntry(entry, buffer);
 
-        StormReplayPregame replayPregame = new()
+        try
         {
-            ReplayBuild = stormReplay.ReplayBuild,
-        };
+            Span<byte> buffer = poolBuffer.AsSpan(..size);
 
-        ReplayServerBattlelobby.Parse(replayPregame, buffer);
+            _stormMpqArchive.DecompressEntry(entry, buffer);
 
-        replayPregame.TransferTo(stormReplay);
+            StormReplayPregame replayPregame = new()
+            {
+                ReplayBuild = stormReplay.ReplayBuild,
+            };
 
-        pool.Return(poolBuffer);
+            ReplayServerBattlelobby.Parse(replayPregame, buffer);
+
+            replayPregame.TransferTo(stormReplay);
+        }
+        finally
+        {
+            pool.Return(poolBuffer);
+        }
     }
 
     private void ValidateResult(StormReplay stormReplay)
