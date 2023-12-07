@@ -200,7 +200,7 @@ public partial class StormReplay
 
     /// <summary>
     /// Gets or sets a value indicating whether the replay does not contain the working set slot ids and as such <see cref=" ClientListByWorkingSetSlotID"/>
-    /// will contain all nulls.
+    /// will contain all <see langword="null"/>s.
     /// </summary>
     internal bool NoWorkingSetSlotID { get; set; } = false;
 
@@ -263,7 +263,7 @@ public partial class StormReplay
     /// Gets a collection of a <see cref="StormTeam"/>'s levels.
     /// </summary>
     /// <param name="team">The team value.</param>
-    /// <returns>A collection of the team's levels or null if it does not exists.</returns>
+    /// <returns>A collection of the team's levels or <see langword="null"/> if it does not exists.</returns>
     public IReadOnlyList<StormTeamLevel>? GetTeamLevels(StormTeam team)
     {
         if (team == StormTeam.Blue)
@@ -278,7 +278,7 @@ public partial class StormReplay
     /// Gets a collection of a team's experience breakdown that occurs during periodic intervals.
     /// </summary>
     /// <param name="team">The team value.</param>
-    /// <returns>A collection of the teams xp or null if it does not exists.</returns>
+    /// <returns>A collection of the teams xp or <see langword="null"/> if it does not exists.</returns>
     public IReadOnlyList<StormTeamXPBreakdown>? GetTeamXPBreakdown(StormTeam team)
     {
         if (team == StormTeam.Blue)
