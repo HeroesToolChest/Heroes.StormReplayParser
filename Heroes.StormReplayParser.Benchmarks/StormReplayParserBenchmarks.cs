@@ -1,6 +1,4 @@
-﻿using BenchmarkDotNet.Jobs;
-
-namespace Heroes.StormReplayParser.Benchmarks;
+﻿namespace Heroes.StormReplayParser.Benchmarks;
 
 [MemoryDiagnoser]
 public class StormReplayParserBenchmarks

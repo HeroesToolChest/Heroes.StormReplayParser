@@ -1,5 +1,5 @@
-﻿using Heroes.StormReplayParser.MpqFiles;
-using Heroes.StormReplayParser.MpqHeroesTool;
+﻿using Heroes.MpqTool;
+using Heroes.StormReplayParser.MpqFiles;
 
 if (args is not null && args.Length == 1 && File.Exists(args[0]))
 {

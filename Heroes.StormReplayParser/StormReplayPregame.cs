@@ -122,10 +122,10 @@ public partial class StormReplayPregame
     /// <remarks>Contains AI. No observers.</remarks>
     internal StormPregamePlayer[] ClientListByWorkingSetSlotID { get; private set; } = new StormPregamePlayer[16];
 
-    internal string?[][] TeamHeroAttributeIdBans { get; private set; } = [[null, null, null], [null, null, null]];
+    internal string?[][] TeamHeroAttributeIdBans { get; private set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<string> DisabledHeroAttributeIdList { get; private set; } = [];
+    internal List<string> DisabledHeroAttributeIdList { get; private set; } = new();
 
     /// <summary>
     /// Gets a collection of a team's bans (as attribute ids).

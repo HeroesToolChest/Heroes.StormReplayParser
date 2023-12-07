@@ -1,4 +1,4 @@
-﻿using Heroes.StormReplayParser.MpqHeroesTool;
+﻿using Heroes.MpqTool;
 
 namespace Heroes.StormReplayParser.Tests.MpqHeroesTool;
 

@@ -5,7 +5,6 @@
 /// </summary>
 public partial class StormReplay
 {
-    private const int MaxStackAllocLimit = 2048;
     private static StormReplayParseStatus _stormReplayParseResult = StormReplayParseStatus.Incomplete;
     private static StormParseException? _failedReplayException = null;
 

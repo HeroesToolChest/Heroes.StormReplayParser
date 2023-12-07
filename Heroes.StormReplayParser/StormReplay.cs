@@ -210,26 +210,26 @@ public partial class StormReplay
     /// <remarks>Contains AI. No observers.</remarks>
     internal StormPlayer[] PlayersWithOpenSlots { get; private set; } = new StormPlayer[10];
 
-    internal string?[][] TeamHeroAttributeIdBans { get; private set; } = [[null, null, null], [null, null, null]];
+    internal string?[][] TeamHeroAttributeIdBans { get; private set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<StormGameEvent> GameEventsInternal { get; private set; } = [];
+    internal List<StormGameEvent> GameEventsInternal { get; private set; } = new List<StormGameEvent>();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<StormTrackerEvent> TrackerEventsInternal { get; private set; } = [];
+    internal List<StormTrackerEvent> TrackerEventsInternal { get; private set; } = new List<StormTrackerEvent>();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<IStormMessage> MessagesInternal { get; private set; } = [];
+    internal List<IStormMessage> MessagesInternal { get; private set; } = new List<IStormMessage>();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<StormDraftPick> DraftPicksInternal { get; private set; } = [];
+    internal List<StormDraftPick> DraftPicksInternal { get; private set; } = new List<StormDraftPick>();
 
     internal Dictionary<int, StormTeamLevel>[] TeamLevelsInternal { get; private set; } = new Dictionary<int, StormTeamLevel>[2];
 
     internal List<StormTeamXPBreakdown>[] TeamXPBreakdownInternal { get; private set; } = new List<StormTeamXPBreakdown>[2];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<string> DisabledHeroAttributeIdList { get; private set; } = [];
+    internal List<string> DisabledHeroAttributeIdList { get; private set; } = new List<string>();
 
     /// <summary>
     /// Gets a collection of a team's bans (as attribute ids).

@@ -1,8 +1,8 @@
-﻿global using Heroes.StormReplayParser.Decoders;
+﻿global using Heroes.MpqTool;
+global using Heroes.StormReplayParser.Decoders;
 global using Heroes.StormReplayParser.GameEvent;
 global using Heroes.StormReplayParser.MessageEvent;
 global using Heroes.StormReplayParser.MpqFiles;
-global using Heroes.StormReplayParser.MpqHeroesTool;
 global using Heroes.StormReplayParser.Player;
 global using Heroes.StormReplayParser.Pregame.Player;
 global using Heroes.StormReplayParser.Replay;

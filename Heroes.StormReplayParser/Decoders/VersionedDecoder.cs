@@ -58,7 +58,7 @@ public class VersionedDecoder
 
                 break;
             case 0x06: // u8
-                Value = [bitReader.ReadAlignedByte()];
+                Value = new byte[] { bitReader.ReadAlignedByte() };
                 break;
             case 0x07: // u32
                 Value = bitReader.ReadAlignedBytes(4).ToArray();

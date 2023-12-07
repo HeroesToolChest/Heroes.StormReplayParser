@@ -28,11 +28,16 @@ public class StormDataStructure<T> : List<T>
     /// Initializes a new instance of the <see cref="StormDataStructure{T}"/> class.
     /// </summary>
     /// <param name="capacity">The number of elements that the new list can initially store.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> cannot be less than 0.</exception>
     public StormDataStructure(int capacity)
         : base(capacity)
     {
+#if NET8_0_OR_GREATER
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
+#else
+        if (capacity < 0)
+            throw new ArgumentOutOfRangeException(nameof(capacity));
+#endif
     }
 
     /// <summary>

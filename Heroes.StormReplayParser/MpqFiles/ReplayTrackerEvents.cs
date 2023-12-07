@@ -145,7 +145,7 @@ internal static class ReplayTrackerEvents
                 int level = (int)stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![1].Structure![1].GetValueAsUInt32();
                 StormTeam team = replay.PlayersWithOpenSlots[playerId - 1].Team;
 
-                Dictionary<int, StormTeamLevel>? teamLevel = replay.TeamLevelsInternal[(int)team] ??= [];
+                Dictionary<int, StormTeamLevel>? teamLevel = replay.TeamLevelsInternal[(int)team] ??= new();
 
                 if (!teamLevel.ContainsKey(level))
                 {
