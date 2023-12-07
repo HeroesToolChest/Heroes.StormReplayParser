@@ -1,5 +1,5 @@
 # Heroes Storm Replay Parser
-[![Build Status](https://dev.azure.com/kevinkoliva/Heroes%20of%20the%20Storm%20Projects/_apis/build/status/HeroesToolChest.Heroes.StormReplayParser?branchName=master)](https://dev.azure.com/kevinkoliva/Heroes%20of%20the%20Storm%20Projects/_build/latest?definitionId=10&branchName=master)
+[![Build](https://github.com/HeroesToolChest/Heroes.StormReplayParser/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/HeroesToolChest/Heroes.StormReplayParser/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/release/HeroesToolChest/Heroes.StormReplayParser.svg)](https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases/latest) 
 [![NuGet](https://img.shields.io/nuget/v/Heroes.StormReplayParser.svg)](https://www.nuget.org/packages/Heroes.StormReplayParser/)
 
@@ -67,7 +67,7 @@ The above provided are properties of classes that are automatically parsed out. 
 ## BattleLobby File Usage
 `replay.server.battlelobby` files can also be parsed to obtain data for pregame analysis tools. The `.battlelobby` file is created at the start of the loading screen.
 
-On Windows, the default location is `C:\<USER PATH>\AppData\Local\Temp\Heroes of the Storm\TempWriteReplayP1\replay.server.battlelobby`. The `Temp\Heroes of the Storm` directory is deleted after the game has closed.
+On Windows, the default location is `C:\<USER PATH>\AppData\Local\Temp\Heroes of the Storm\TempWriteReplayP1\replay.server.battlelobby`. The `Temp\Heroes of the Storm` directory is deleted after the game (not the match) has closed.
 
 To parse a battlelobby file use `StormReplayPregame.Parse(string fileName)` by providing the `.battlelobby` file. It will return a `StormReplayPregameResult` object that will have the result of the parsing as well as the `StormReplayPregame` object that will contain all the data parsed.
 
@@ -111,7 +111,7 @@ Some data returned will be references to the game data, such as `PlayerHero.Hero
 ## Developing
 To build and compile the code, it is recommended to use the latest version of [Visual Studio 2022 or Visual Studio Code](https://visualstudio.microsoft.com/downloads/).
 
-Another option is to use the dotnet CLI tools from the [.NET Core 6.0 SDK](https://dotnet.microsoft.com/download).
+Another option is to use the dotnet CLI tools from the [.NET 8.0 SDK](https://dotnet.microsoft.com/download).
 
 ## License
 [MIT license](/LICENSE)
