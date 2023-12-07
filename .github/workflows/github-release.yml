@@ -1,0 +1,17 @@
+name: Github Release
+
+on: workflow_dispatch
+  
+jobs:
+  deploy:
+    uses: koliva8245/github.workflows/.github/workflows/github-release.yml@main
+    permissions:
+      contents: write
+    with:
+      title: 'Heroes Storm Replay Parser'
+      app-name: Heroes.StormReplayParser
+      artificats-workflow: build.yml
+      github-release-env: Github Release
+      github-release-url: https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
