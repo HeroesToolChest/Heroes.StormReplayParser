@@ -19,7 +19,7 @@ internal static class ReplayServerBattlelobby
             replay.ClientListByWorkingSetSlotID[i] = new();
 
         Dictionary<ReplayAttributeEventType, StormBattleLobbyAttribute> lobbyAttributesByAttributeEventType = new();
-        List<StormS2mFiles> s2mFiles = new();
+        List<StormS2mFiles> s2mvFiles = new();
         List<string> battleNetCachePaths = new();
 
         BitReader bitReader = new(source, EndianType.BigEndian);
@@ -170,13 +170,13 @@ internal static class ReplayServerBattlelobby
             PlayerSelectedAttributeChoice(ref bitReader, replay, lobbyAttributesByAttributeEventType[attributeEventType]);
         }
 
-        /* Locales section */
+        /* Local/locales section */
 
         uint s2mvCacheHandlesLength = bitReader.ReadBits(6);
 
         for (int i = 0; i < s2mvCacheHandlesLength; i++)
         {
-            s2mFiles.Add(new StormS2mFiles(ref bitReader));
+            s2mvFiles.Add(new StormS2mFiles(ref bitReader));
         }
 
         uint localesLength = bitReader.ReadBits(5); // number of locales
@@ -598,7 +598,10 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBitArray(2);
 
         if (pregameMode)
-            replay.MapLink = GetMapLink(battleNetCachePaths.Last(), s2mFiles.Last());
+        {
+            replay.MapLink = GetMapLink(battleNetCachePaths.Last(), s2mvFiles.Last());
+            replay.MapId = GetMapId(battleNetCachePaths.Last());
+        }
 
         replay.IsBattleLobbyPlayerInfoParsed = true;
     }
@@ -979,5 +982,34 @@ internal static class ReplayServerBattlelobby
         {
             return null;
         }
+    }
+
+    private static string? GetMapId(string battleNetCachePath)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            battleNetCachePath = battleNetCachePath.Replace('\\', Path.DirectorySeparatorChar);
+
+        using MpqHeroesArchive archive = MpqHeroesFile.Open(battleNetCachePath);
+
+        if (!archive.TryGetEntry("MapScript.galaxy", out MpqHeroesArchiveEntry? entry))
+            return null;
+
+        StreamReader streamReader = new(archive.DecompressEntry(entry.Value));
+
+        while (!streamReader.EndOfStream)
+        {
+            string? line = streamReader.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(line) || !line.Contains("mAPMapStringID", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            int equalsIndex = line.IndexOf('=');
+            if (equalsIndex < 1)
+                continue;
+
+            return line.AsSpan(equalsIndex + 1).Trim().Trim(new char[] { '"', ';' }).ToString();
+        }
+
+        return null;
     }
 }

@@ -32,6 +32,11 @@ public partial class StormReplayPregame
     public string? MapLink { get; set; }
 
     /// <summary>
+    /// Gets or sets the map id name.
+    /// </summary>
+    public string? MapId { get; set; }
+
+    /// <summary>
     /// Gets or sets the speed the game was played at.
     /// </summary>
     public StormGameSpeed GameSpeed { get; set; } = StormGameSpeed.Unknown;
