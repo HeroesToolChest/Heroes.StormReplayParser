@@ -989,27 +989,37 @@ internal static class ReplayServerBattlelobby
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             battleNetCachePath = battleNetCachePath.Replace('\\', Path.DirectorySeparatorChar);
 
-        using MpqHeroesArchive archive = MpqHeroesFile.Open(battleNetCachePath);
-
-        if (!archive.TryGetEntry("MapScript.galaxy", out MpqHeroesArchiveEntry? entry))
-            return null;
-
-        StreamReader streamReader = new(archive.DecompressEntry(entry.Value));
-
-        while (!streamReader.EndOfStream)
+        try
         {
-            string? line = streamReader.ReadLine();
+            if (!File.Exists(battleNetCachePath))
+                return null;
 
-            if (string.IsNullOrWhiteSpace(line) || !line.Contains("mAPMapStringID", StringComparison.OrdinalIgnoreCase))
-                continue;
+            using MpqHeroesArchive archive = MpqHeroesFile.Open(battleNetCachePath);
 
-            int equalsIndex = line.IndexOf('=');
-            if (equalsIndex < 1)
-                continue;
+            if (!archive.TryGetEntry("MapScript.galaxy", out MpqHeroesArchiveEntry? entry))
+                return null;
 
-            return line.AsSpan(equalsIndex + 1).Trim().Trim(new char[] { '"', ';' }).ToString();
+            StreamReader streamReader = new(archive.DecompressEntry(entry.Value));
+
+            while (!streamReader.EndOfStream)
+            {
+                string? line = streamReader.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(line) || !line.Contains("mAPMapStringID", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                int equalsIndex = line.IndexOf('=');
+                if (equalsIndex < 1)
+                    continue;
+
+                return line.AsSpan(equalsIndex + 1).Trim().Trim(new char[] { '"', ';' }).ToString();
+            }
+
+            return null;
         }
-
-        return null;
+        catch
+        {
+            return null;
+        }
     }
 }
