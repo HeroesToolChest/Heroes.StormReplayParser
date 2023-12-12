@@ -482,6 +482,29 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.IsNull(players[0].Talents[5].Timestamp);
     }
 
+    [TestMethod]
+    public void TrackerEventsAsJsonTest()
+    {
+        int i = 0;
+        foreach (string? item in _stormReplay.TrackerEvents.Select(x => x.VersionedDecoder?.AsJson()))
+        {
+            if (item is null)
+                continue;
+
+            try
+            {
+                JsonDocument.Parse(item);
+                i++;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but received: {ex.Message}");
+            }
+        }
+
+        Assert.AreEqual(_stormReplay.TrackerEvents.Count, i);
+    }
+
     private static void NoTrackerEvents(StormReplayResult result)
     {
         StormReplay replay = result.Replay!;

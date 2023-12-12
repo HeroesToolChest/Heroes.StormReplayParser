@@ -530,7 +530,7 @@ public class VolskayaFoundry1ReplayParserTests
 
     [TestMethod]
     [TestCategory("Parsing Options")]
-    public void NoTrackerEventsParsingTests()
+    public void NoTrackerEventsParsingTest()
     {
         StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
         {
@@ -547,7 +547,7 @@ public class VolskayaFoundry1ReplayParserTests
 
     [TestMethod]
     [TestCategory("Parsing Options")]
-    public void NoGameEventsParsingTests()
+    public void NoGameEventsParsingTest()
     {
         StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
         {
@@ -590,7 +590,7 @@ public class VolskayaFoundry1ReplayParserTests
 
     [TestMethod]
     [TestCategory("Parsing Options")]
-    public void NoMessageEventsParsingTests()
+    public void NoMessageEventsParsingTest()
     {
         StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
         {
@@ -629,6 +629,29 @@ public class VolskayaFoundry1ReplayParserTests
 
         NoGameEvents(result);
         NoMessageEvents(result);
+    }
+
+    [TestMethod]
+    public void TrackerEventsAsJsonTest()
+    {
+        int i = 0;
+        foreach (string? item in _stormReplay.TrackerEvents.Select(x => x.VersionedDecoder?.AsJson()))
+        {
+            if (item is null)
+                continue;
+
+            try
+            {
+                JsonDocument.Parse(item);
+                i++;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but received: {ex.Message}");
+            }
+        }
+
+        Assert.AreEqual(_stormReplay.TrackerEvents.Count, i);
     }
 
     private static void NoTrackerEvents(StormReplayResult result)

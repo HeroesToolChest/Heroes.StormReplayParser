@@ -75,7 +75,7 @@ public class VersionedDecoder
     }
 
     /// <summary>
-    /// Gets the dictionary containing another version decoder.
+    /// Gets the collection containing another version decoder.
     /// </summary>
     public List<VersionedDecoder>? Structure { get; private set; } = null;
 
@@ -177,6 +177,62 @@ public class VersionedDecoder
 
             _ => string.Empty,
         };
+    }
+
+    /// <summary>
+    /// Returns the current object as a json string.
+    /// </summary>
+    /// <returns>A json string.</returns>
+    public string AsJson()
+    {
+        return DataType switch
+        {
+            0x00 => ArrayData is not null ? GetArrayAsJson(ArrayData) : "null",
+            0x02 => Value is not null ? $"\"{Encoding.UTF8.GetString(Value)}\"" : "null",
+            0x04 => OptionalData is not null ? OptionalData.AsJson() : "null",
+            0x05 => Structure is not null ? GetStructureAsJson(Structure) : "null",
+            0x07 => _endianType == EndianType.BigEndian ? BinaryPrimitives.ReadUInt32BigEndian(Value).ToString() : BinaryPrimitives.ReadUInt32LittleEndian(Value).ToString(),
+            0x08 => _endianType == EndianType.BigEndian ? BinaryPrimitives.ReadUInt64BigEndian(Value).ToString() : BinaryPrimitives.ReadUInt64LittleEndian(Value).ToString(),
+            0x09 => BinaryPrimitivesExtensions.ReadVIntLittleEndian(Value).ToString(),
+
+            _ => string.Empty,
+        };
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string GetStructureAsJson(List<VersionedDecoder> structure)
+    {
+        StringBuilder sb = new("{");
+
+        for (int i = 0; i < structure.Count; i++)
+        {
+            if (i < structure.Count - 1)
+                sb.Append($"\"{i}\": {structure[i].AsJson()}, ");
+            else
+                sb.Append($"\"{i}\": {structure[i].AsJson()}");
+        }
+
+        sb.Append('}');
+
+        return sb.ToString();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string GetArrayAsJson(VersionedDecoder[] arrayData)
+    {
+        StringBuilder sb = new("[{");
+
+        for (int i = 0; i < arrayData.Length; i++)
+        {
+            if (i < arrayData.Length - 1)
+                sb.Append($"\"{i}\": {arrayData[i].AsJson()}, ");
+            else
+                sb.Append($"\"{i}\": {arrayData[i].AsJson()}");
+        }
+
+        sb.Append("}]");
+
+        return sb.ToString();
     }
 
     private uint Get32UIntFromVInt()

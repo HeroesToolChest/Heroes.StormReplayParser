@@ -32,4 +32,27 @@ public class SilverCity1ReplayParserTests
         Assert.AreEqual(1, disabledHeroes.Count);
         Assert.AreEqual("STUK", disabledHeroes[0]);
     }
+
+    [TestMethod]
+    public void TrackerEventsAsJsonTest()
+    {
+        int i = 0;
+        foreach (string? item in _stormReplay.TrackerEvents.Select(x => x.VersionedDecoder?.AsJson()))
+        {
+            if (item is null)
+                continue;
+
+            try
+            {
+                JsonDocument.Parse(item);
+                i++;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but received: {ex.Message}");
+            }
+        }
+
+        Assert.AreEqual(_stormReplay.TrackerEvents.Count, i);
+    }
 }

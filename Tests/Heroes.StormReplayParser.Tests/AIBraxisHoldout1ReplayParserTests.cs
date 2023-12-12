@@ -133,4 +133,27 @@ public class AIBraxisHoldout1ReplayParserTests
         Assert.AreEqual(StormLobbyMode.Standard, _stormReplay.LobbyMode);
         Assert.AreEqual(StormReadyMode.FCFS, _stormReplay.ReadyMode);
     }
+
+    [TestMethod]
+    public void TrackerEventsAsJsonTest()
+    {
+        int i = 0;
+        foreach (string? item in _stormReplay.TrackerEvents.Select(x => x.VersionedDecoder?.AsJson()))
+        {
+            if (item is null)
+                continue;
+
+            try
+            {
+                JsonDocument.Parse(item);
+                i++;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but received: {ex.Message}");
+            }
+        }
+
+        Assert.AreEqual(_stormReplay.TrackerEvents.Count, i);
+    }
 }
