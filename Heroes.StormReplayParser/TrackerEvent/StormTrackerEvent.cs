@@ -1,4 +1,4 @@
-﻿namespace Heroes.StormReplayParser;
+﻿namespace Heroes.StormReplayParser.TrackerEvent;
 
 /// <summary>
 /// Contains the properties for a tracker event.

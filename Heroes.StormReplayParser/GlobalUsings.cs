@@ -6,6 +6,7 @@ global using Heroes.StormReplayParser.MpqFiles;
 global using Heroes.StormReplayParser.Player;
 global using Heroes.StormReplayParser.Pregame.Player;
 global using Heroes.StormReplayParser.Replay;
+global using Heroes.StormReplayParser.TrackerEvent;
 global using System.Buffers;
 global using System.Buffers.Binary;
 global using System.Diagnostics;
