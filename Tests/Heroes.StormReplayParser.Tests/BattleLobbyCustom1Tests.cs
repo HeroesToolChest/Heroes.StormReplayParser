@@ -48,7 +48,7 @@ public class BattleLobbyCustom1Tests
     [TestMethod]
     public void PlayerTest()
     {
-        StormPregamePlayer player0 = _stormReplay.StormObservers.ToList()[0];
+        PregameStormPlayer player0 = _stormReplay.StormObservers.ToList()[0];
 
         Assert.AreEqual(PlayerType.Observer, player0.PlayerType);
         Assert.AreEqual(PlayerSlotType.Human, player0.PlayerSlotType);

@@ -49,7 +49,7 @@ public class BattleLobbyStormLeague1Tests
     [TestMethod]
     public void PlayerTest()
     {
-        StormPregamePlayer player4 = _stormReplay.StormPlayers.ToList()[4];
+        PregameStormPlayer player4 = _stormReplay.StormPlayers.ToList()[4];
 
         Assert.AreEqual(PlayerType.Human, player4.PlayerType);
         Assert.AreEqual(PlayerSlotType.Human, player4.PlayerSlotType);
@@ -61,17 +61,17 @@ public class BattleLobbyStormLeague1Tests
         Assert.IsNull(player4.PartyValue);
         Assert.AreEqual(PlayerDifficulty.Elite, player4.PlayerDifficulty);
 
-        StormPregamePlayer player5 = _stormReplay.StormPlayers.ToList()[5];
+        PregameStormPlayer player5 = _stormReplay.StormPlayers.ToList()[5];
         Assert.IsFalse(player5.HasActiveBoost);
         Assert.IsFalse(player5.IsBlizzardStaff);
         Assert.IsFalse(player5.IsSilenced);
         Assert.IsFalse(player5.IsVoiceSilenced);
         Assert.AreEqual(6794873790121, player5.PartyValue);
 
-        StormPregamePlayer player6 = _stormReplay.StormPlayers.ToList()[6];
+        PregameStormPlayer player6 = _stormReplay.StormPlayers.ToList()[6];
         Assert.AreEqual(player5.PartyValue, player6.PartyValue);
 
-        StormPregamePlayer player3 = _stormReplay.StormPlayers.ToList()[3];
+        PregameStormPlayer player3 = _stormReplay.StormPlayers.ToList()[3];
         Assert.AreEqual(3, player3.PlayerHero!.HeroMasteryTier);
     }
 
@@ -88,7 +88,7 @@ public class BattleLobbyStormLeague1Tests
     [TestMethod]
     public void PlayerLoadout()
     {
-        PlayerPregameLoadout loadout4 = _stormReplay.StormPlayers.ToList()[4]!.PlayerLoadout!;
+        PregamePlayerLoadout loadout4 = _stormReplay.StormPlayers.ToList()[4]!.PlayerLoadout!;
 
         Assert.AreEqual("AJAN", loadout4.AnnouncerPackAttributeId);
         Assert.AreEqual("BNaf", loadout4.BannerAttributeId);

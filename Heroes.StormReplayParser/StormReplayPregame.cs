@@ -74,17 +74,17 @@ public partial class StormReplayPregame
     /// <summary>
     /// Gets a collection of playing players (no observers, has AI).
     /// </summary>
-    public IEnumerable<StormPregamePlayer> StormPlayers => ClientListByWorkingSetSlotID.Where(PlayersFunc());
+    public IEnumerable<PregameStormPlayer> StormPlayers => ClientListByWorkingSetSlotID.Where(PlayersFunc());
 
     /// <summary>
     /// Gets a collection of players (no AI, has observers).
     /// </summary>
-    public IEnumerable<StormPregamePlayer> StormPlayersWithObservers => ClientListByWorkingSetSlotID.Where(PlayersWithObserversFunc());
+    public IEnumerable<PregameStormPlayer> StormPlayersWithObservers => ClientListByWorkingSetSlotID.Where(PlayersWithObserversFunc());
 
     /// <summary>
     /// Gets a collection of observer players.
     /// </summary>
-    public IEnumerable<StormPregamePlayer> StormObservers => ClientListByWorkingSetSlotID.Where(ObserversFunc());
+    public IEnumerable<PregameStormPlayer> StormObservers => ClientListByWorkingSetSlotID.Where(ObserversFunc());
 
     /// <summary>
     /// Gets the total number of playing players (no observers, has AI).
@@ -108,7 +108,7 @@ public partial class StormReplayPregame
     {
         get
         {
-            StormPregamePlayer? player = StormPlayersWithObservers.FirstOrDefault();
+            PregameStormPlayer? player = StormPlayersWithObservers.FirstOrDefault();
             if (player is not null && player.ToonHandle is not null)
                 return player.ToonHandle.StormRegion;
             else
@@ -125,7 +125,7 @@ public partial class StormReplayPregame
     /// Gets the list of all players connected to the game, using 'm_workingSetSlotId' as index.
     /// </summary>
     /// <remarks>Contains AI. No observers.</remarks>
-    internal StormPregamePlayer[] ClientListByWorkingSetSlotID { get; private set; } = new StormPregamePlayer[16];
+    internal PregameStormPlayer[] ClientListByWorkingSetSlotID { get; private set; } = new PregameStormPlayer[16];
 
     internal string?[][] TeamHeroAttributeIdBans { get; private set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
 
@@ -145,9 +145,9 @@ public partial class StormReplayPregame
         return TeamHeroAttributeIdBans[(int)stormTeam];
     }
 
-    private static Func<StormPregamePlayer, bool> PlayersFunc() => x => x?.PlayerType != PlayerType.Observer && (x?.PlayerSlotType == PlayerSlotType.Human || x?.PlayerSlotType == PlayerSlotType.Computer);
+    private static Func<PregameStormPlayer, bool> PlayersFunc() => x => x?.PlayerType != PlayerType.Observer && (x?.PlayerSlotType == PlayerSlotType.Human || x?.PlayerSlotType == PlayerSlotType.Computer);
 
-    private static Func<StormPregamePlayer, bool> PlayersWithObserversFunc() => x => x?.PlayerSlotType == PlayerSlotType.Human;
+    private static Func<PregameStormPlayer, bool> PlayersWithObserversFunc() => x => x?.PlayerSlotType == PlayerSlotType.Human;
 
-    private static Func<StormPregamePlayer, bool> ObserversFunc() => x => x?.PlayerType == PlayerType.Observer && x.PlayerSlotType == PlayerSlotType.Human;
+    private static Func<PregameStormPlayer, bool> ObserversFunc() => x => x?.PlayerType == PlayerType.Observer && x.PlayerSlotType == PlayerSlotType.Human;
 }

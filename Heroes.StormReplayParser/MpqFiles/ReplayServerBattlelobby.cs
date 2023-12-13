@@ -424,7 +424,7 @@ internal static class ReplayServerBattlelobby
 
             uint playerIndex = bitReader.ReadBits(5); // m_workingSetSlotId
 
-            StormPregamePlayer player = replay.ClientListByWorkingSetSlotID[playerIndex];
+            PregameStormPlayer player = replay.ClientListByWorkingSetSlotID[playerIndex];
             ToonHandle playerToonHandle = player.ToonHandle ??= new();
 
             // toon handle
@@ -742,7 +742,7 @@ internal static class ReplayServerBattlelobby
     private static void SetPlayerAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int playerSlotIndex, int attributeValueIndex)
     {
         string value = attribute.AttributeValues[attributeValueIndex].Value;
-        StormPregamePlayer player = replay.ClientListByWorkingSetSlotID[playerSlotIndex];
+        PregameStormPlayer player = replay.ClientListByWorkingSetSlotID[playerSlotIndex];
 
         player.PlayerHero ??= new();
 

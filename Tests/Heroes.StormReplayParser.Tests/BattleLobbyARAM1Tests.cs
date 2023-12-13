@@ -48,7 +48,7 @@ public class BattleLobbyARAM1Tests
     [TestMethod]
     public void PlayerTest()
     {
-        StormPregamePlayer player4 = _stormReplay.StormPlayers.ToList()[4];
+        PregameStormPlayer player4 = _stormReplay.StormPlayers.ToList()[4];
 
         Assert.IsTrue(player4.BattleTagName.StartsWith("Blimphead316"));
         Assert.AreEqual(PlayerType.Human, player4.PlayerType);
@@ -62,7 +62,7 @@ public class BattleLobbyARAM1Tests
         Assert.IsNull(player4.PartyValue);
         Assert.AreEqual(PlayerDifficulty.Beginner, player4.PlayerDifficulty);
 
-        StormPregamePlayer player8 = _stormReplay.StormPlayers.ToList()[8];
+        PregameStormPlayer player8 = _stormReplay.StormPlayers.ToList()[8];
         Assert.IsTrue(player8.HasActiveBoost);
         Assert.IsFalse(player8.IsBlizzardStaff);
         Assert.IsFalse(player8.IsSilenced);
@@ -82,7 +82,7 @@ public class BattleLobbyARAM1Tests
     [TestMethod]
     public void PlayerLoadout()
     {
-        PlayerPregameLoadout loadout4 = _stormReplay.StormPlayers.ToList()[4]!.PlayerLoadout!;
+        PregamePlayerLoadout loadout4 = _stormReplay.StormPlayers.ToList()[4]!.PlayerLoadout!;
 
         Assert.AreEqual(string.Empty, loadout4.AnnouncerPackAttributeId);
         Assert.AreEqual(string.Empty, loadout4.BannerAttributeId);

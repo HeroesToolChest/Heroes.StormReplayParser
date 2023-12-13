@@ -1,4 +1,4 @@
-﻿namespace Heroes.StormReplayParser;
+﻿namespace Heroes.StormReplayParser.Pregame;
 
 internal class StormBattleLobbyEnabledAttributeValue
 {

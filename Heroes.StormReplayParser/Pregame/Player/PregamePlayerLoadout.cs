@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains a player's loadout during the pregame.
 /// </summary>
-public class PlayerPregameLoadout
+public class PregamePlayerLoadout
 {
     /// <summary>
     /// Gets or sets the player's skin / skin tint attribute id.

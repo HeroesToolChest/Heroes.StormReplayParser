@@ -8,7 +8,7 @@ internal static class PregameMapper
 
         for (int i = 0; i < pregameReplay.ClientListByWorkingSetSlotID.Length; i++)
         {
-            StormPregamePlayer? stormPregamePlayer = pregameReplay.ClientListByWorkingSetSlotID[i];
+            PregameStormPlayer? stormPregamePlayer = pregameReplay.ClientListByWorkingSetSlotID[i];
             if (stormPregamePlayer is null)
                 continue;
 

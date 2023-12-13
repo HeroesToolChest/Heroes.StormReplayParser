@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains the properties for a player during the pregame.
 /// </summary>
-public class StormPregamePlayer
+public class PregameStormPlayer
 {
     private int? _accountLevel = null;
 
@@ -46,7 +46,7 @@ public class StormPregamePlayer
     /// <summary>
     /// Gets or sets the player's loadout information.
     /// </summary>
-    public PlayerPregameLoadout PlayerLoadout { get; set; } = new PlayerPregameLoadout();
+    public PregamePlayerLoadout PlayerLoadout { get; set; } = new PregamePlayerLoadout();
 
     /// <summary>
     /// Gets or sets a value indicating whether the player has been given the silenced penalty.
