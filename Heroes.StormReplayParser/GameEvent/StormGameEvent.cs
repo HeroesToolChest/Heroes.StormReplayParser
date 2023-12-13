@@ -79,7 +79,7 @@ public readonly struct StormGameEvent : IEquatable<StormGameEvent>
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return HashCode.Combine(Timestamp, GameEventType, Data?.ToString());
+        return HashCode.Combine(MessageSender, Timestamp, GameEventType, Data?.ToString());
     }
 
     /// <inheritdoc/>

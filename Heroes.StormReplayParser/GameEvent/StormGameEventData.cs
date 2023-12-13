@@ -147,4 +147,79 @@ public class StormGameEventData
             _ => string.Empty,
         };
     }
+
+    /// <summary>
+    /// Returns the current object as a json string.
+    /// </summary>
+    /// <returns>A json string.</returns>
+    public string AsJson()
+    {
+        return DataType switch
+        {
+            StormGameEventDataType.Bool => $"\"{Boolean?.ToString()}\"",
+            StormGameEventDataType.Integer32 => $"\"{Integer32?.ToString()}\"",
+            StormGameEventDataType.UnsignedInteger32 => $"\"{UnsignedInteger32?.ToString()}\"",
+            StormGameEventDataType.UnsignedInteger64 => $"\"{UnsignedInteger64?.ToString()}\"",
+            StormGameEventDataType.Blob => Blob is not null ? $"\"{Blob}\"" : "null",
+            StormGameEventDataType.Array => Array is not null ? GetArrayAsJson(Array) : "null",
+            StormGameEventDataType.Structure => Structure is not null ? GetStructureAsJson(Structure) : "null",
+            StormGameEventDataType.BitArray => BitArray is not null ? GetBitArrayAsJson(BitArray) : "null",
+
+            _ => string.Empty,
+        };
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string GetArrayAsJson(StormGameEventData[] arrayData)
+    {
+        StringBuilder sb = new("[{");
+
+        for (int i = 0; i < arrayData.Length; i++)
+        {
+            sb.Append($"\"{i}\": {arrayData[i].AsJson()}");
+
+            if (i < arrayData.Length - 1)
+                sb.Append(',');
+        }
+
+        sb.Append("}]");
+
+        return sb.ToString();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string GetStructureAsJson(StormDataStructure<StormGameEventData> structure)
+    {
+        StringBuilder sb = new("{");
+
+        for (int i = 0; i < structure.Count; i++)
+        {
+            sb.Append($"\"{i}\": {structure[i].AsJson()}");
+
+            if (i < structure.Count - 1)
+                sb.Append(',');
+        }
+
+        sb.Append('}');
+
+        return sb.ToString();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string GetBitArrayAsJson(bool[] bitArray)
+    {
+        StringBuilder sb = new("[");
+
+        for (int i = 0; i < bitArray.Length; i++)
+        {
+            sb.Append($"{bitArray[i]}");
+
+            if (i < bitArray.Length - 1)
+                sb.Append(',');
+        }
+
+        sb.Append(']');
+
+        return sb.ToString();
+    }
 }

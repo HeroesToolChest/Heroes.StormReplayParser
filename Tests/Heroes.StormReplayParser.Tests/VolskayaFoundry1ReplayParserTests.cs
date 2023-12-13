@@ -632,7 +632,7 @@ public class VolskayaFoundry1ReplayParserTests
     }
 
     [TestMethod]
-    public void TrackerEventsAsJsonTest()
+    public void TrackerEventsVersionedDecoderAsJsonTest()
     {
         int i = 0;
         foreach (string? item in _stormReplay.TrackerEvents.Select(x => x.VersionedDecoder?.AsJson()))
@@ -652,6 +652,29 @@ public class VolskayaFoundry1ReplayParserTests
         }
 
         Assert.AreEqual(_stormReplay.TrackerEvents.Count, i);
+    }
+
+    [TestMethod]
+    public void GameEventsDataAsJsonTest()
+    {
+        int i = 0;
+        foreach (string? item in _stormReplay.GameEvents.Select(x => x.Data?.AsJson()))
+        {
+            if (item is null)
+                continue;
+
+            try
+            {
+                JsonDocument.Parse(item);
+                i++;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but received: {ex.Message}");
+            }
+        }
+
+        Assert.AreEqual(_stormReplay.GameEvents.Count, i);
     }
 
     private static void NoTrackerEvents(StormReplayResult result)

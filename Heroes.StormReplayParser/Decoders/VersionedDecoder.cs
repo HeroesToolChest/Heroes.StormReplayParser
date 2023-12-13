@@ -206,10 +206,10 @@ public class VersionedDecoder
 
         for (int i = 0; i < structure.Count; i++)
         {
+            sb.Append($"\"{i}\": {structure[i].AsJson()}");
+
             if (i < structure.Count - 1)
-                sb.Append($"\"{i}\": {structure[i].AsJson()}, ");
-            else
-                sb.Append($"\"{i}\": {structure[i].AsJson()}");
+                sb.Append(',');
         }
 
         sb.Append('}');
@@ -224,10 +224,10 @@ public class VersionedDecoder
 
         for (int i = 0; i < arrayData.Length; i++)
         {
+            sb.Append($"\"{i}\": {arrayData[i].AsJson()}");
+
             if (i < arrayData.Length - 1)
-                sb.Append($"\"{i}\": {arrayData[i].AsJson()}, ");
-            else
-                sb.Append($"\"{i}\": {arrayData[i].AsJson()}");
+                sb.Append(',');
         }
 
         sb.Append("}]");
