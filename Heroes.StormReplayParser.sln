@@ -20,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heroes.StormReplayParser.Be
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitLocator", "BitLocator\BitLocator.csproj", "{DD9FAC04-A7E4-455A-B5A8-7F73D450D7B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeroesParser.BattleLobby", "HeroesParser.BattleLobby\HeroesParser.BattleLobby.csproj", "{4B046FE7-774E-42D8-A22F-F0F18F8AD009}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeroesParser.Pregame", "HeroesParser.Pregame\HeroesParser.Pregame.csproj", "{2238FE7A-2167-4FB7-BDB1-242667C54D05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,10 +48,10 @@ Global
 		{DD9FAC04-A7E4-455A-B5A8-7F73D450D7B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD9FAC04-A7E4-455A-B5A8-7F73D450D7B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD9FAC04-A7E4-455A-B5A8-7F73D450D7B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4B046FE7-774E-42D8-A22F-F0F18F8AD009}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B046FE7-774E-42D8-A22F-F0F18F8AD009}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B046FE7-774E-42D8-A22F-F0F18F8AD009}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B046FE7-774E-42D8-A22F-F0F18F8AD009}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2238FE7A-2167-4FB7-BDB1-242667C54D05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2238FE7A-2167-4FB7-BDB1-242667C54D05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2238FE7A-2167-4FB7-BDB1-242667C54D05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2238FE7A-2167-4FB7-BDB1-242667C54D05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
