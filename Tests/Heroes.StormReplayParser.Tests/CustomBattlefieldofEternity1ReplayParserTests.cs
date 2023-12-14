@@ -483,10 +483,10 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     }
 
     [TestMethod]
-    public void TrackerEventsAsJsonTest()
+    public void TrackerEventsToJsonTest()
     {
         int i = 0;
-        foreach (string? item in _stormReplay.TrackerEvents.Select(x => x.VersionedDecoder?.AsJson()))
+        foreach (string? item in _stormReplay.TrackerEvents.Select(x => x.VersionedDecoder?.ToJson()))
         {
             if (item is null)
                 continue;
@@ -505,6 +505,29 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.AreEqual(_stormReplay.TrackerEvents.Count, i);
     }
 
+    [TestMethod]
+    public void GameEventsDataToJsonTest()
+    {
+        int i = 0;
+        foreach (string? item in _stormReplay.GameEvents.Select(x => x.Data?.ToJson()))
+        {
+            if (item is null)
+                continue;
+
+            try
+            {
+                JsonDocument.Parse(item);
+                i++;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but received: {ex.Message}");
+            }
+        }
+
+        Assert.AreEqual(_stormReplay.GameEvents.Count, i);
+
+    }
     private static void NoTrackerEvents(StormReplayResult result)
     {
         StormReplay replay = result.Replay!;

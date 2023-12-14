@@ -34,10 +34,10 @@ public class SilverCity1ReplayParserTests
     }
 
     [TestMethod]
-    public void TrackerEventsVersionedDecoderAsJsonTest()
+    public void TrackerEventsVersionedDecoderToJsonTest()
     {
         int i = 0;
-        foreach (string? item in _stormReplay.TrackerEvents.Select(x => x.VersionedDecoder?.AsJson()))
+        foreach (string? item in _stormReplay.TrackerEvents.Select(x => x.VersionedDecoder?.ToJson()))
         {
             if (item is null)
                 continue;
@@ -57,10 +57,10 @@ public class SilverCity1ReplayParserTests
     }
 
     [TestMethod]
-    public void GameEventsDataAsJsonTest()
+    public void GameEventsDataToJsonTest()
     {
         int i = 0;
-        foreach (string? item in _stormReplay.GameEvents.Select(x => x.Data?.AsJson()))
+        foreach (string? item in _stormReplay.GameEvents.Select(x => x.Data?.ToJson()))
         {
             if (item is null)
                 continue;

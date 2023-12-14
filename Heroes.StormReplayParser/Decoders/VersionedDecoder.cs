@@ -183,13 +183,13 @@ public class VersionedDecoder
     /// Returns the current object as a json string.
     /// </summary>
     /// <returns>A json string.</returns>
-    public string AsJson()
+    public string ToJson()
     {
         return DataType switch
         {
             0x00 => ArrayData is not null ? GetArrayAsJson(ArrayData) : "null",
             0x02 => Value is not null ? $"\"{Encoding.UTF8.GetString(Value)}\"" : "null",
-            0x04 => OptionalData is not null ? OptionalData.AsJson() : "null",
+            0x04 => OptionalData is not null ? OptionalData.ToJson() : "null",
             0x05 => Structure is not null ? GetStructureAsJson(Structure) : "null",
             0x07 => _endianType == EndianType.BigEndian ? BinaryPrimitives.ReadUInt32BigEndian(Value).ToString() : BinaryPrimitives.ReadUInt32LittleEndian(Value).ToString(),
             0x08 => _endianType == EndianType.BigEndian ? BinaryPrimitives.ReadUInt64BigEndian(Value).ToString() : BinaryPrimitives.ReadUInt64LittleEndian(Value).ToString(),
@@ -206,7 +206,7 @@ public class VersionedDecoder
 
         for (int i = 0; i < structure.Count; i++)
         {
-            sb.Append($"\"{i}\": {structure[i].AsJson()}");
+            sb.Append($"\"{i}\": {structure[i].ToJson()}");
 
             if (i < structure.Count - 1)
                 sb.Append(',');
@@ -224,7 +224,7 @@ public class VersionedDecoder
 
         for (int i = 0; i < arrayData.Length; i++)
         {
-            sb.Append($"\"{i}\": {arrayData[i].AsJson()}");
+            sb.Append($"\"{i}\": {arrayData[i].ToJson()}");
 
             if (i < arrayData.Length - 1)
                 sb.Append(',');

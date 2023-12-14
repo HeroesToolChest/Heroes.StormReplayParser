@@ -152,7 +152,7 @@ public class StormGameEventData
     /// Returns the current object as a json string.
     /// </summary>
     /// <returns>A json string.</returns>
-    public string AsJson()
+    public string ToJson()
     {
         return DataType switch
         {
@@ -176,7 +176,7 @@ public class StormGameEventData
 
         for (int i = 0; i < arrayData.Length; i++)
         {
-            sb.Append($"\"{i}\": {arrayData[i].AsJson()}");
+            sb.Append($"\"{i}\": {arrayData[i].ToJson()}");
 
             if (i < arrayData.Length - 1)
                 sb.Append(',');
@@ -194,7 +194,7 @@ public class StormGameEventData
 
         for (int i = 0; i < structure.Count; i++)
         {
-            sb.Append($"\"{i}\": {structure[i].AsJson()}");
+            sb.Append($"\"{i}\": {structure[i].ToJson()}");
 
             if (i < structure.Count - 1)
                 sb.Append(',');
