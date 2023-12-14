@@ -526,8 +526,8 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         }
 
         Assert.AreEqual(_stormReplay.GameEvents.Count, i);
-
     }
+
     private static void NoTrackerEvents(StormReplayResult result)
     {
         StormReplay replay = result.Replay!;
