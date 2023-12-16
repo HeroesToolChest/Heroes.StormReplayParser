@@ -744,6 +744,8 @@ internal static class ReplayTrackerEvents
                     case "PlaysDiablo":
                     case "PlaysWarCraft":
                     case "PlaysOverwatch":
+                    case "PlaysNexus":
+                    case "PlaysOverwatchOrNexus":
 
                     // Gender Booleans
                     case "TeamWinsFemale":
