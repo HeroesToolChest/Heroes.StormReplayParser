@@ -652,6 +652,7 @@ public class VolskayaFoundry1ReplayParserTests
         }
 
         Assert.AreEqual(_stormReplay.TrackerEvents.Count, i);
+        Assert.AreEqual("{\"0\": 161,\"1\": 27,\"2\": \"FootmanMinion\",\"3\": 11,\"4\": 11,\"5\": 50,\"6\": 85}", _stormReplay.TrackerEvents[2345].VersionedDecoder!.ToJson());
     }
 
     [TestMethod]
@@ -675,6 +676,7 @@ public class VolskayaFoundry1ReplayParserTests
         }
 
         Assert.AreEqual(_stormReplay.GameEvents.Count, i);
+        Assert.AreEqual("{\"0\": \"98\",\"1\": {\"0\": \"567020\",\"1\": \"388989\",\"2\": \"32333\"}}", _stormReplay.GameEvents[5657].Data!.ToJson());
     }
 
     private static void NoTrackerEvents(StormReplayResult result)

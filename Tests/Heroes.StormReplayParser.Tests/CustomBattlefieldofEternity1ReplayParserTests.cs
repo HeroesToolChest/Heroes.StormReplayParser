@@ -503,6 +503,9 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         }
 
         Assert.AreEqual(_stormReplay.TrackerEvents.Count, i);
+        Assert.AreEqual(
+            "{\"0\": \"TownStructureInit\",\"1\": null,\"2\": [{\"0\": {\"0\": {\"0\": \"TownID\"},\"1\": 3},\"1\": {\"0\": {\"0\": \"Team\"},\"1\": 1},\"2\": {\"0\": {\"0\": \"Lane\"},\"1\": 2}}],\"3\": [{\"0\": {\"0\": {\"0\": \"PositionX\"},\"1\": 268288},\"1\": {\"0\": {\"0\": \"PositionY\"},\"1\": 346112}}]}",
+            _stormReplay.TrackerEvents[245].VersionedDecoder!.ToJson());
     }
 
     [TestMethod]
@@ -526,6 +529,9 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         }
 
         Assert.AreEqual(_stormReplay.GameEvents.Count, i);
+        Assert.AreEqual(
+            "{\"0\": {\"0\": [{\"0\": \"557865560\",\"1\": \"3759145086\",\"2\": \"3536921532\",\"3\": \"571549913\",\"4\": \"1963877419\",\"5\": \"1637922647\",\"6\": \"3416812981\",\"7\": \"668301726\",\"8\": \"1198314030\"}],\"1\": [{\"0\": \"10666\",\"1\": \"5718\",\"2\": \"5811\",\"3\": \"4768\",\"4\": \"1833\",\"5\": \"2999\",\"6\": \"1505\",\"7\": \"1182\",\"8\": \"1502\"}]}}",
+            _stormReplay.GameEvents[5].Data!.ToJson());
     }
 
     private static void NoTrackerEvents(StormReplayResult result)

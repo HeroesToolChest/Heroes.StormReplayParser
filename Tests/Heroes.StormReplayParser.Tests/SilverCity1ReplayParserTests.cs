@@ -54,6 +54,7 @@ public class SilverCity1ReplayParserTests
         }
 
         Assert.AreEqual(_stormReplay.TrackerEvents.Count, i);
+        Assert.AreEqual("{\"0\": 67,\"1\": 124,\"2\": \"FootmanMinion\",\"3\": 12,\"4\": 12,\"5\": 188,\"6\": 105}", _stormReplay.TrackerEvents[2434].VersionedDecoder!.ToJson());
     }
 
     [TestMethod]
@@ -77,5 +78,6 @@ public class SilverCity1ReplayParserTests
         }
 
         Assert.AreEqual(_stormReplay.GameEvents.Count, i);
+        Assert.AreEqual("{\"0\": \"87558\"}", _stormReplay.GameEvents[3567].Data!.ToJson());
     }
 }

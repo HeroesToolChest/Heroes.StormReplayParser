@@ -155,6 +155,7 @@ public class AIBraxisHoldout1ReplayParserTests
         }
 
         Assert.AreEqual(_stormReplay.TrackerEvents.Count, i);
+        Assert.AreEqual("{\"0\": 300,\"1\": 1,\"2\": 0,\"3\": 73,\"4\": 118,\"5\": null,\"6\": null}", _stormReplay.TrackerEvents[456].VersionedDecoder!.ToJson());
     }
 
     [TestMethod]
@@ -178,5 +179,6 @@ public class AIBraxisHoldout1ReplayParserTests
         }
 
         Assert.AreEqual(_stormReplay.GameEvents.Count, i);
+        Assert.AreEqual("{\"0\": \"1077\",\"1\": {\"0\": \"340837\",\"1\": \"314771\",\"2\": \"32374\"}}", _stormReplay.GameEvents[6000].Data!.ToJson());
     }
 }
