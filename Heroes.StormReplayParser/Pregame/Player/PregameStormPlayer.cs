@@ -90,5 +90,5 @@ public class PregameStormPlayer
     /// <summary>
     /// Gets or sets the computer player difficulty.
     /// </summary>
-    public PlayerDifficulty PlayerDifficulty { get; set; } = PlayerDifficulty.Unknown;
+    public ComputerDifficulty ComputerDifficulty { get; set; } = ComputerDifficulty.Unknown;
 }

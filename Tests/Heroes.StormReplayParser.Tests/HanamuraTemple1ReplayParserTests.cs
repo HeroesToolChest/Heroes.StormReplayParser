@@ -82,7 +82,7 @@ public class HanamuraTemple1ReplayParserTests
         StormPlayer player = players[9];
 
         Assert.AreEqual("5v5", _stormReplay.TeamSize);
-        Assert.AreEqual(PlayerDifficulty.Elite, player.PlayerDifficulty);
+        Assert.AreEqual(ComputerDifficulty.Elite, player.ComputerDifficulty);
         Assert.AreEqual(StormGameSpeed.Faster, _stormReplay.GameSpeed);
         Assert.AreEqual(StormGameMode.QuickMatch, _stormReplay.GameMode);
         Assert.AreEqual("Hanz", player.PlayerHero!.HeroAttributeId);

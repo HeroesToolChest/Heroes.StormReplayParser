@@ -820,7 +820,7 @@ internal static class ReplayServerBattlelobby
 
             case ReplayAttributeEventType.DifficultyLevel:
                 {
-                    player.PlayerDifficulty = ReplayAttributeEvents.GetDifficultyLevel(value);
+                    player.ComputerDifficulty = ReplayAttributeEvents.GetComputerDifficultyLevel(value);
 
                     break;
                 }

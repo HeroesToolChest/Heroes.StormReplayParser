@@ -59,7 +59,7 @@ internal static class ReplayAttributeEvents
                     {
                         StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
 
-                        player.PlayerDifficulty = GetDifficultyLevel(value);
+                        player.ComputerDifficulty = GetComputerDifficultyLevel(value);
 
                         break;
                     }
@@ -333,14 +333,14 @@ internal static class ReplayAttributeEvents
         _ => PlayerType.Unknown,
     };
 
-    internal static PlayerDifficulty GetDifficultyLevel(string value) => value switch
+    internal static ComputerDifficulty GetComputerDifficultyLevel(string value) => value switch
     {
-        "VyEy" => PlayerDifficulty.Beginner,
-        "Easy" => PlayerDifficulty.Recruit,
-        "Medi" => PlayerDifficulty.Adept,
-        "HdVH" => PlayerDifficulty.Veteran,
-        "VyHd" => PlayerDifficulty.Elite,
+        "VyEy" => ComputerDifficulty.Beginner,
+        "Easy" => ComputerDifficulty.Recruit,
+        "Medi" => ComputerDifficulty.Adept,
+        "HdVH" => ComputerDifficulty.Veteran,
+        "VyHd" => ComputerDifficulty.Elite,
 
-        _ => PlayerDifficulty.Unknown,
+        _ => ComputerDifficulty.Unknown,
     };
 }

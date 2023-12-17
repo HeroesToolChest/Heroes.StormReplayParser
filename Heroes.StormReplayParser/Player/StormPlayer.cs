@@ -106,7 +106,7 @@ public class StormPlayer
     /// <summary>
     /// Gets or sets the computer player difficulty.
     /// </summary>
-    public PlayerDifficulty PlayerDifficulty { get; set; } = PlayerDifficulty.Unknown;
+    public ComputerDifficulty ComputerDifficulty { get; set; } = ComputerDifficulty.Unknown;
 
     /// <summary>
     /// Gets the player's score result.

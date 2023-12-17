@@ -80,7 +80,7 @@ public class AIBraxisHoldout1ReplayParserTests
         StormPlayer player = players[9];
 
         Assert.AreEqual("5v5", _stormReplay.TeamSize);
-        Assert.AreEqual(PlayerDifficulty.Elite, player.PlayerDifficulty);
+        Assert.AreEqual(ComputerDifficulty.Elite, player.ComputerDifficulty);
         Assert.AreEqual(StormGameSpeed.Faster, _stormReplay.GameSpeed);
         Assert.AreEqual(StormGameMode.Cooperative, _stormReplay.GameMode);
         Assert.AreEqual(string.Empty, player.PlayerHero!.HeroAttributeId);

@@ -1,9 +1,9 @@
 ﻿namespace Heroes.StormReplayParser.Player;
 
 /// <summary>
-/// Specifices the player difficulty.
+/// Specifices the computer difficulty.
 /// </summary>
-public enum PlayerDifficulty
+public enum ComputerDifficulty
 {
     /// <summary>
     /// Indicates an unknown difficulty.

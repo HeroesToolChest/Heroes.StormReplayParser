@@ -60,7 +60,7 @@ public class BattleLobbyARAM1Tests
         Assert.IsFalse(player4.IsVoiceSilenced);
         Assert.AreEqual("Blimphead316", player4.Name);
         Assert.IsNull(player4.PartyValue);
-        Assert.AreEqual(PlayerDifficulty.Beginner, player4.PlayerDifficulty);
+        Assert.AreEqual(ComputerDifficulty.Beginner, player4.ComputerDifficulty);
 
         PregameStormPlayer player8 = _stormReplay.StormPlayers.ToList()[8];
         Assert.IsTrue(player8.HasActiveBoost);

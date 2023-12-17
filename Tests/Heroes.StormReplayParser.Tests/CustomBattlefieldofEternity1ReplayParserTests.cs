@@ -107,7 +107,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         StormPlayer player8 = playersWithObs[8];
 
         Assert.AreEqual(PlayerType.Observer, player8.PlayerType);
-        Assert.AreEqual(PlayerDifficulty.Unknown, player8.PlayerDifficulty);
+        Assert.AreEqual(ComputerDifficulty.Unknown, player8.ComputerDifficulty);
     }
 
     [TestMethod]
@@ -117,7 +117,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         StormPlayer player = players[9];
 
         Assert.AreEqual("5v5", _stormReplay.TeamSize);
-        Assert.AreEqual(PlayerDifficulty.Elite, player.PlayerDifficulty);
+        Assert.AreEqual(ComputerDifficulty.Elite, player.ComputerDifficulty);
         Assert.AreEqual(StormGameSpeed.Faster, _stormReplay.GameSpeed);
         Assert.AreEqual(StormGameMode.Custom, _stormReplay.GameMode);
         Assert.AreEqual("Wiza", player.PlayerHero!.HeroAttributeId);

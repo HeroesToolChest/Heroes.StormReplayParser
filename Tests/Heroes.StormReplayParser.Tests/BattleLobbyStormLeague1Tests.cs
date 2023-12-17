@@ -59,7 +59,7 @@ public class BattleLobbyStormLeague1Tests
         Assert.IsFalse(player4.IsSilenced);
         Assert.IsFalse(player4.IsVoiceSilenced);
         Assert.IsNull(player4.PartyValue);
-        Assert.AreEqual(PlayerDifficulty.Elite, player4.PlayerDifficulty);
+        Assert.AreEqual(ComputerDifficulty.Elite, player4.ComputerDifficulty);
 
         PregameStormPlayer player5 = _stormReplay.StormPlayers.ToList()[5];
         Assert.IsFalse(player5.HasActiveBoost);

@@ -59,7 +59,7 @@ public class BattleLobbyCustom1Tests
         Assert.IsFalse(player0.IsVoiceSilenced);
         Assert.IsTrue(player0.Name.StartsWith("la"));
         Assert.IsNull(player0.PartyValue);
-        Assert.AreEqual(PlayerDifficulty.Elite, player0.PlayerDifficulty);
+        Assert.AreEqual(ComputerDifficulty.Elite, player0.ComputerDifficulty);
         Assert.AreEqual(1214607983, player0.ToonHandle!.ProgramId);
         Assert.IsTrue(player0.ToonHandle!.Id.ToString().StartsWith("152"));
         Assert.IsTrue(player0.ToonHandle!.ShortcutId.ToString().StartsWith("T:563"));

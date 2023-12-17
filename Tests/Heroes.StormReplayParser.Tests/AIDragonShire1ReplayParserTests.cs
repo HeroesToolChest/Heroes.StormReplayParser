@@ -90,7 +90,7 @@ public class AIDragonShire1ReplayParserTests
         StormPlayer player = players[9];
 
         Assert.AreEqual("5v5", _stormReplay.TeamSize);
-        Assert.AreEqual(PlayerDifficulty.Veteran, player.PlayerDifficulty);
+        Assert.AreEqual(ComputerDifficulty.Veteran, player.ComputerDifficulty);
         Assert.AreEqual(StormGameSpeed.Faster, _stormReplay.GameSpeed);
         Assert.AreEqual(StormGameMode.Cooperative, _stormReplay.GameMode);
         Assert.AreEqual(string.Empty, player.PlayerHero!.HeroAttributeId);
