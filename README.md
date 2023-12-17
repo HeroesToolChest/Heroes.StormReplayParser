@@ -3,7 +3,7 @@
 [![Release](https://img.shields.io/github/release/HeroesToolChest/Heroes.StormReplayParser.svg)](https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases/latest) 
 [![NuGet](https://img.shields.io/nuget/v/Heroes.StormReplayParser.svg)](https://www.nuget.org/packages/Heroes.StormReplayParser/)
 
-Heroes Storm Replay Parser is a .NET library that parses the Heroes of the Storm replay files (.StormReplay).
+Heroes Storm Replay Parser is a .NET library that parses the Heroes of the Storm replay files (.StormReplay) and can also be used to parse `.battlelobby` files.
 
 To see this library in action check out [Heroes Decode](https://github.com/HeroesToolChest/HeroesDecode).
 
