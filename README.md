@@ -89,7 +89,7 @@ if (status == StormReplayPregameParseStatus.Success)
     int buildVersion = replay.ReplayBuild;
 
     // player data
-    IEnumerable<StormPregamePlayer> players = replay.StormPlayers;
+    IEnumerable<PregameStormPlayer> players = replay.StormPlayers;
 }
 else
 {
