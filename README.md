@@ -1,5 +1,5 @@
 # Heroes Storm Replay Parser
-[![Build](https://github.com/HeroesToolChest/Heroes.StormReplayParser/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/HeroesToolChest/Heroes.StormReplayParser/actions/workflows/build.yml)
+[![Build](https://github.com/HeroesToolChest/Heroes.StormReplayParser/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/HeroesToolChest/Heroes.StormReplayParser/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/release/HeroesToolChest/Heroes.StormReplayParser.svg)](https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases/latest) 
 [![NuGet](https://img.shields.io/nuget/v/Heroes.StormReplayParser.svg)](https://www.nuget.org/packages/Heroes.StormReplayParser/)
 
