@@ -263,7 +263,7 @@ public partial class StormReplay
     {
         if (stormReplay.PlayersCount == 1)
             _stormReplayParseResult = StormReplayParseStatus.TryMeMode;
-        else if (stormReplay.Players.All(x => !x.IsWinner) || stormReplay.ReplayLength.Minutes < 2)
+        else if (stormReplay.Players.All(x => !x.IsWinner) || stormReplay.ReplayLength.TotalSeconds < 45)
             _stormReplayParseResult = StormReplayParseStatus.Incomplete;
         else if (stormReplay.Timestamp == DateTime.MinValue)
             _stormReplayParseResult = StormReplayParseStatus.UnexpectedResult;

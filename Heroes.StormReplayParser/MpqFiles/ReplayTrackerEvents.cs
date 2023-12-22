@@ -145,7 +145,7 @@ internal static class ReplayTrackerEvents
                 int level = (int)stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![1].Structure![1].GetValueAsUInt32();
                 StormTeam team = replay.PlayersWithOpenSlots[playerId - 1].Team;
 
-                Dictionary<int, StormTeamLevel>? teamLevel = replay.TeamLevelsInternal[(int)team] ??= new();
+                Dictionary<int, StormTeamLevel> teamLevel = replay.TeamLevelsInternal[(int)team] ??= new();
 
                 if (!teamLevel.ContainsKey(level))
                 {
@@ -209,7 +209,7 @@ internal static class ReplayTrackerEvents
                 uint team = stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32() - 1;
 
                 replay.TeamXPBreakdownInternal[team] ??= new List<StormTeamXPBreakdown>();
-                replay.TeamXPBreakdownInternal[team].Add(new StormTeamXPBreakdown()
+                replay.TeamXPBreakdownInternal[team]!.Add(new StormTeamXPBreakdown()
                 {
                     Level = (int)stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![1].Structure![1].GetValueAsUInt32(),
                     Time = stormTrackerEvent.Timestamp,
@@ -264,15 +264,14 @@ internal static class ReplayTrackerEvents
                 StormTeam team = replay.PlayersWithOpenSlots[playerId - 1].Team;
                 int teamNumber = (int)team;
 
-                StormTeamXPBreakdown lastBreakdown = replay.TeamXPBreakdownInternal[teamNumber].Last();
+                List<StormTeamXPBreakdown>? teamXpBreakdown = replay.TeamXPBreakdownInternal[teamNumber];
+                StormTeamXPBreakdown? teamLastBreakdown = teamXpBreakdown?.Last();
 
-                if (lastBreakdown.Time != stormTrackerEvent.Timestamp)
+                if (teamLastBreakdown is not null && teamLastBreakdown.Time != stormTrackerEvent.Timestamp)
                 {
-                    replay.TeamXPBreakdownInternal[teamNumber] ??= new List<StormTeamXPBreakdown>();
-
-                    replay.TeamXPBreakdownInternal[teamNumber].Add(new StormTeamXPBreakdown()
+                    teamXpBreakdown!.Add(new StormTeamXPBreakdown()
                     {
-                        Level = replay.TeamLevelsInternal[teamNumber].Last().Key,
+                        Level = replay.TeamLevelsInternal[teamNumber]!.Last().Key,
                         Time = stormTrackerEvent.Timestamp,
                         MinionXP = (int)(stormTrackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![0].Structure![1].GetValueAsInt64() / 4096),
                         CreepXP = (int)(stormTrackerEvent.VersionedDecoder!.Structure![3].OptionalData!.ArrayData![1].Structure![1].GetValueAsInt64() / 4096),

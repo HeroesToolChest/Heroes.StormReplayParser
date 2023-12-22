@@ -210,7 +210,11 @@ public partial class StormReplay
     /// <remarks>Contains AI. No observers.</remarks>
     internal StormPlayer[] PlayersWithOpenSlots { get; private set; } = new StormPlayer[10];
 
+#if NET8_0_OR_GREATER
+    internal string?[][] TeamHeroAttributeIdBans { get; private set; } = [[null, null, null], [null, null, null]];
+#else
     internal string?[][] TeamHeroAttributeIdBans { get; private set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
+#endif
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<StormGameEvent> GameEventsInternal { get; private set; } = new List<StormGameEvent>();
@@ -224,9 +228,9 @@ public partial class StormReplay
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<StormDraftPick> DraftPicksInternal { get; private set; } = new List<StormDraftPick>();
 
-    internal Dictionary<int, StormTeamLevel>[] TeamLevelsInternal { get; private set; } = new Dictionary<int, StormTeamLevel>[2];
+    internal Dictionary<int, StormTeamLevel>?[] TeamLevelsInternal { get; private set; } = new Dictionary<int, StormTeamLevel>[2];
 
-    internal List<StormTeamXPBreakdown>[] TeamXPBreakdownInternal { get; private set; } = new List<StormTeamXPBreakdown>[2];
+    internal List<StormTeamXPBreakdown>?[] TeamXPBreakdownInternal { get; private set; } = new List<StormTeamXPBreakdown>[2];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<string> DisabledHeroAttributeIdList { get; private set; } = new List<string>();
@@ -252,9 +256,9 @@ public partial class StormReplay
     public int? GetTeamFinalLevel(StormTeam team)
     {
         if (team == StormTeam.Blue)
-            return TeamLevelsInternal[0]?.Values.LastOrDefault()?.Level;
+            return TeamLevelsInternal[0]?.Values?.LastOrDefault()?.Level;
         else if (team == StormTeam.Red)
-            return TeamLevelsInternal[1]?.Values.LastOrDefault()?.Level;
+            return TeamLevelsInternal[1]?.Values?.LastOrDefault()?.Level;
         else
             return null;
     }
@@ -267,9 +271,9 @@ public partial class StormReplay
     public IReadOnlyList<StormTeamLevel>? GetTeamLevels(StormTeam team)
     {
         if (team == StormTeam.Blue)
-            return TeamLevelsInternal[0]?.Values.ToList() ?? null;
+            return TeamLevelsInternal[0]?.Values?.ToList() ?? null;
         else if (team == StormTeam.Red)
-            return TeamLevelsInternal[1]?.Values.ToList() ?? null;
+            return TeamLevelsInternal[1]?.Values?.ToList() ?? null;
         else
             return null;
     }
@@ -278,7 +282,7 @@ public partial class StormReplay
     /// Gets a collection of a team's experience breakdown that occurs during periodic intervals.
     /// </summary>
     /// <param name="team">The team value.</param>
-    /// <returns>A collection of the teams xp or <see langword="null"/> if it does not exists.</returns>
+    /// <returns>A collection of the team's xp or <see langword="null"/> if it does not exist.</returns>
     public IReadOnlyList<StormTeamXPBreakdown>? GetTeamXPBreakdown(StormTeam team)
     {
         if (team == StormTeam.Blue)
