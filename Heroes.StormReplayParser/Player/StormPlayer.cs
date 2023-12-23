@@ -104,6 +104,11 @@ public class StormPlayer
     public long? PartyValue { get; set; } = null;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the player's platform is a mac.
+    /// </summary>
+    public bool IsPlatformMac { get; set; }
+
+    /// <summary>
     /// Gets or sets the computer player difficulty.
     /// </summary>
     public ComputerDifficulty ComputerDifficulty { get; set; } = ComputerDifficulty.Unknown;

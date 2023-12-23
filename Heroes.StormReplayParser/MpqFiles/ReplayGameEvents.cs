@@ -66,7 +66,11 @@ internal static class ReplayGameEvents
                         [13] = new StormGameEventData(bitReader.ReadBlobAsString(9)), // m_hotkeyProfile
                     };
 
+                    if (player is not null)
+                        player.IsPlatformMac = structure[8]!.Boolean!.Value;
+
                     gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
+
                     break;
                 case StormGameEventType.SBankFileEvent:
                     structure = new StormDataStructure<StormGameEventData>(1)
@@ -1061,7 +1065,8 @@ internal static class ReplayGameEvents
 
                     gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
 
-                    SetPlayerTalent(player!, gameEvent.Value);
+                    if (player is not null)
+                        SetPlayerTalent(player, gameEvent.Value);
 
                     break;
                 case StormGameEventType.SHeroTalentTreeSelectionPanelToggledEvent:
