@@ -226,7 +226,7 @@ internal static class ReplayInitData
                 }
                 else if (!string.IsNullOrEmpty(toonHandle) && observerStatus == 0)
                 {
-                    replay.ClientListByUserID[userId.Value] = replay.Players.FirstOrDefault(x => x.ToonHandle?.ToString() == toonHandle)
+                    replay.ClientListByUserID[userId.Value] = replay.Players.FirstOrDefault(x => x is not null && x.ToonHandle?.ToString() == toonHandle)
                         ?? throw new StormParseException($"Unable to set {nameof(replay.ClientListByUserID)}, could not find player with a toonhandle of {toonHandle}");
                 }
                 else if (observerStatus == 0)
@@ -235,14 +235,14 @@ internal static class ReplayInitData
                 }
 
                 if (observerStatus > 0)
-                    replay.ClientListByUserID[userId.Value].PlayerType = PlayerType.Observer;
+                    replay.ClientListByUserID[userId.Value]!.PlayerType = PlayerType.Observer;
 
-                if (replay.ClientListByUserID[userId.Value].PlayerType != PlayerType.Observer)
+                if (replay.ClientListByUserID[userId.Value]!.PlayerType != PlayerType.Observer)
                 {
-                    replay.ClientListByUserID[userId.Value].PlayerHero ??= new PlayerHero();
-                    replay.ClientListByUserID[userId.Value].PlayerHero!.HeroId = heroId;
-                    replay.ClientListByUserID[userId.Value].PlayerLoadout.SkinAndSkinTint = skinAndSkinTint;
-                    replay.ClientListByUserID[userId.Value].PlayerLoadout.MountAndMountTint = mountAndMountTint;
+                    replay.ClientListByUserID[userId.Value]!.PlayerHero ??= new PlayerHero();
+                    replay.ClientListByUserID[userId.Value]!.PlayerHero!.HeroId = heroId;
+                    replay.ClientListByUserID[userId.Value]!.PlayerLoadout.SkinAndSkinTint = skinAndSkinTint;
+                    replay.ClientListByUserID[userId.Value]!.PlayerLoadout.MountAndMountTint = mountAndMountTint;
                 }
             }
 
@@ -265,34 +265,34 @@ internal static class ReplayInitData
             }
 
             if (userId.HasValue)
-                replay.ClientListByUserID[userId.Value].IsSilenced = bitReader.ReadBoolean(); // m_hasSilencePenalty
+                replay.ClientListByUserID[userId.Value]!.IsSilenced = bitReader.ReadBoolean(); // m_hasSilencePenalty
 
             if (replay.ReplayBuild >= 61718 && userId.HasValue)
-                replay.ClientListByUserID[userId.Value].IsVoiceSilenced = bitReader.ReadBoolean();  // m_hasVoiceSilencePenalty
+                replay.ClientListByUserID[userId.Value]!.IsVoiceSilenced = bitReader.ReadBoolean();  // m_hasVoiceSilencePenalty
 
             if (replay.ReplayBuild >= 66977 && userId.HasValue)
-                replay.ClientListByUserID[userId.Value].IsBlizzardStaff = bitReader.ReadBoolean();  // m_isBlizzardStaff
+                replay.ClientListByUserID[userId.Value]!.IsBlizzardStaff = bitReader.ReadBoolean();  // m_isBlizzardStaff
 
             if (replay.ReplayBuild >= 69947 && userId.HasValue)
-                replay.ClientListByUserID[userId.Value].HasActiveBoost = bitReader.ReadBoolean();  // m_hasActiveBoost
+                replay.ClientListByUserID[userId.Value]!.HasActiveBoost = bitReader.ReadBoolean();  // m_hasActiveBoost
 
             if (replay.ReplayVersion.Major >= 2)
             {
                 string banner = bitReader.ReadBlobAsString(9); // m_banner
                 if (userId.HasValue)
-                    replay.ClientListByUserID[userId.Value].PlayerLoadout.Banner = banner;
+                    replay.ClientListByUserID[userId.Value]!.PlayerLoadout.Banner = banner;
 
                 string spray = bitReader.ReadBlobAsString(9); // m_spray
                 if (userId.HasValue)
-                    replay.ClientListByUserID[userId.Value].PlayerLoadout.Spray = spray;
+                    replay.ClientListByUserID[userId.Value]!.PlayerLoadout.Spray = spray;
 
                 string announcer = bitReader.ReadBlobAsString(9); // m_announcerPack
                 if (userId.HasValue)
-                    replay.ClientListByUserID[userId.Value].PlayerLoadout.AnnouncerPack = announcer;
+                    replay.ClientListByUserID[userId.Value]!.PlayerLoadout.AnnouncerPack = announcer;
 
                 string voiceLine = bitReader.ReadBlobAsString(9); // m_voiceLine
                 if (userId.HasValue)
-                    replay.ClientListByUserID[userId.Value].PlayerLoadout.VoiceLine = voiceLine;
+                    replay.ClientListByUserID[userId.Value]!.PlayerLoadout.VoiceLine = voiceLine;
 
                 // m_heroMasteryTiers
                 if (replay.ReplayBuild >= 52561)
@@ -306,7 +306,7 @@ internal static class ReplayInitData
 
                         if (userId.HasValue)
                         {
-                            replay.ClientListByUserID[userId.Value].HeroMasteryTiersInternal.Add(new HeroMasteryTier()
+                            replay.ClientListByUserID[userId.Value]!.HeroMasteryTiersInternal.Add(new HeroMasteryTier()
                             {
                                 HeroAttributeId = heroAttributeName,
                                 TierLevel = tier,

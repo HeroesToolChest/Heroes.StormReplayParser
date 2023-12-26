@@ -1,14 +1,14 @@
 ﻿namespace Heroes.StormReplayParser.Tests;
 
 [TestClass]
-public class NoPlayerNamesNoTag_77548ReplayParserTests
+public class NoPlayerNamesNoTag1ReplayParserTests
 {
     private readonly string _replaysFolder = "Replays";
-    private readonly string _replayFile = "NoPlayerNamesNoTag_77548.StormR";
+    private readonly string _replayFile = "NoPlayerNamesNoTag1_77548.StormR";
     private readonly StormReplay _stormReplay;
     private readonly StormReplayParseStatus _result;
 
-    public NoPlayerNamesNoTag_77548ReplayParserTests()
+    public NoPlayerNamesNoTag1ReplayParserTests()
     {
         StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile));
         _stormReplay = result.Replay;

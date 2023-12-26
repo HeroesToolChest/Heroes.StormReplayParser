@@ -6,7 +6,7 @@ namespace Heroes.StormReplayParser.Tests;
 public class BattleLobbyStormLeague1Tests
 {
     private readonly string _replaysFolder = "BattleLobbys";
-    private readonly string _replayFile = "replay.server.StormLeague1.battlelobby";
+    private readonly string _replayFile = "replay.server.StormLeague1_89566.battlelobby";
     private readonly StormReplayPregame _stormReplay;
     private readonly StormReplayPregameParseStatus _result;
 

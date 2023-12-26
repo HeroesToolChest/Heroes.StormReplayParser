@@ -48,7 +48,7 @@ internal static class ReplayTrackerEvents
                     Dictionary<string, int?[]> scoreResultsByScoreName = stormTrackerEvent.VersionedDecoder.Structure![0].ArrayData!
                         .ToDictionary(x => x.Structure![0].GetValueAsString(), x => x.Structure![1].ArrayData!.Select(i => i.ArrayData?.Length == 1 ? (int)i.ArrayData![0].Structure![0].GetValueAsInt64() : (int?)null).ToArray());
 
-                    Span<StormPlayer> stormPlayersSpan = replay.ClientListByWorkingSetSlotID;
+                    Span<StormPlayer?> stormPlayersSpan = replay.ClientListByWorkingSetSlotID;
 
                     for (int i = 0; i < stormPlayersSpan.Length; i++)
                     {
@@ -143,7 +143,7 @@ internal static class ReplayTrackerEvents
             {
                 int playerId = (int)stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32();
                 int level = (int)stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![1].Structure![1].GetValueAsUInt32();
-                StormTeam team = replay.PlayersWithOpenSlots[playerId - 1].Team;
+                StormTeam team = replay.PlayersWithOpenSlots[playerId - 1]!.Team;
 
                 Dictionary<int, StormTeamLevel> teamLevel = replay.TeamLevelsInternal[(int)team] ??= new();
 
@@ -261,7 +261,7 @@ internal static class ReplayTrackerEvents
                 trickleXPValueSpan.SequenceEqual("TrickleXP"))
             {
                 uint playerId = stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32();
-                StormTeam team = replay.PlayersWithOpenSlots[playerId - 1].Team;
+                StormTeam team = replay.PlayersWithOpenSlots[playerId - 1]!.Team;
                 int teamNumber = (int)team;
 
                 List<StormTeamXPBreakdown>? teamXpBreakdown = replay.TeamXPBreakdownInternal[teamNumber];
@@ -304,9 +304,9 @@ internal static class ReplayTrackerEvents
 
             if (playerIdValueSpan.SequenceEqual("PlayerID") && heroValueSpan.SequenceEqual("Hero"))
             {
-                StormPlayer player = replay.PlayersWithOpenSlots[stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32() - 1];
+                StormPlayer player = replay.PlayersWithOpenSlots[stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32() - 1]!;
 
-                player.PlayerHero!.HeroUnitId = stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData![0].Structure![1].GetValueAsString();
+                player!.PlayerHero!.HeroUnitId = stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData![0].Structure![1].GetValueAsString();
 
                 int arrayLength = stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData!.Length;
 
@@ -351,7 +351,7 @@ internal static class ReplayTrackerEvents
             {
                 uint playerId = stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32();
 
-                StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
+                StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
 
                 if (player.TalentsInternal.Count > player.TalentSetCount)
                 {

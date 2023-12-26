@@ -9,7 +9,7 @@ public class IndustrialDistrictMacPlayers1ReplayParserTests
 
     public IndustrialDistrictMacPlayers1ReplayParserTests()
     {
-        StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, "IndustrialDistrictMacPlayers1.StormR"));
+        StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, "IndustrialDistrictMacPlayers1_91418.StormR"));
         _stormReplay = result.Replay;
         _result = result.Status;
     }

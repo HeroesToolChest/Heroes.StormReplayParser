@@ -129,18 +129,28 @@ public class StormPlayer
     public IReadOnlyList<HeroTalent> Talents => TalentsInternal;
 
     /// <summary>
+    /// Gets the player's times when they left and rejoined the game.
+    /// </summary>
+    public IReadOnlyList<PlayerDisconnect> PlayerDisconnects => PlayerDisconnectsInternal;
+
+    /// <summary>
     /// Gets the amount of match awards.
     /// </summary>
     public int? MatchAwardsCount => ScoreResult?.MatchAwards.Count;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<HeroMasteryTier> HeroMasteryTiersInternal { get; set; } = new List<HeroMasteryTier>();
+    internal List<HeroMasteryTier> HeroMasteryTiersInternal { get; set; } = new();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<HeroTalent> TalentsInternal { get; set; } = new List<HeroTalent>(7);
+    internal List<HeroTalent> TalentsInternal { get; set; } = new(7);
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    internal List<PlayerDisconnect> PlayerDisconnectsInternal { get; set; } = new();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal int TalentSetCount { get; set; } = 0;
+
+    internal TimeSpan LastCameraUpdateEvent { get; set; }
 
     internal int? WorkingSetSlotId { get; set; }
 

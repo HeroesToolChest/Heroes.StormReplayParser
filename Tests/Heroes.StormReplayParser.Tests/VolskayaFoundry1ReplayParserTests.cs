@@ -679,6 +679,14 @@ public class VolskayaFoundry1ReplayParserTests
         Assert.AreEqual("{\"0\": \"98\",\"1\": {\"0\": \"567020\",\"1\": \"388989\",\"2\": \"32333\"}}", _stormReplay.GameEvents[5657].Data!.ToJson());
     }
 
+    [TestMethod]
+    public void PlayerDisconnectsTest()
+    {
+        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+
+        Assert.IsTrue(players.All(x => x.PlayerDisconnects.Count == 0));
+    }
+
     private static void NoTrackerEvents(StormReplayResult result)
     {
         StormReplay replay = result.Replay!;

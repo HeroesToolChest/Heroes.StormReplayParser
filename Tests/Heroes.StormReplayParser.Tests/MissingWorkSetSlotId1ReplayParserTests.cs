@@ -83,4 +83,22 @@ public class MissingWorkSetSlotId1ReplayParserTests
         Assert.IsNotNull(players[2].ScoreResult);
         Assert.IsNotNull(players[3].ScoreResult);
     }
+
+    [TestMethod]
+    public void PlayerDisconnectsTest()
+    {
+        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+
+        Assert.AreEqual(0, players[0].PlayerDisconnects.Count);
+        Assert.AreEqual(0, players[1].PlayerDisconnects.Count);
+        Assert.AreEqual(0, players[2].PlayerDisconnects.Count);
+        Assert.AreEqual(0, players[3].PlayerDisconnects.Count);
+        Assert.AreEqual(0, players[4].PlayerDisconnects.Count);
+
+        Assert.AreEqual(1, players[5].PlayerDisconnects.Count);
+        Assert.AreEqual(0, players[6].PlayerDisconnects.Count);
+        Assert.AreEqual(0, players[7].PlayerDisconnects.Count);
+        Assert.AreEqual(0, players[8].PlayerDisconnects.Count);
+        Assert.AreEqual(0, players[9].PlayerDisconnects.Count);
+    }
 }

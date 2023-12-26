@@ -38,9 +38,9 @@ internal static class ReplayAttributeEvents
                         }
 
                         if (value == "Comp")
-                            replay.PlayersWithOpenSlots[playerId - 1].PlayerType = PlayerType.Computer;
+                            replay.PlayersWithOpenSlots[playerId - 1]!.PlayerType = PlayerType.Computer;
                         else if (value == "Humn")
-                            replay.PlayersWithOpenSlots[playerId - 1].PlayerType = PlayerType.Human;
+                            replay.PlayersWithOpenSlots[playerId - 1]!.PlayerType = PlayerType.Human;
                         else if (value == "Open")
                             replayPlayersWithOpenSlotsIndex++; // Less than 10 players in a Custom game
                         else
@@ -57,7 +57,7 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.DifficultyLevel:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
+                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
 
                         player.ComputerDifficulty = GetComputerDifficultyLevel(value);
 
@@ -93,7 +93,7 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.HeroAttributeId:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
+                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
 
                         if (!player.IsAutoSelect)
                             player.IsAutoSelect = value == "rand";
@@ -105,7 +105,7 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.SkinAndSkinTint:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
+                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
 
                         if (!player.IsAutoSelect)
                             player.IsAutoSelect = value == "rand";
@@ -117,7 +117,7 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.MountAndMountTint:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
+                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
 
                         player.PlayerLoadout.MountAndMountTintAttributeId = value;
 
@@ -126,7 +126,7 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.Banner:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
+                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
 
                         player.PlayerLoadout.BannerAttributeId = value;
 
@@ -135,7 +135,7 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.Spray:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
+                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
 
                         player.PlayerLoadout.SprayAttributeId = value;
 
@@ -144,7 +144,7 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.VoiceLine:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
+                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
 
                         player.PlayerLoadout.VoiceLineAttributeId = value;
 
@@ -153,7 +153,7 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.Announcer:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
+                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
 
                         player.PlayerLoadout.AnnouncerPackAttributeId = value;
 
@@ -162,7 +162,7 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.HeroLevel:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1];
+                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
 
                         player.PlayerHero!.HeroLevel = int.Parse(value);
 

@@ -98,17 +98,17 @@ public partial class StormReplay
     /// <summary>
     /// Gets a collection of playing players (no observers, has AI).
     /// </summary>
-    public IEnumerable<StormPlayer> StormPlayers => Players.Where(x => x is not null);
+    public IEnumerable<StormPlayer> StormPlayers => Players.Where(x => x is not null)!;
 
     /// <summary>
     /// Gets a collection of players (no AI, has observers).
     /// </summary>
-    public IEnumerable<StormPlayer> StormPlayersWithObservers => ClientListByUserID.Where(x => x is not null);
+    public IEnumerable<StormPlayer> StormPlayersWithObservers => ClientListByUserID.Where(x => x is not null)!;
 
     /// <summary>
     /// Gets a collection of observer players.
     /// </summary>
-    public IEnumerable<StormPlayer> StormObservers => ClientListByUserID.Where(ObserversFunc());
+    public IEnumerable<StormPlayer> StormObservers => ClientListByUserID.Where(ObserversFunc()!)!;
 
     /// <summary>
     /// Gets the total number of playing players (no observers, has AI).
@@ -143,7 +143,17 @@ public partial class StormReplay
     /// <summary>
     /// Gets the winning team.
     /// </summary>
-    public StormTeam WinningTeam => Players[0].IsWinner ? StormTeam.Blue : StormTeam.Red;
+    public StormTeam WinningTeam
+    {
+        get
+        {
+            StormPlayer? player = Players[0];
+            if (player is null)
+                return StormTeam.Unknown;
+            else
+                return player.IsWinner ? StormTeam.Blue : StormTeam.Red;
+        }
+    }
 
     /// <summary>
     /// Gets a collection of tracker events.
@@ -184,19 +194,19 @@ public partial class StormReplay
     /// Gets or sets the list of all players (no observers).
     /// </summary>
     /// <remarks>Contains AI.</remarks>
-    internal StormPlayer[] Players { get; set; } = new StormPlayer[10];
+    internal StormPlayer?[] Players { get; set; } = new StormPlayer?[10];
 
     /// <summary>
     /// Gets the list of all players connected to the game, using 'm_userId' as index.
     /// </summary>
     /// <remarks>Contains observers. No AI.</remarks>
-    internal StormPlayer[] ClientListByUserID { get; private set; } = new StormPlayer[16];
+    internal StormPlayer?[] ClientListByUserID { get; private set; } = new StormPlayer?[16];
 
     /// <summary>
     /// Gets the list of all players connected to the game, using 'm_workingSetSlotId' as index.
     /// </summary>
     /// <remarks>Contains AI. No observers.</remarks>
-    internal StormPlayer[] ClientListByWorkingSetSlotID { get; private set; } = new StormPlayer[16];
+    internal StormPlayer?[] ClientListByWorkingSetSlotID { get; private set; } = new StormPlayer?[16];
 
     /// <summary>
     /// Gets or sets a value indicating whether the replay does not contain the working set slot ids and as such <see cref=" ClientListByWorkingSetSlotID"/>
@@ -208,7 +218,7 @@ public partial class StormReplay
     /// Gets the collection of open slot players. In some places, this is used instead of the 'Player' array, in games with less than 10 players.
     /// </summary>
     /// <remarks>Contains AI. No observers.</remarks>
-    internal StormPlayer[] PlayersWithOpenSlots { get; private set; } = new StormPlayer[10];
+    internal StormPlayer?[] PlayersWithOpenSlots { get; private set; } = new StormPlayer?[10];
 
 #if NET8_0_OR_GREATER
     internal string?[][] TeamHeroAttributeIdBans { get; private set; } = [[null, null, null], [null, null, null]];

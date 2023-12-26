@@ -55,6 +55,22 @@ public partial class StormReplay
         return stormReplay;
     }
 
+    private static void FinalPlayerData(StormReplay stormReplay)
+    {
+        TimeSpan latestCameraUpdateEvent = stormReplay.ClientListByUserID.Where(x => x is not null).Max(x => x!.LastCameraUpdateEvent);
+
+        // remove the occurrence where the players leaves at the end of the match
+        foreach (StormPlayer? player in stormReplay.ClientListByUserID)
+        {
+            if (player is null)
+                continue;
+
+            PlayerDisconnect? lastOccurrence = player.PlayerDisconnectsInternal.LastOrDefault();
+            if (lastOccurrence is not null && lastOccurrence.From > latestCameraUpdateEvent)
+                player.PlayerDisconnectsInternal.Remove(lastOccurrence);
+        }
+    }
+
     private void Parse(StormReplay stormReplay)
     {
         using MpqHeroesArchive stormMpqArchive = _stormMpqArchive;
@@ -71,12 +87,7 @@ public partial class StormReplay
 
         ParseReplayDetails(stormReplay, pool);
 
-        if (stormReplay.Players.Length != 10 || stormReplay.Players.Count(i => i.IsWinner) != 5)
-        {
-            // Filter out 'Try Me' games, any games without 10 players, and incomplete games
-            return;
-        }
-        else if (stormReplay.Timestamp == DateTime.MinValue)
+        if (stormReplay.Timestamp == DateTime.MinValue)
         {
             // Uncommon issue when parsing replay.details
             return;
@@ -101,6 +112,8 @@ public partial class StormReplay
             ParseReplayMessageEvents(stormReplay, pool);
 
         ValidateResult(stormReplay);
+
+        FinalPlayerData(stormReplay);
     }
 
     private void ParseReplayHeader(StormReplay stormReplay)
@@ -263,15 +276,15 @@ public partial class StormReplay
     {
         if (stormReplay.PlayersCount == 1)
             _stormReplayParseResult = StormReplayParseStatus.TryMeMode;
-        else if (stormReplay.Players.All(x => !x.IsWinner) || stormReplay.ReplayLength.TotalSeconds < 45)
+        else if (stormReplay.Players.All(x => x is not null && !x.IsWinner) || stormReplay.ReplayLength.TotalSeconds < 45)
             _stormReplayParseResult = StormReplayParseStatus.Incomplete;
         else if (stormReplay.Timestamp == DateTime.MinValue)
             _stormReplayParseResult = StormReplayParseStatus.UnexpectedResult;
         else if (stormReplay.Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
             _stormReplayParseResult = StormReplayParseStatus.PreAlphaWipe;
-        else if (!_parseOptions.AllowPTR && stormReplay.Players.Any(x => x.ToonHandle?.Region >= 90))
+        else if (!_parseOptions.AllowPTR && stormReplay.Players.Any(x => x is not null && x.ToonHandle?.Region >= 90))
             _stormReplayParseResult = StormReplayParseStatus.PTRRegion;
-        else if (!(stormReplay.Players.Count(x => x.IsWinner) == 5 && stormReplay.PlayersCount == 10 && StormGameMode.AllGameModes.HasFlag(stormReplay.GameMode)))
+        else if (!(stormReplay.Players.Count(x => x is not null && x.IsWinner) == 5 && stormReplay.PlayersCount == 10 && StormGameMode.AllGameModes.HasFlag(stormReplay.GameMode)))
             _stormReplayParseResult = StormReplayParseStatus.UnexpectedResult;
         else
             _stormReplayParseResult = StormReplayParseStatus.Success;

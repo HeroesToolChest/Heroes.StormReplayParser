@@ -627,6 +627,10 @@ internal static class ReplayGameEvents
                     structure[5] = new StormGameEventData(bitReader.ReadBoolean()); // m_follow
 
                     gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
+
+                    if (player is not null)
+                        player.LastCameraUpdateEvent = timeStamp;
+
                     break;
                 case StormGameEventType.STriggerDialogControlEvent:
                     structure = new StormDataStructure<StormGameEventData>(3)
@@ -914,6 +918,10 @@ internal static class ReplayGameEvents
                         structure[0] = new StormGameEventData(bitReader.ReadBits(5));
 
                     gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
+
+                    if (player is not null)
+                        AddPlayerDisconnect(player, gameEvent.Value);
+
                     break;
                 case StormGameEventType.SGameUserJoinEvent:
                     structure = new StormDataStructure<StormGameEventData>(7)
@@ -949,6 +957,10 @@ internal static class ReplayGameEvents
                     }
 
                     gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
+
+                    if (player is not null)
+                        UpdatePlayerDisconnect(player, gameEvent.Value);
+
                     break;
                 case StormGameEventType.SCommandManagerStateEvent:
                     structure = new StormDataStructure<StormGameEventData>(2)
@@ -1142,8 +1154,26 @@ internal static class ReplayGameEvents
     {
         player.TalentsInternal.Add(new HeroTalent()
         {
-            TalentSlotId = (int?)gameEvent.Data!.Structure![0]!.UnsignedInteger32,
+            TalentSlotId = (int?)gameEvent.Data!.Structure![0].UnsignedInteger32,
             Timestamp = gameEvent.Timestamp,
         });
+    }
+
+    private static void AddPlayerDisconnect(StormPlayer player, StormGameEvent gameEvent)
+    {
+        player.PlayerDisconnectsInternal.Add(new PlayerDisconnect()
+        {
+            From = gameEvent.Timestamp,
+            LeaveReason = (int?)gameEvent.Data!.Structure![0].UnsignedInteger32,
+        });
+    }
+
+    private static void UpdatePlayerDisconnect(StormPlayer player, StormGameEvent gameEvent)
+    {
+        PlayerDisconnect? lastOccurrence = player.PlayerDisconnectsInternal.LastOrDefault();
+        if (lastOccurrence is null)
+            return;
+
+        lastOccurrence.To = gameEvent.Timestamp;
     }
 }

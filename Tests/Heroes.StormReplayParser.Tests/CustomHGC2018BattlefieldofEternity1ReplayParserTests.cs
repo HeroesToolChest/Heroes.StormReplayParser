@@ -96,4 +96,12 @@ public class CustomHGC2018BattlefieldofEternity1ReplayParserTests
         Assert.AreEqual(StormLobbyMode.TournamentDraft, _stormReplay.LobbyMode);
         Assert.AreEqual(StormReadyMode.FCFS, _stormReplay.ReadyMode);
     }
+
+    [TestMethod]
+    public void PlayerDisconnectsTest()
+    {
+        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+
+        Assert.IsTrue(players.All(x => x.PlayerDisconnects.Count == 0));
+    }
 }
