@@ -19,4 +19,17 @@ public class PlayerDisconnect
     /// Gets or sets the time when the player rejoins the game. Returns <see langword="null"/> if the player did not rejoin.
     /// </summary>
     public TimeSpan? To { get; set; }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        if (To is null)
+        {
+            return $"Player left at {From} (and did not rejoin)";
+        }
+        else
+        {
+            return $"Player left at {From} and rejoined at {To.Value}";
+        }
+    }
 }
