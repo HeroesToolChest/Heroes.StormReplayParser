@@ -48,6 +48,7 @@ Besides providing the file name of the replay, `ParseOptions()` may also be pass
 Game Event parsing provides the following:
 - Hero names (localized)
 - Talent timestamps
+- Player disconnects
 
 Tracker Event parsing provides the following:
 - Hero unit ids
