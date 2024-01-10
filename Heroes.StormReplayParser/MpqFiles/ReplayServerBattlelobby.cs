@@ -999,7 +999,7 @@ internal static class ReplayServerBattlelobby
             if (!archive.TryGetEntry("MapScript.galaxy", out MpqHeroesArchiveEntry? entry))
                 return null;
 
-            StreamReader streamReader = new(archive.DecompressEntry(entry.Value));
+            using StreamReader streamReader = new(archive.DecompressEntry(entry.Value));
 
             while (!streamReader.EndOfStream)
             {
