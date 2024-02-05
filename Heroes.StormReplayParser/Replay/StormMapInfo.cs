@@ -11,7 +11,7 @@ public class StormMapInfo
     public string MapName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the map id name.
+    /// Gets or sets the map id name. Not all maps have this set. Sandbox maps could have this set to their respective non-sandbox map id.
     /// </summary>
     public string? MapId { get; set; }
 

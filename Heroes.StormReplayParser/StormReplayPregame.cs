@@ -27,14 +27,19 @@ public partial class StormReplayPregame
     public string TeamSize { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the map link, which can be used to determine the map.
+    /// Gets or sets the map link, which can be used to determine the map. Sandbox maps could have this set to their respective non-sandbox map link.
     /// </summary>
     public string? MapLink { get; set; }
 
     /// <summary>
-    /// Gets or sets the map id name.
+    /// Gets or sets the map id name. Not all maps have this set. Sandbox maps could have this set to their respective non-sandbox map id.
     /// </summary>
     public string? MapId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the map title name (always in enUS).
+    /// </summary>
+    public string? MapTitle { get; set; }
 
     /// <summary>
     /// Gets or sets the speed the game was played at.

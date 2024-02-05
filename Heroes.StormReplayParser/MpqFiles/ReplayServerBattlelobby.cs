@@ -599,7 +599,10 @@ internal static class ReplayServerBattlelobby
 
         if (pregameMode)
         {
-            replay.MapLink = GetMapLink(battleNetCachePaths.Last(), s2mvFiles.Last());
+            (string? MapLink, string? MapTitle)? mapInfo = GetMapInfo(battleNetCachePaths.Last(), s2mvFiles.Last());
+            replay.MapLink = mapInfo?.MapLink;
+            replay.MapTitle = mapInfo?.MapTitle;
+
             replay.MapId = GetMapId(battleNetCachePaths.Last());
         }
 
@@ -943,7 +946,7 @@ internal static class ReplayServerBattlelobby
         }
     }
 
-    private static string? GetMapLink(string battleNetCachePath, StormS2mFiles mapFile)
+    private static (string? MapLink, string? MapTitle)? GetMapInfo(string battleNetCachePath, StormS2mFiles mapFile)
     {
         ReadOnlySpan<char> firstTwo = mapFile.FileName.AsSpan(0, 2);
         ReadOnlySpan<char> nextTwo = mapFile.FileName.AsSpan(2, 2);
@@ -966,14 +969,16 @@ internal static class ReplayServerBattlelobby
 
             using JsonDocument jsonDocument = JsonDocument.Parse(fileStream);
 
-            JsonElement root = jsonDocument.RootElement;
+            JsonElement rootElement = jsonDocument.RootElement;
 
-            if (root.TryGetProperty("MapInfo", out JsonElement mapInfoElement) &&
+            if (rootElement.TryGetProperty("MapInfo", out JsonElement mapInfoElement) &&
                 mapInfoElement.TryGetProperty("Properties", out JsonElement propertiesElement) &&
                 propertiesElement.TryGetProperty("Loading", out JsonElement loadingElement) &&
-                loadingElement.TryGetProperty("MapLink", out JsonElement mapLinkElement))
+                loadingElement.TryGetProperty("MapLink", out JsonElement mapLinkElement) &&
+                rootElement.TryGetProperty("UsedStrings", out JsonElement usedStringsElement) &&
+                usedStringsElement.TryGetProperty("DocInfo/Name", out JsonElement docInfoNameElement))
             {
-                return mapLinkElement.GetString();
+                return (mapLinkElement.GetString(), docInfoNameElement.GetProperty("enUS").GetString());
             }
 
             return null;
