@@ -14,4 +14,4 @@ jobs:
       github-release-env: Github Release
       github-release-url: https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases
     secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
+      token: ${{ secrets.GH_RELEASE }}
