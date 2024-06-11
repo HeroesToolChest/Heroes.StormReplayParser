@@ -47,7 +47,7 @@ public class WarheadJunctionDisconnectingPlayer1ReplayParserTests
             Path.Combine(_replaysFolder, "WarheadJunctionDisconnectingPlayer1_91418.StormR"),
             new ParseOptions()
             {
-                 ShouldParseGameEvents = false,
+                ShouldParseGameEvents = false,
             });
 
         Assert.IsTrue(result.Replay.StormPlayers.All(x => x.PlayerDisconnects.Count == 0));
