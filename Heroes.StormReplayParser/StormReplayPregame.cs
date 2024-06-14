@@ -74,7 +74,7 @@ public partial class StormReplayPregame
     /// <summary>
     /// Gets a collection of disabled heroes as attributeIds.
     /// </summary>
-    public IReadOnlyCollection<string> DisabledHeroes => DisabledHeroAttributeIdList;
+    public IReadOnlyCollection<string> DisabledHeroes => DisabledHeroAttributeIdList.AsReadOnly();
 
     /// <summary>
     /// Gets a collection of playing players (no observers, has AI).

@@ -158,27 +158,27 @@ public partial class StormReplay
     /// <summary>
     /// Gets a collection of tracker events.
     /// </summary>
-    public IReadOnlyList<StormTrackerEvent> TrackerEvents => TrackerEventsInternal;
+    public IReadOnlyList<StormTrackerEvent> TrackerEvents => TrackerEventsInternal.AsReadOnly();
 
     /// <summary>
     /// Gets a collection of game events.
     /// </summary>
-    public IReadOnlyList<StormGameEvent> GameEvents => GameEventsInternal;
+    public IReadOnlyList<StormGameEvent> GameEvents => GameEventsInternal.AsReadOnly();
 
     /// <summary>
     /// Gets a collection of all messages.
     /// </summary>
-    public IReadOnlyList<IStormMessage> Messages => MessagesInternal;
+    public IReadOnlyList<IStormMessage> Messages => MessagesInternal.AsReadOnly();
 
     /// <summary>
     /// Gets a collection of only chat messages.
     /// </summary>
-    public IEnumerable<IStormMessage> ChatMessages => MessagesInternal.Where(x => x.MessageEventType == StormMessageEventType.SChatMessage);
+    public IEnumerable<IStormMessage> ChatMessages => MessagesInternal.AsReadOnly().Where(x => x.MessageEventType == StormMessageEventType.SChatMessage);
 
     /// <summary>
     /// Gets a collection of the draft order.
     /// </summary>
-    public IReadOnlyList<StormDraftPick> DraftPicks => DraftPicksInternal;
+    public IReadOnlyList<StormDraftPick> DraftPicks => DraftPicksInternal.AsReadOnly();
 
     /// <summary>
     /// Gets or sets a value indicating whether battle lobby data was parsed successfully.

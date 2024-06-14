@@ -37,7 +37,7 @@ public class StormPlayer
     /// <summary>
     /// Gets the player's hero's mastery tier levels.
     /// </summary>
-    public IReadOnlyList<HeroMasteryTier> HeroMasteryTiers => HeroMasteryTiersInternal;
+    public IReadOnlyList<HeroMasteryTier> HeroMasteryTiers => HeroMasteryTiersInternal.AsReadOnly();
 
     /// <summary>
     /// Gets the amount of hero mastery tiers.
@@ -126,12 +126,12 @@ public class StormPlayer
     /// <summary>
     /// Gets the player's selected talents.
     /// </summary>
-    public IReadOnlyList<HeroTalent> Talents => TalentsInternal;
+    public IReadOnlyList<HeroTalent> Talents => TalentsInternal.AsReadOnly();
 
     /// <summary>
     /// Gets the player's times when they left and rejoined the game.
     /// </summary>
-    public IReadOnlyList<PlayerDisconnect> PlayerDisconnects => PlayerDisconnectsInternal;
+    public IReadOnlyList<PlayerDisconnect> PlayerDisconnects => PlayerDisconnectsInternal.AsReadOnly();
 
     /// <summary>
     /// Gets the amount of match awards.
