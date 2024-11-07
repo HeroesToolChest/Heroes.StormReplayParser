@@ -132,10 +132,10 @@ public partial class StormReplayPregame
     /// <remarks>Contains AI. No observers.</remarks>
     internal PregameStormPlayer[] ClientListByWorkingSetSlotID { get; private set; } = new PregameStormPlayer[16];
 
-    internal string?[][] TeamHeroAttributeIdBans { get; private set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
+    internal string?[][] TeamHeroAttributeIdBans { get; private set; } = [[null, null, null], [null, null, null]];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<string> DisabledHeroAttributeIdList { get; private set; } = new();
+    internal List<string> DisabledHeroAttributeIdList { get; private set; } = [];
 
     /// <summary>
     /// Gets a collection of a team's bans (as attribute ids).
@@ -145,9 +145,9 @@ public partial class StormReplayPregame
     public IReadOnlyList<string?> GetTeamBans(StormTeam stormTeam)
     {
         if (!(stormTeam == StormTeam.Blue || stormTeam == StormTeam.Red))
-            return new List<string>();
+            return [];
 
-        return TeamHeroAttributeIdBans[(int)stormTeam];
+        return TeamHeroAttributeIdBans[(int)stormTeam].AsReadOnly();
     }
 
     private static Func<PregameStormPlayer, bool> PlayersFunc() => x => x?.PlayerType != PlayerType.Observer && (x?.PlayerSlotType == PlayerSlotType.Human || x?.PlayerSlotType == PlayerSlotType.Computer);

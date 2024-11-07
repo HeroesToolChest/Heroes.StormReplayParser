@@ -128,8 +128,8 @@ public class VolskayaFoundry1ReplayParserTests
         Assert.AreEqual("DEA0", player.PlayerLoadout.AnnouncerPackAttributeId);
         Assert.AreEqual(20, player.PlayerHero.HeroLevel);
 
-        List<string?> ban0List = _stormReplay.GetTeamBans(StormTeam.Blue).ToList();
-        List<string?> ban1List = _stormReplay.GetTeamBans(StormTeam.Red).ToList();
+        List<string?> ban0List = [.. _stormReplay.GetTeamBans(StormTeam.Blue)];
+        List<string?> ban1List = [.. _stormReplay.GetTeamBans(StormTeam.Red)];
 
         Assert.AreEqual("Garr", ban0List[1]);
         Assert.AreEqual("DEAT", ban1List[1]);
@@ -325,12 +325,12 @@ public class VolskayaFoundry1ReplayParserTests
     [TestMethod]
     public void PlayersMatchAwardsTest()
     {
-        List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[0].MatchAwards!.ToList();
+        List<MatchAwardType> matchAwards = [.. _stormReplay.StormPlayers.ToList()[0].MatchAwards!];
 
         Assert.AreEqual(1, _stormReplay.StormPlayers.ToList()[0].MatchAwardsCount);
         Assert.AreEqual(MatchAwardType.MostMercCampsCaptured, matchAwards[0]);
 
-        matchAwards = _stormReplay.StormPlayers.ToList()[9].MatchAwards!.ToList();
+        matchAwards = [.. _stormReplay.StormPlayers.ToList()[9].MatchAwards!];
 
         Assert.AreEqual(0, matchAwards.Count);
     }
@@ -338,7 +338,7 @@ public class VolskayaFoundry1ReplayParserTests
     [TestMethod]
     public void MessagesTest()
     {
-        List<IStormMessage> messages = _stormReplay.Messages.ToList();
+        List<IStormMessage> messages = [.. _stormReplay.Messages];
 
         IStormMessage stormMessage = messages.Last();
 

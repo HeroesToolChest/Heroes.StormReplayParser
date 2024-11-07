@@ -220,30 +220,26 @@ public partial class StormReplay
     /// <remarks>Contains AI. No observers.</remarks>
     internal StormPlayer?[] PlayersWithOpenSlots { get; private set; } = new StormPlayer?[10];
 
-#if NET8_0_OR_GREATER
     internal string?[][] TeamHeroAttributeIdBans { get; private set; } = [[null, null, null], [null, null, null]];
-#else
-    internal string?[][] TeamHeroAttributeIdBans { get; private set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
-#endif
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<StormGameEvent> GameEventsInternal { get; private set; } = new List<StormGameEvent>();
+    internal List<StormGameEvent> GameEventsInternal { get; private set; } = [];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<StormTrackerEvent> TrackerEventsInternal { get; private set; } = new List<StormTrackerEvent>();
+    internal List<StormTrackerEvent> TrackerEventsInternal { get; private set; } = [];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<IStormMessage> MessagesInternal { get; private set; } = new List<IStormMessage>();
+    internal List<IStormMessage> MessagesInternal { get; private set; } = [];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<StormDraftPick> DraftPicksInternal { get; private set; } = new List<StormDraftPick>();
+    internal List<StormDraftPick> DraftPicksInternal { get; private set; } = [];
 
     internal Dictionary<int, StormTeamLevel>?[] TeamLevelsInternal { get; private set; } = new Dictionary<int, StormTeamLevel>[2];
 
     internal List<StormTeamXPBreakdown>?[] TeamXPBreakdownInternal { get; private set; } = new List<StormTeamXPBreakdown>[2];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<string> DisabledHeroAttributeIdList { get; private set; } = new List<string>();
+    internal List<string> DisabledHeroAttributeIdList { get; private set; } = [];
 
     /// <summary>
     /// Gets a collection of a team's bans (as attribute ids).
@@ -253,9 +249,9 @@ public partial class StormReplay
     public IReadOnlyList<string?> GetTeamBans(StormTeam stormTeam)
     {
         if (!(stormTeam == StormTeam.Blue || stormTeam == StormTeam.Red))
-            return new List<string>();
+            return [];
 
-        return TeamHeroAttributeIdBans[(int)stormTeam];
+        return TeamHeroAttributeIdBans[(int)stormTeam].AsReadOnly();
     }
 
     /// <summary>

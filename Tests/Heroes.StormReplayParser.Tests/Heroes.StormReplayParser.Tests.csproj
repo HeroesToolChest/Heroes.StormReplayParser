@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSTest.Sdk/3.5.0">
 
   <PropertyGroup>  
-    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <NoWarn>EnableGenerateDocumentationFile</NoWarn>

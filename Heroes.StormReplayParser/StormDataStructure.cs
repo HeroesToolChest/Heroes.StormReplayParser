@@ -32,12 +32,7 @@ public class StormDataStructure<T> : List<T>
     public StormDataStructure(int capacity)
         : base(capacity)
     {
-#if NET8_0_OR_GREATER
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
-#else
-        if (capacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(capacity));
-#endif
     }
 
     /// <summary>

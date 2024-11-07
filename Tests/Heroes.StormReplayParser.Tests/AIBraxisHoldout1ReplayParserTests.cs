@@ -92,8 +92,8 @@ public class AIBraxisHoldout1ReplayParserTests
         Assert.AreEqual(string.Empty, player.PlayerLoadout.AnnouncerPackAttributeId);
         Assert.AreEqual(1, player.PlayerHero.HeroLevel);
 
-        List<string?> ban0List = _stormReplay.GetTeamBans(StormTeam.Blue).ToList();
-        List<string?> ban1List = _stormReplay.GetTeamBans(StormTeam.Red).ToList();
+        List<string?> ban0List = [.. _stormReplay.GetTeamBans(StormTeam.Blue)];
+        List<string?> ban1List = [.. _stormReplay.GetTeamBans(StormTeam.Red)];
 
         Assert.AreEqual(string.Empty, ban0List[1]);
         Assert.AreEqual(string.Empty, ban1List[1]);

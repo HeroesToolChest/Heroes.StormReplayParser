@@ -102,8 +102,8 @@ public class AIDragonShire1ReplayParserTests
         Assert.AreEqual(string.Empty, player.PlayerLoadout.AnnouncerPackAttributeId);
         Assert.AreEqual(1, player.PlayerHero.HeroLevel);
 
-        List<string?> ban0List = _stormReplay.GetTeamBans(StormTeam.Blue).ToList();
-        List<string?> ban1List = _stormReplay.GetTeamBans(StormTeam.Red).ToList();
+        List<string?> ban0List = [.. _stormReplay.GetTeamBans(StormTeam.Blue)];
+        List<string?> ban1List = [.. _stormReplay.GetTeamBans(StormTeam.Red)];
 
         Assert.AreEqual(string.Empty, ban0List[1]);
         Assert.AreEqual(string.Empty, ban1List[1]);
@@ -120,8 +120,8 @@ public class AIDragonShire1ReplayParserTests
     [TestMethod]
     public void TeamLevelsTest()
     {
-        List<StormTeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue)!.ToList();
-        List<StormTeamLevel> levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red)!.ToList();
+        List<StormTeamLevel> levelsBlue = [.. _stormReplay.GetTeamLevels(StormTeam.Blue)!];
+        List<StormTeamLevel> levelsRed = [.. _stormReplay.GetTeamLevels(StormTeam.Red)!];
 
         Assert.AreEqual(15, levelsBlue.Count);
         Assert.AreEqual(15, levelsRed.Count);
@@ -237,11 +237,11 @@ public class AIDragonShire1ReplayParserTests
     [TestMethod]
     public void PlayersMatchAwardsTest()
     {
-        List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[3].MatchAwards!.ToList();
+        List<MatchAwardType> matchAwards = [.. _stormReplay.StormPlayers.ToList()[3].MatchAwards!];
 
         Assert.AreEqual(0, matchAwards.Count);
 
-        matchAwards = _stormReplay.StormPlayers.ToList()[1].MatchAwards!.ToList();
+        matchAwards = [.. _stormReplay.StormPlayers.ToList()[1].MatchAwards!];
         Assert.AreEqual(1, matchAwards.Count);
         Assert.AreEqual(MatchAwardType.MostDragonShrinesCaptured, matchAwards[0]);
     }
@@ -249,7 +249,7 @@ public class AIDragonShire1ReplayParserTests
     [TestMethod]
     public void MessagesTest()
     {
-        List<IStormMessage> messages = _stormReplay.Messages.ToList();
+        List<IStormMessage> messages = [.. _stormReplay.Messages];
 
         Assert.AreEqual(10, messages.Count);
     }

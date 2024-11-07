@@ -88,7 +88,7 @@ public class TowersofDoom1ReplayParserTests
     [TestMethod]
     public void MessagesTest()
     {
-        List<IStormMessage> messages = _stormReplay.Messages.ToList();
+        List<IStormMessage> messages = [.. _stormReplay.Messages];
 
         Assert.AreEqual(262, messages.Count);
     }

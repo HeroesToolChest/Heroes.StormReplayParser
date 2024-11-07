@@ -103,7 +103,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.AreEqual(1, player0.HeroMasteryTiers.ToList()[2].TierLevel);
         Assert.AreEqual(PlayerType.Human, player0.PlayerType);
 
-        List<StormPlayer> playersWithObs = _stormReplay.StormPlayersWithObservers.ToList();
+        List<StormPlayer> playersWithObs = [.. _stormReplay.StormPlayersWithObservers];
         StormPlayer player8 = playersWithObs[8];
 
         Assert.AreEqual(PlayerType.Observer, player8.PlayerType);
@@ -129,8 +129,8 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.AreEqual("AFIR", player.PlayerLoadout.AnnouncerPackAttributeId);
         Assert.AreEqual(20, player.PlayerHero.HeroLevel);
 
-        List<string?> ban0List = _stormReplay.GetTeamBans(StormTeam.Blue).ToList();
-        List<string?> ban1List = _stormReplay.GetTeamBans(StormTeam.Red).ToList();
+        List<string?> ban0List = [.. _stormReplay.GetTeamBans(StormTeam.Blue)];
+        List<string?> ban1List = [.. _stormReplay.GetTeamBans(StormTeam.Red)];
 
         Assert.AreEqual("Diab", ban0List[1]);
         Assert.AreEqual("Tra0", ban1List[1]);
@@ -139,7 +139,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void DraftOrderTest()
     {
-        List<StormDraftPick> draft = _stormReplay.DraftPicks.ToList();
+        List<StormDraftPick> draft = [.. _stormReplay.DraftPicks];
 
         Assert.AreEqual(14, draft.Count);
 
@@ -157,8 +157,8 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void TeamLevelsTest()
     {
-        List<StormTeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue)!.ToList();
-        List<StormTeamLevel> levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red)!.ToList();
+        List<StormTeamLevel> levelsBlue = [.. _stormReplay.GetTeamLevels(StormTeam.Blue)!];
+        List<StormTeamLevel> levelsRed = [.. _stormReplay.GetTeamLevels(StormTeam.Red)!];
 
         Assert.AreEqual(18, levelsBlue.Count);
         Assert.AreEqual(20, levelsRed.Count);
@@ -303,7 +303,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void PlayersMatchAwardsTest()
     {
-        List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[8].MatchAwards!.ToList();
+        List<MatchAwardType> matchAwards = [.. _stormReplay.StormPlayers.ToList()[8].MatchAwards!];
 
         Assert.AreEqual(0, matchAwards.Count);
     }
@@ -311,7 +311,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void MessagesTest()
     {
-        List<IStormMessage> messages = _stormReplay.Messages.ToList();
+        List<IStormMessage> messages = [.. _stormReplay.Messages];
 
         IStormMessage stormMessage = messages[144];
 
