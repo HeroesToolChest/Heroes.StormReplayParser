@@ -7,8 +7,8 @@ jobs:
     uses: koliva8245/github.workflows/.github/workflows/dotnet-build.yml@main
     with:
       dotnet-sdk: |
-        6.0.x
         8.0.X
+        9.0.X
       main-project: Heroes.StormReplayParser/Heroes.StormReplayParser.csproj
       artifact-name-prefix: Heroes.StormReplayParser
       is-tool: false
