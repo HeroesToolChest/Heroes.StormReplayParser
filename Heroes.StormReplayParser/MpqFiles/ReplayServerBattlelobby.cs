@@ -1017,7 +1017,7 @@ internal static class ReplayServerBattlelobby
                 if (equalsIndex < 1)
                     continue;
 
-                return line.AsSpan(equalsIndex + 1).Trim().Trim(new char[] { '"', ';' }).ToString();
+                return line.AsSpan(equalsIndex + 1).Trim().Trim(['"', ';']).ToString();
             }
 
             return null;
