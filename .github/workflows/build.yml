@@ -9,6 +9,7 @@ jobs:
       dotnet-sdk: |
         8.0.X
         9.0.X
+        10.0.X
       main-project: Heroes.StormReplayParser/Heroes.StormReplayParser.csproj
       artifact-name-prefix: Heroes.StormReplayParser
       is-tool: false
