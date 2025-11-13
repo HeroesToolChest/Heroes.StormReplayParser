@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Heroes.StormReplayParser.Tests/Heroes.StormReplayParser.Tests.csproj" />
+  </Folder>
+  <Project Path="BitLocator/BitLocator.csproj" />
+  <Project Path="Heroes.StormReplayParser.Benchmarks/Heroes.StormReplayParser.Benchmarks.csproj" />
+  <Project Path="Heroes.StormReplayParser/Heroes.StormReplayParser.csproj" />
+  <Project Path="HeroesParser.Pregame/HeroesParser.Pregame.csproj" />
+  <Project Path="HeroesParser/HeroesParser.csproj" />
+</Solution>
