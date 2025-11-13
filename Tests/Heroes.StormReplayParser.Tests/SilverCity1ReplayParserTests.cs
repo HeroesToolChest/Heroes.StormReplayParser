@@ -29,7 +29,7 @@ public class SilverCity1ReplayParserTests
 
         var disabledHeroes = _stormReplay.DisabledHeroes.ToList();
 
-        Assert.AreEqual(1, disabledHeroes.Count);
+        Assert.HasCount(1, disabledHeroes);
         Assert.AreEqual("STUK", disabledHeroes[0]);
     }
 

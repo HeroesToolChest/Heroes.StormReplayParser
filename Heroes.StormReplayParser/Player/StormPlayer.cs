@@ -7,7 +7,10 @@ public class StormPlayer
 {
     private Func<int, ScoreResult>? _scoreResult;
     private int? _player;
-    private int? _accountLevel = null;
+#if NET10_0_OR_GREATER
+#else
+    private int? _accountLevel;
+#endif
 
     /// <summary>
     /// Gets or sets the player's name.
@@ -94,8 +97,13 @@ public class StormPlayer
     /// </summary>
     public int? AccountLevel
     {
+#if NET10_0_OR_GREATER
+        get;
+        set => field = value == 0 ? null : value;
+#else
         get => _accountLevel;
         set => _accountLevel = value == 0 ? null : value;
+#endif
     }
 
     /// <summary>
@@ -139,13 +147,13 @@ public class StormPlayer
     public int? MatchAwardsCount => ScoreResult?.MatchAwards.Count;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<HeroMasteryTier> HeroMasteryTiersInternal { get; set; } = new();
+    internal List<HeroMasteryTier> HeroMasteryTiersInternal { get; set; } = [];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<HeroTalent> TalentsInternal { get; set; } = new(7);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<PlayerDisconnect> PlayerDisconnectsInternal { get; set; } = new();
+    internal List<PlayerDisconnect> PlayerDisconnectsInternal { get; set; } = [];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal int TalentSetCount { get; set; } = 0;

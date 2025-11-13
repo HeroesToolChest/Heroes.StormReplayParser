@@ -5,7 +5,6 @@ public class StormReplayVersionTests
 {
     [TestMethod]
     [DataRow(1, 1, 1, 11111, 11111)]
-    [DataRow(1, 1, 1, 11111, 11111)]
     public void EqualsTest(int major, int minor, int revision, int build, int baseBuild)
     {
         Assert.AreEqual(
@@ -76,7 +75,7 @@ public class StormReplayVersionTests
         };
 
         Assert.AreEqual(1, version.CompareTo((int?)null));
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsExactly<ArgumentException>(() =>
         {
             version.CompareTo(5);
         });
@@ -137,7 +136,7 @@ public class StormReplayVersionTests
 #pragma warning disable SA1131 // Use readable conditions
         Assert.IsFalse(null! == version2);
 #pragma warning restore SA1131 // Use readable conditions
-        Assert.IsFalse(version2 is null);
+        Assert.IsNotNull(version2);
 
         Assert.IsTrue(null! == (StormReplayVersion)null!);
         Assert.IsTrue(version == version2);
@@ -173,7 +172,7 @@ public class StormReplayVersionTests
 #pragma warning disable SA1131 // Use readable conditions
         Assert.IsTrue(null! != version2);
 #pragma warning restore SA1131 // Use readable conditions
-        Assert.IsTrue(version2 is not null);
+        Assert.IsNotNull(version2);
 
         Assert.IsFalse(null! != (StormReplayVersion)null!);
         Assert.IsTrue(version != version2);
@@ -183,7 +182,6 @@ public class StormReplayVersionTests
     [DataRow(1, 2, 2, 11111, 11111, 2, 2, 2, 11111, 11111)]
     [DataRow(2, 1, 2, 11111, 11111, 2, 2, 2, 11111, 11111)]
     [DataRow(2, 2, 0, 11111, 11111, 2, 2, 2, 11111, 11111)]
-    [DataRow(2, 2, 2, 10000, 10000, 2, 2, 2, 11111, 11111)]
     [DataRow(2, 2, 2, 10000, 10000, 2, 2, 2, 11111, 11111)]
     [DataRow(2, 2, 2, 10000, 10000, 2, 2, 2, 10000, 77777)]
     public void OperatorLessThanTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)
@@ -223,7 +221,6 @@ public class StormReplayVersionTests
     [DataRow(1, 2, 2, 11111, 11111, 2, 2, 2, 11111, 11111)]
     [DataRow(2, 1, 2, 11111, 11111, 2, 2, 2, 11111, 11111)]
     [DataRow(2, 2, 0, 11111, 11111, 2, 2, 2, 11111, 11111)]
-    [DataRow(2, 2, 2, 10000, 10000, 2, 2, 2, 11111, 11111)]
     [DataRow(2, 2, 2, 10000, 10000, 2, 2, 2, 11111, 11111)]
     [DataRow(2, 2, 2, 10000, 10000, 2, 2, 2, 10000, 10000)]
     public void OperatorLessThanOrEqualTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)
@@ -302,7 +299,6 @@ public class StormReplayVersionTests
     [DataRow(2, 2, 2, 11111, 11111, 1, 2, 2, 11111, 11111)]
     [DataRow(2, 2, 2, 11111, 11111, 2, 1, 2, 11111, 11111)]
     [DataRow(2, 2, 2, 11111, 11111, 2, 2, 0, 11111, 11111)]
-    [DataRow(2, 2, 2, 11111, 11111, 2, 2, 2, 10000, 10000)]
     [DataRow(2, 2, 2, 11111, 11111, 2, 2, 2, 10000, 10000)]
     [DataRow(2, 2, 2, 10000, 10000, 2, 2, 2, 10000, 10000)]
     public void OperatorGreaterThanOrEqualTest(int major, int minor, int revision, int build, int baseBuild, int major2, int minor2, int revision2, int build2, int baseBuild2)

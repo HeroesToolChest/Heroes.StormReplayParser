@@ -5,7 +5,10 @@
 /// </summary>
 public class StormDraftPick
 {
+#if NET10_0_OR_GREATER
+#else
     private StormTeam _team;
+#endif
 
     /// <summary>
     /// Gets or sets the name of the selected hero (internal name - CHeroId).
@@ -24,12 +27,21 @@ public class StormDraftPick
     {
         get
         {
+#if NET10_0_OR_GREATER
+            if (Player is null)
+                return field;
+            else
+                return Player.Team;
+        }
+        set => field = value;
+#else
             if (Player is null)
                 return _team;
             else
                 return Player.Team;
         }
         set => _team = value;
+#endif
     }
 
     /// <summary>

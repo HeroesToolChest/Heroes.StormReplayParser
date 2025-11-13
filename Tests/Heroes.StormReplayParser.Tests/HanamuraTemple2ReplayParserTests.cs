@@ -21,7 +21,7 @@ public class HanamuraTemple2ReplayParserTests
     [TestMethod]
     public void StormReplayInitDataTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player0 = players[0];
 
         Assert.IsFalse(player0.IsSilenced);

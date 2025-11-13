@@ -57,12 +57,12 @@ public class BattleLobbyCustom1Tests
         Assert.IsFalse(player0.IsBlizzardStaff);
         Assert.IsFalse(player0.IsSilenced);
         Assert.IsFalse(player0.IsVoiceSilenced);
-        Assert.IsTrue(player0.Name.StartsWith("la"));
+        Assert.StartsWith("la", player0.Name);
         Assert.IsNull(player0.PartyValue);
         Assert.AreEqual(ComputerDifficulty.Elite, player0.ComputerDifficulty);
         Assert.AreEqual(1214607983, player0.ToonHandle!.ProgramId);
-        Assert.IsTrue(player0.ToonHandle!.Id.ToString().StartsWith("152"));
-        Assert.IsTrue(player0.ToonHandle!.ShortcutId.ToString().StartsWith("T:563"));
-        Assert.IsTrue(player0.ToonHandle!.ShortcutId.ToString().EndsWith("#167"));
+        Assert.StartsWith("152", player0.ToonHandle!.Id.ToString());
+        Assert.StartsWith("T:563", player0.ToonHandle!.ShortcutId.ToString());
+        Assert.EndsWith("#167", player0.ToonHandle!.ShortcutId.ToString());
     }
 }

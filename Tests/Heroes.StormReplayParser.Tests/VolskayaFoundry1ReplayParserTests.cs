@@ -52,7 +52,7 @@ public class VolskayaFoundry1ReplayParserTests
     [TestMethod]
     public void StormReplayDetailsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player0 = players[0];
 
         Assert.AreEqual("Steph", player0.Name);
@@ -80,7 +80,7 @@ public class VolskayaFoundry1ReplayParserTests
         Assert.IsFalse(_stormReplay.HasAI);
         Assert.IsFalse(_stormReplay.HasObservers);
 
-        Assert.AreEqual(0, _stormReplay.StormObservers.ToList().Count);
+        Assert.IsEmpty(_stormReplay.StormObservers.ToList());
         Assert.AreEqual(0, _stormReplay.PlayersObserversCount);
     }
 
@@ -90,7 +90,7 @@ public class VolskayaFoundry1ReplayParserTests
         Assert.AreEqual(1102687070, _stormReplay.RandomValue);
         Assert.AreEqual(StormGameMode.StormLeague, _stormReplay.GameMode);
 
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player0 = players[0];
 
         Assert.AreEqual("GreymaneDoctorVar1", player0.PlayerLoadout.SkinAndSkinTint);
@@ -112,7 +112,7 @@ public class VolskayaFoundry1ReplayParserTests
     [TestMethod]
     public void StormReplayAttributeEventsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player = players[9];
 
         Assert.AreEqual("5v5", _stormReplay.TeamSize);
@@ -140,7 +140,7 @@ public class VolskayaFoundry1ReplayParserTests
     {
         var draft = _stormReplay.DraftPicks.ToList();
 
-        Assert.AreEqual(16, draft.Count);
+        Assert.HasCount(16, draft);
 
         Assert.AreEqual("Crusader", draft[0].HeroSelected);
         Assert.AreEqual(StormDraftPickType.Banned, draft[0].PickType);
@@ -155,16 +155,16 @@ public class VolskayaFoundry1ReplayParserTests
     [TestMethod]
     public void TeamLevelsTest()
     {
-        List<StormTeamLevel>? levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue)?.ToList();
-        List<StormTeamLevel>? levelsBlue2 = _stormReplay.GetTeamLevels(StormTeam.Blue)?.ToList();
-        List<StormTeamLevel>? levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red)?.ToList();
-        List<StormTeamLevel>? levelsRed2 = _stormReplay.GetTeamLevels(StormTeam.Red)?.ToList();
+        List<StormTeamLevel> levelsBlue = [.. _stormReplay.GetTeamLevels(StormTeam.Blue)!];
+        List<StormTeamLevel> levelsBlue2 = [.. _stormReplay.GetTeamLevels(StormTeam.Blue)!];
+        List<StormTeamLevel> levelsRed = [.. _stormReplay.GetTeamLevels(StormTeam.Red)!];
+        List<StormTeamLevel> levelsRed2 = [.. _stormReplay.GetTeamLevels(StormTeam.Red)!];
         List<StormTeamLevel>? levelsOther = _stormReplay.GetTeamLevels(StormTeam.Observer)?.ToList();
 
-        Assert.AreEqual(19, levelsBlue!.Count);
-        Assert.AreEqual(19, levelsBlue2!.Count);
-        Assert.AreEqual(21, levelsRed!.Count);
-        Assert.AreEqual(21, levelsRed2!.Count);
+        Assert.HasCount(19, levelsBlue);
+        Assert.HasCount(19, levelsBlue2);
+        Assert.HasCount(21, levelsRed);
+        Assert.HasCount(21, levelsRed2);
         Assert.IsNull(levelsOther);
 
         Assert.AreEqual(1, levelsBlue[0].Level);
@@ -197,12 +197,12 @@ public class VolskayaFoundry1ReplayParserTests
     [TestMethod]
     public void TeamXpBreakdownTest()
     {
-        List<StormTeamXPBreakdown>? xpBlue = _stormReplay.GetTeamXPBreakdown(StormTeam.Blue)?.ToList();
-        List<StormTeamXPBreakdown>? xpRed = _stormReplay.GetTeamXPBreakdown(StormTeam.Red)?.ToList();
+        List<StormTeamXPBreakdown> xpBlue = [.. _stormReplay.GetTeamXPBreakdown(StormTeam.Blue)!];
+        List<StormTeamXPBreakdown> xpRed = [.. _stormReplay.GetTeamXPBreakdown(StormTeam.Red)!];
         List<StormTeamXPBreakdown>? xpOther = _stormReplay.GetTeamXPBreakdown(StormTeam.Observer)?.ToList();
 
-        Assert.AreEqual(18, xpBlue!.Count);
-        Assert.AreEqual(18, xpRed!.Count);
+        Assert.HasCount(18, xpBlue);
+        Assert.HasCount(18, xpRed);
         Assert.IsNull(xpOther);
 
         StormTeamXPBreakdown blue = xpBlue[0];
@@ -319,7 +319,7 @@ public class VolskayaFoundry1ReplayParserTests
         Assert.AreEqual(1, scoreResult.Tier10Talent);
         Assert.AreEqual(1, scoreResult.Tier13Talent);
         Assert.AreEqual(3, scoreResult.Tier16Talent);
-        Assert.AreEqual(null, scoreResult.Tier20Talent);
+        Assert.IsNull(scoreResult.Tier20Talent);
     }
 
     [TestMethod]
@@ -332,7 +332,7 @@ public class VolskayaFoundry1ReplayParserTests
 
         matchAwards = [.. _stormReplay.StormPlayers.ToList()[9].MatchAwards!];
 
-        Assert.AreEqual(0, matchAwards.Count);
+        Assert.IsEmpty(matchAwards);
     }
 
     [TestMethod]
@@ -342,20 +342,20 @@ public class VolskayaFoundry1ReplayParserTests
 
         IStormMessage stormMessage = messages.Last();
 
-        Assert.IsTrue(stormMessage.MessageEventType == StormMessageEventType.SChatMessage);
+        Assert.AreEqual(StormMessageEventType.SChatMessage, stormMessage.MessageEventType);
 
         ChatMessage chatMessage = (ChatMessage)stormMessage;
 
         Assert.AreEqual(StormMessageEventType.SChatMessage, stormMessage.MessageEventType);
         Assert.AreEqual("Rehgar", stormMessage.MessageSender!.PlayerHero!.HeroName);
         Assert.AreEqual(StormMessageTarget.Allies, chatMessage.MessageTarget);
-        Assert.IsTrue(chatMessage.Text.StartsWith("https:"));
-        Assert.IsTrue(chatMessage.Text.EndsWith("nzs"));
+        Assert.StartsWith("https:", chatMessage.Text);
+        Assert.EndsWith("nzs", chatMessage.Text);
         Assert.AreEqual(new TimeSpan(11055625000), stormMessage.Timestamp);
 
         stormMessage = messages.First();
 
-        Assert.IsTrue(stormMessage.MessageEventType == StormMessageEventType.SLoadingProgressMessage);
+        Assert.AreEqual(StormMessageEventType.SLoadingProgressMessage, stormMessage.MessageEventType);
 
         LoadingProgressMessage loadingProgressMessage = (LoadingProgressMessage)stormMessage;
 
@@ -366,7 +366,7 @@ public class VolskayaFoundry1ReplayParserTests
 
         stormMessage = messages[97];
 
-        Assert.IsTrue(stormMessage.MessageEventType == StormMessageEventType.SPingMessage);
+        Assert.AreEqual(StormMessageEventType.SPingMessage, stormMessage.MessageEventType);
 
         PingMessage pingMessage = (PingMessage)stormMessage;
 
@@ -381,16 +381,16 @@ public class VolskayaFoundry1ReplayParserTests
     [TestMethod]
     public void ChatMessagesTest()
     {
-        List<IStormMessage> messages = _stormReplay.ChatMessages.ToList();
+        List<IStormMessage> messages = [.. _stormReplay.ChatMessages];
 
-        Assert.AreEqual(15, messages.Count);
+        Assert.HasCount(15, messages);
         Assert.IsTrue(messages.All(x => !string.IsNullOrEmpty(x.Message)));
     }
 
     [TestMethod]
     public void PlayerTalentsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
 
         // jaina
         Assert.AreEqual(2, players[1].Talents[0].TalentSlotId);
@@ -462,16 +462,16 @@ public class VolskayaFoundry1ReplayParserTests
     [TestMethod]
     public void BattleLobbyDataTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
 
         Assert.AreEqual(1145, players[1].AccountLevel);
-        Assert.AreEqual(null, players[1].PartyValue);
+        Assert.IsNull(players[1].PartyValue);
         Assert.AreEqual(1201, players[9].AccountLevel);
-        Assert.AreEqual(null, players[9].PartyValue);
+        Assert.IsNull(players[9].PartyValue);
 
-        Assert.IsTrue(players[0].BattleTagName.StartsWith(players[0].Name));
-        Assert.IsTrue(players[0].BattleTagName.Contains('#'));
-        Assert.IsTrue(players[0].BattleTagName.EndsWith("88"));
+        Assert.StartsWith(players[0].Name, players[0].BattleTagName);
+        Assert.Contains('#', players[0].BattleTagName);
+        Assert.EndsWith("88", players[0].BattleTagName);
 
         Assert.AreEqual("T:56372890#167", players[6].ToonHandle!.ShortcutId);
     }
@@ -479,7 +479,7 @@ public class VolskayaFoundry1ReplayParserTests
     [TestMethod]
     public void TrackerEventsTest()
     {
-        Assert.AreEqual(8319, _stormReplay.TrackerEvents.Count);
+        Assert.HasCount(8319, _stormReplay.TrackerEvents);
         Assert.AreEqual("Volskaya", _stormReplay.MapInfo.MapId);
         Assert.AreEqual("HeroGreymane", _stormReplay.StormPlayers.ToList()[0].PlayerHero!.HeroUnitId);
         StormTrackerEvent unitBornEvent = _stormReplay.TrackerEvents[8145];
@@ -499,7 +499,7 @@ public class VolskayaFoundry1ReplayParserTests
     [TestMethod]
     public void GameEventsTest()
     {
-        Assert.AreEqual(122839, _stormReplay.GameEvents.Count);
+        Assert.HasCount(122839, _stormReplay.GameEvents);
         Assert.AreEqual("Malthael", _stormReplay.Owner!.PlayerHero!.HeroName);
 
         StormGameEvent updateTargetPointEvent = _stormReplay.GameEvents[100741];
@@ -560,8 +560,8 @@ public class VolskayaFoundry1ReplayParserTests
         Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
         NoGameEvents(result);
 
-        List<StormPlayer> players = result.Replay.StormPlayers.ToList();
-        Assert.AreEqual(6, players[0].Talents.Count);
+        List<StormPlayer> players = [.. result.Replay.StormPlayers];
+        Assert.HasCount(6, players[0].Talents);
 
         Assert.AreEqual("GreymaneInnerBeastViciousness", players[0].Talents[0].TalentNameId);
         Assert.IsNull(players[0].Talents[0].TalentSlotId);
@@ -614,15 +614,15 @@ public class VolskayaFoundry1ReplayParserTests
 
         Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
 
-        Assert.AreEqual(0, replay.TrackerEvents.Count);
+        Assert.IsEmpty(replay.TrackerEvents);
         Assert.IsNull(replay.GetTeamLevels(StormTeam.Blue));
         Assert.IsNull(replay.GetTeamLevels(StormTeam.Red));
         Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Blue));
         Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Red));
-        Assert.AreEqual(0, replay.DraftPicks.Count);
+        Assert.IsEmpty(replay.DraftPicks);
 
-        List<StormPlayer> players = replay.StormPlayers.ToList();
-        Assert.AreEqual(0, players[0].Talents.Count);
+        List<StormPlayer> players = [.. replay.StormPlayers];
+        Assert.IsEmpty(players[0].Talents);
         Assert.IsNull(players[0].ScoreResult);
         Assert.IsNull(players[0].MatchAwards);
         Assert.IsNull(players[0].MatchAwardsCount);
@@ -682,7 +682,7 @@ public class VolskayaFoundry1ReplayParserTests
     [TestMethod]
     public void PlayerDisconnectsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
 
         Assert.IsTrue(players.All(x => x.PlayerDisconnects.Count == 0));
     }
@@ -693,14 +693,14 @@ public class VolskayaFoundry1ReplayParserTests
 
         Assert.IsNull(result.Replay.MapInfo.MapId);
 
-        Assert.AreEqual(0, replay.TrackerEvents.Count);
+        Assert.IsEmpty(replay.TrackerEvents);
         Assert.IsNull(replay.GetTeamLevels(StormTeam.Blue));
         Assert.IsNull(replay.GetTeamLevels(StormTeam.Red));
         Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Blue));
         Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Red));
-        Assert.AreEqual(0, replay.DraftPicks.Count);
+        Assert.IsEmpty(replay.DraftPicks);
 
-        List<StormPlayer> players = replay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. replay.StormPlayers];
         Assert.IsNull(players[0].Talents[0].TalentNameId);
         Assert.IsNull(players[0].ScoreResult);
         Assert.IsNull(players[0].MatchAwards);
@@ -711,7 +711,7 @@ public class VolskayaFoundry1ReplayParserTests
     {
         StormReplay replay = result.Replay!;
 
-        Assert.AreEqual(0, replay.GameEvents.Count);
+        Assert.IsEmpty(replay.GameEvents);
         Assert.IsNull(replay.Owner?.PlayerHero?.HeroName);
     }
 
@@ -719,7 +719,7 @@ public class VolskayaFoundry1ReplayParserTests
     {
         StormReplay replay = result.Replay!;
 
-        Assert.AreEqual(0, replay.Messages.Count);
-        Assert.AreEqual(0, replay.ChatMessages.ToList().Count);
+        Assert.IsEmpty(replay.Messages);
+        Assert.IsEmpty(replay.ChatMessages.ToList());
     }
 }

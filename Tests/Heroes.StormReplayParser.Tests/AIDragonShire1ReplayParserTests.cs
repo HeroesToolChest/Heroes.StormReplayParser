@@ -51,7 +51,7 @@ public class AIDragonShire1ReplayParserTests
     [TestMethod]
     public void StormReplayDetailsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player0 = players[0];
 
         Assert.AreEqual("lavakill", player0.Name);
@@ -86,7 +86,7 @@ public class AIDragonShire1ReplayParserTests
     [TestMethod]
     public void StormReplayAttributeEventsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player = players[9];
 
         Assert.AreEqual("5v5", _stormReplay.TeamSize);
@@ -114,7 +114,7 @@ public class AIDragonShire1ReplayParserTests
     {
         var draft = _stormReplay.DraftPicks.ToList();
 
-        Assert.AreEqual(0, draft.Count);
+        Assert.IsEmpty(draft);
     }
 
     [TestMethod]
@@ -123,8 +123,8 @@ public class AIDragonShire1ReplayParserTests
         List<StormTeamLevel> levelsBlue = [.. _stormReplay.GetTeamLevels(StormTeam.Blue)!];
         List<StormTeamLevel> levelsRed = [.. _stormReplay.GetTeamLevels(StormTeam.Red)!];
 
-        Assert.AreEqual(15, levelsBlue.Count);
-        Assert.AreEqual(15, levelsRed.Count);
+        Assert.HasCount(15, levelsBlue);
+        Assert.HasCount(15, levelsRed);
 
         Assert.AreEqual(1, levelsBlue[0].Level);
         Assert.AreEqual(new TimeSpan(32500000), levelsBlue[0].Time);
@@ -150,12 +150,12 @@ public class AIDragonShire1ReplayParserTests
     [TestMethod]
     public void TeamXpBreakdownTest()
     {
-        List<StormTeamXPBreakdown>? xpBlue = _stormReplay.GetTeamXPBreakdown(StormTeam.Blue)?.ToList();
-        List<StormTeamXPBreakdown>? xpRed = _stormReplay.GetTeamXPBreakdown(StormTeam.Red)?.ToList();
+        List<StormTeamXPBreakdown> xpBlue = [.. _stormReplay.GetTeamXPBreakdown(StormTeam.Blue)!];
+        List<StormTeamXPBreakdown> xpRed = [.. _stormReplay.GetTeamXPBreakdown(StormTeam.Red)!];
         List<StormTeamXPBreakdown>? xpOther = _stormReplay.GetTeamXPBreakdown(StormTeam.Observer)?.ToList();
 
-        Assert.AreEqual(13, xpBlue!.Count);
-        Assert.AreEqual(13, xpRed!.Count);
+        Assert.HasCount(13, xpBlue);
+        Assert.HasCount(13, xpRed);
         Assert.IsNull(xpOther);
 
         StormTeamXPBreakdown blue = xpBlue[3];
@@ -230,8 +230,8 @@ public class AIDragonShire1ReplayParserTests
         Assert.AreEqual(1, scoreResult.Tier7Talent);
         Assert.AreEqual(1, scoreResult.Tier10Talent);
         Assert.AreEqual(2, scoreResult.Tier13Talent);
-        Assert.AreEqual(null, scoreResult.Tier16Talent);
-        Assert.AreEqual(null, scoreResult.Tier20Talent);
+        Assert.IsNull(scoreResult.Tier16Talent);
+        Assert.IsNull(scoreResult.Tier20Talent);
     }
 
     [TestMethod]
@@ -239,10 +239,10 @@ public class AIDragonShire1ReplayParserTests
     {
         List<MatchAwardType> matchAwards = [.. _stormReplay.StormPlayers.ToList()[3].MatchAwards!];
 
-        Assert.AreEqual(0, matchAwards.Count);
+        Assert.IsEmpty(matchAwards);
 
         matchAwards = [.. _stormReplay.StormPlayers.ToList()[1].MatchAwards!];
-        Assert.AreEqual(1, matchAwards.Count);
+        Assert.HasCount(1, matchAwards);
         Assert.AreEqual(MatchAwardType.MostDragonShrinesCaptured, matchAwards[0]);
     }
 
@@ -251,25 +251,25 @@ public class AIDragonShire1ReplayParserTests
     {
         List<IStormMessage> messages = [.. _stormReplay.Messages];
 
-        Assert.AreEqual(10, messages.Count);
+        Assert.HasCount(10, messages);
     }
 
     [TestMethod]
     public void ChatMessagesTest()
     {
-        List<IStormMessage> messages = _stormReplay.ChatMessages.ToList();
+        List<IStormMessage> messages = [.. _stormReplay.ChatMessages];
 
-        Assert.AreEqual(0, messages.Count);
+        Assert.IsEmpty(messages);
         Assert.IsTrue(messages.All(x => !string.IsNullOrEmpty(x.Message)));
     }
 
     [TestMethod]
     public void BattleLobbyDataTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
 
         Assert.AreEqual(2331, players[0].AccountLevel);
-        Assert.AreEqual(null, players[0].PartyValue);
+        Assert.IsNull(players[0].PartyValue);
 
         Assert.AreEqual("T:56372890#167", players[0].ToonHandle!.ShortcutId);
         Assert.IsTrue(_stormReplay.IsBattleLobbyPlayerInfoParsed);
@@ -278,23 +278,23 @@ public class AIDragonShire1ReplayParserTests
     [TestMethod]
     public void TrackerEventsTest()
     {
-        Assert.AreEqual(4437, _stormReplay.TrackerEvents.Count);
+        Assert.HasCount(4437, _stormReplay.TrackerEvents);
         Assert.AreEqual("DragonShire", _stormReplay.MapInfo.MapId);
     }
 
     [TestMethod]
     public void GameEventsTest()
     {
-        Assert.AreEqual(7046, _stormReplay.GameEvents.Count);
+        Assert.HasCount(7046, _stormReplay.GameEvents);
         Assert.AreEqual("Qhira", _stormReplay.Owner!.PlayerHero!.HeroName);
     }
 
     [TestMethod]
     public void PlayerTalentsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
 
-        Assert.AreEqual(5, players[0].Talents.Count);
+        Assert.HasCount(5, players[0].Talents);
 
         // valla
         Assert.AreEqual(2, players[0].Talents[0].TalentSlotId);
@@ -322,7 +322,7 @@ public class AIDragonShire1ReplayParserTests
         Assert.AreEqual(51, players[0].Talents[4].Timestamp!.Value.Seconds);
 
         // arthas
-        Assert.AreEqual(5, players[6].Talents.Count);
+        Assert.HasCount(5, players[6].Talents);
 
         Assert.AreEqual("ArthasMasteryEternalHungerFrostmourneHungers", players[6].Talents[0].TalentNameId);
         Assert.IsNull(players[6].Talents[0].TalentSlotId);
@@ -377,10 +377,10 @@ public class AIDragonShire1ReplayParserTests
         Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
         NoGameEvents(result);
 
-        List<StormPlayer> players = result.Replay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. result.Replay.StormPlayers];
 
         // arthas
-        Assert.AreEqual(5, players[6].Talents.Count);
+        Assert.HasCount(5, players[6].Talents);
 
         Assert.AreEqual("ArthasMasteryEternalHungerFrostmourneHungers", players[6].Talents[0].TalentNameId);
         Assert.IsNull(players[6].Talents[0].TalentSlotId);
@@ -409,14 +409,14 @@ public class AIDragonShire1ReplayParserTests
 
         Assert.IsNull(result.Replay.MapInfo.MapId);
 
-        Assert.AreEqual(0, replay.TrackerEvents.Count);
+        Assert.IsEmpty(replay.TrackerEvents);
         Assert.IsNull(replay.GetTeamLevels(StormTeam.Blue));
         Assert.IsNull(replay.GetTeamLevels(StormTeam.Red));
         Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Blue));
         Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Red));
-        Assert.AreEqual(0, replay.DraftPicks.Count);
+        Assert.IsEmpty(replay.DraftPicks);
 
-        List<StormPlayer> players = replay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. replay.StormPlayers];
         Assert.IsNull(players[0].Talents[0].TalentNameId);
         Assert.IsNull(players[0].ScoreResult);
         Assert.IsNull(players[0].MatchAwards);
@@ -427,7 +427,7 @@ public class AIDragonShire1ReplayParserTests
     {
         StormReplay replay = result.Replay!;
 
-        Assert.AreEqual(0, replay.GameEvents.Count);
+        Assert.IsEmpty(replay.GameEvents);
         Assert.IsNull(replay.Owner?.PlayerHero?.HeroName);
     }
 }

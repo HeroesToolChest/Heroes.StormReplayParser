@@ -5,7 +5,10 @@
 /// </summary>
 public class PregameStormPlayer
 {
+#if NET10_0_OR_GREATER
+#else
     private int? _accountLevel = null;
+#endif
 
     /// <summary>
     /// Gets the player's name.
@@ -78,8 +81,13 @@ public class PregameStormPlayer
     /// </summary>
     public int? AccountLevel
     {
+#if NET10_0_OR_GREATER
+        get => field;
+        set => field = value == 0 ? null : value;
+#else
         get => _accountLevel;
         set => _accountLevel = value == 0 ? null : value;
+#endif
     }
 
     /// <summary>

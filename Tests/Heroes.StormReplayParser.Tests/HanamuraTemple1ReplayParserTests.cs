@@ -28,7 +28,7 @@ public class HanamuraTemple1ReplayParserTests
     [TestMethod]
     public void StormReplayDetailsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player0 = players[0];
 
         Assert.AreEqual("crazealot", player0.Name);
@@ -57,7 +57,7 @@ public class HanamuraTemple1ReplayParserTests
         Assert.AreEqual(2143281452, _stormReplay.RandomValue);
         Assert.AreEqual(StormGameMode.QuickMatch, _stormReplay.GameMode);
 
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player0 = players[0];
 
         Assert.AreEqual("BrightwingLuxMonkeyWhite", player0.PlayerLoadout.SkinAndSkinTint);
@@ -78,7 +78,7 @@ public class HanamuraTemple1ReplayParserTests
     [TestMethod]
     public void StormReplayAttributeEventsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player = players[9];
 
         Assert.AreEqual("5v5", _stormReplay.TeamSize);
@@ -106,17 +106,17 @@ public class HanamuraTemple1ReplayParserTests
     {
         var draft = _stormReplay.DraftPicks.ToList();
 
-        Assert.AreEqual(0, draft.Count);
+        Assert.IsEmpty(draft);
     }
 
     [TestMethod]
     public void BattleLobbyDataTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
 
         Assert.AreEqual(2319, players[1].AccountLevel);
-        Assert.AreEqual(null, players[1].PartyValue);
+        Assert.IsNull(players[1].PartyValue);
         Assert.AreEqual(654, players[9].AccountLevel);
-        Assert.AreEqual(null, players[9].PartyValue);
+        Assert.IsNull(players[9].PartyValue);
     }
 }

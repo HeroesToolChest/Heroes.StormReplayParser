@@ -42,7 +42,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void StormReplayDetailsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player0 = players[0];
 
         Assert.AreEqual("AZTDoubt", player0.Name);
@@ -68,7 +68,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.AreEqual("Battlefield of Eternity", _stormReplay.MapInfo.MapName);
         Assert.AreEqual(636619794857150779, _stormReplay.Timestamp.Ticks);
 
-        List<StormPlayer> playersWithObs = _stormReplay.StormPlayersWithObservers.ToList();
+        List<StormPlayer> playersWithObs = [.. _stormReplay.StormPlayersWithObservers];
         StormPlayer player8 = playersWithObs[8];
 
         Assert.AreEqual(StormTeam.Observer, player8.Team);
@@ -85,7 +85,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.AreEqual(36047320, _stormReplay.RandomValue);
         Assert.AreEqual(StormGameMode.Custom, _stormReplay.GameMode);
 
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player0 = players[0];
 
         Assert.AreEqual("GreymaneDoctorVar3", player0.PlayerLoadout.SkinAndSkinTint);
@@ -113,7 +113,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void StormReplayAttributeEventsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player = players[9];
 
         Assert.AreEqual("5v5", _stormReplay.TeamSize);
@@ -141,7 +141,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     {
         List<StormDraftPick> draft = [.. _stormReplay.DraftPicks];
 
-        Assert.AreEqual(14, draft.Count);
+        Assert.HasCount(14, draft);
 
         Assert.AreEqual("Maiev", draft[0].HeroSelected);
         Assert.AreEqual(StormDraftPickType.Banned, draft[0].PickType);
@@ -160,8 +160,8 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         List<StormTeamLevel> levelsBlue = [.. _stormReplay.GetTeamLevels(StormTeam.Blue)!];
         List<StormTeamLevel> levelsRed = [.. _stormReplay.GetTeamLevels(StormTeam.Red)!];
 
-        Assert.AreEqual(18, levelsBlue.Count);
-        Assert.AreEqual(20, levelsRed.Count);
+        Assert.HasCount(18, levelsBlue);
+        Assert.HasCount(20, levelsRed);
 
         Assert.AreEqual(1, levelsBlue[0].Level);
         Assert.AreEqual(new TimeSpan(32500000), levelsBlue[0].Time);
@@ -193,12 +193,12 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void TeamXpBreakdownTest()
     {
-        List<StormTeamXPBreakdown>? xpBlue = _stormReplay.GetTeamXPBreakdown(StormTeam.Blue)?.ToList();
-        List<StormTeamXPBreakdown>? xpRed = _stormReplay.GetTeamXPBreakdown(StormTeam.Red)?.ToList();
+        List<StormTeamXPBreakdown> xpBlue = [.. _stormReplay.GetTeamXPBreakdown(StormTeam.Blue)!];
+        List<StormTeamXPBreakdown> xpRed = [.. _stormReplay.GetTeamXPBreakdown(StormTeam.Red)!];
         List<StormTeamXPBreakdown>? xpOther = _stormReplay.GetTeamXPBreakdown(StormTeam.Observer)?.ToList();
 
-        Assert.AreEqual(20, xpBlue!.Count);
-        Assert.AreEqual(20, xpRed!.Count);
+        Assert.HasCount(20, xpBlue);
+        Assert.HasCount(20, xpRed);
         Assert.IsNull(xpOther);
 
         StormTeamXPBreakdown blue = xpBlue[3];
@@ -270,12 +270,12 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.AreEqual(12804, scoreResult.MinionDamage);
         Assert.AreEqual(0, scoreResult.Multikill);
         Assert.AreEqual(0, scoreResult.OutnumberedDeaths);
-        Assert.AreEqual(null, scoreResult.PhysicalDamage);
+        Assert.IsNull(scoreResult.PhysicalDamage);
         Assert.AreEqual(0, scoreResult.ProtectionGivenToAllies);
         Assert.AreEqual(0, scoreResult.SelfHealing);
         Assert.AreEqual(22012, scoreResult.SiegeDamage);
         Assert.AreEqual(0, scoreResult.SoloKills);
-        Assert.AreEqual(null, scoreResult.SpellDamage);
+        Assert.IsNull(scoreResult.SpellDamage);
         Assert.AreEqual(9208, scoreResult.StructureDamage);
         Assert.AreEqual(0, scoreResult.SummonDamage);
         Assert.AreEqual(8, scoreResult.Takedowns);
@@ -297,7 +297,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.AreEqual(1, scoreResult.Tier10Talent);
         Assert.AreEqual(3, scoreResult.Tier13Talent);
         Assert.AreEqual(2, scoreResult.Tier16Talent);
-        Assert.AreEqual(null, scoreResult.Tier20Talent);
+        Assert.IsNull(scoreResult.Tier20Talent);
     }
 
     [TestMethod]
@@ -305,7 +305,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     {
         List<MatchAwardType> matchAwards = [.. _stormReplay.StormPlayers.ToList()[8].MatchAwards!];
 
-        Assert.AreEqual(0, matchAwards.Count);
+        Assert.IsEmpty(matchAwards);
     }
 
     [TestMethod]
@@ -333,27 +333,27 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void ChatMessagesTest()
     {
-        List<IStormMessage> messages = _stormReplay.ChatMessages.ToList();
+        List<IStormMessage> messages = [.. _stormReplay.ChatMessages];
 
-        Assert.AreEqual(4, messages.Count);
+        Assert.HasCount(4, messages);
         Assert.IsTrue(messages.All(x => !string.IsNullOrEmpty(x.Message)));
     }
 
     [TestMethod]
     public void BattleLobbyDataTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayersWithObservers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayersWithObservers];
 
         Assert.IsTrue(_stormReplay.IsBattleLobbyPlayerInfoParsed);
 
         Assert.IsNull(players[1].AccountLevel);
-        Assert.AreEqual(null, players[1].PartyValue);
+        Assert.IsNull(players[1].PartyValue);
         Assert.IsNull(players[9].AccountLevel);
-        Assert.AreEqual(null, players[9].PartyValue);
+        Assert.IsNull(players[9].PartyValue);
 
-        Assert.IsTrue(players[0].BattleTagName.StartsWith(players[0].Name));
-        Assert.IsTrue(players[0].BattleTagName.Contains('#'));
-        Assert.IsTrue(players[0].BattleTagName.EndsWith("34"));
+        Assert.StartsWith(players[0].Name, players[0].BattleTagName);
+        Assert.Contains('#', players[0].BattleTagName);
+        Assert.EndsWith("34", players[0].BattleTagName);
 
         Assert.AreEqual(6462480, players[8].ToonHandle!.Id);
         Assert.AreEqual(1214607983, players[8].ToonHandle!.ProgramId);
@@ -362,29 +362,29 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.AreEqual(StormRegion.US, players[8].ToonHandle!.StormRegion);
         Assert.AreEqual("T:93796888#558", players[8].ToonHandle!.ShortcutId);
         Assert.AreEqual("1-Hero-1-6462480", players[8].ToonHandle!.ToString());
-        Assert.IsTrue(players[8].BattleTagName.StartsWith(players[8].Name));
-        Assert.IsTrue(players[8].BattleTagName.Contains('#'));
-        Assert.IsTrue(players[8].BattleTagName.EndsWith("27"));
+        Assert.StartsWith(players[8].Name, players[8].BattleTagName);
+        Assert.Contains('#', players[8].BattleTagName);
+        Assert.EndsWith("27", players[8].BattleTagName);
     }
 
     [TestMethod]
     public void TrackerEventsTest()
     {
-        Assert.AreEqual(5239, _stormReplay.TrackerEvents.Count);
+        Assert.HasCount(5239, _stormReplay.TrackerEvents);
         Assert.AreEqual("BattlefieldOfEternity", _stormReplay.MapInfo.MapId);
     }
 
     [TestMethod]
     public void GameEventsTest()
     {
-        Assert.AreEqual(347248, _stormReplay.GameEvents.Count);
+        Assert.HasCount(347248, _stormReplay.GameEvents);
         Assert.AreEqual("Hanzo", _stormReplay.Owner!.PlayerHero!.HeroName);
     }
 
     [TestMethod]
     public void PlayerTalentsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
 
         // sonya
         Assert.AreEqual(2, players[1].Talents[0].TalentSlotId);
@@ -454,8 +454,8 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
         NoGameEvents(result);
 
-        List<StormPlayer> players = result.Replay.StormPlayers.ToList();
-        Assert.AreEqual(6, players[0].Talents.Count);
+        List<StormPlayer> players = [.. result.Replay.StormPlayers];
+        Assert.HasCount(6, players[0].Talents);
 
         Assert.AreEqual("GreymaneInnerBeastViciousness", players[0].Talents[0].TalentNameId);
         Assert.IsNull(players[0].Talents[0].TalentSlotId);
@@ -540,14 +540,14 @@ public class CustomBattlefieldofEternity1ReplayParserTests
 
         Assert.IsNull(result.Replay.MapInfo.MapId);
 
-        Assert.AreEqual(0, replay.TrackerEvents.Count);
+        Assert.IsEmpty(replay.TrackerEvents);
         Assert.IsNull(replay.GetTeamLevels(StormTeam.Blue));
         Assert.IsNull(replay.GetTeamLevels(StormTeam.Red));
         Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Blue));
         Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Red));
-        Assert.AreEqual(0, replay.DraftPicks.Count);
+        Assert.IsEmpty(replay.DraftPicks);
 
-        List<StormPlayer> players = replay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. replay.StormPlayers];
         Assert.IsNull(players[0].Talents[0].TalentNameId);
         Assert.IsNull(players[0].ScoreResult);
         Assert.IsNull(players[0].MatchAwards);
@@ -558,7 +558,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     {
         StormReplay replay = result.Replay!;
 
-        Assert.AreEqual(0, replay.GameEvents.Count);
+        Assert.IsEmpty(replay.GameEvents);
         Assert.IsNull(replay.Owner?.PlayerHero?.HeroName);
     }
 }

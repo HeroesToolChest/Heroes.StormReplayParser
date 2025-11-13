@@ -1,14 +1,11 @@
-﻿<Project Sdk="MSTest.Sdk/3.8.2">
+﻿<Project Sdk="MSTest.Sdk/4.0.2">
 
-  <PropertyGroup>  
-    <TargetFramework>net8.0</TargetFramework>
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <NoWarn>EnableGenerateDocumentationFile</NoWarn>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-
-    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
-    <TestingPlatformCaptureOutput>false</TestingPlatformCaptureOutput>
   </PropertyGroup>
 
   <ItemGroup>

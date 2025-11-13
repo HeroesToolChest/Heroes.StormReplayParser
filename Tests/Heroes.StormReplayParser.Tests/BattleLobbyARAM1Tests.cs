@@ -50,7 +50,7 @@ public class BattleLobbyARAM1Tests
     {
         PregameStormPlayer player4 = _stormReplay.StormPlayers.ToList()[4];
 
-        Assert.IsTrue(player4.BattleTagName.StartsWith("Blimphead316"));
+        Assert.StartsWith("Blimphead316", player4.BattleTagName);
         Assert.AreEqual(PlayerType.Human, player4.PlayerType);
         Assert.AreEqual(PlayerSlotType.Human, player4.PlayerSlotType);
         Assert.AreEqual(739, player4.AccountLevel);
@@ -98,13 +98,13 @@ public class BattleLobbyARAM1Tests
     {
         ToonHandle toon4 = _stormReplay.StormPlayers.ToList()[4]!.ToonHandle!;
 
-        Assert.IsTrue(toon4.Id.ToString().StartsWith("12519"));
+        Assert.StartsWith("12519", toon4.Id.ToString());
         Assert.AreEqual(1214607983, toon4.ProgramId);
         Assert.AreEqual(1, toon4.Realm);
         Assert.AreEqual(1, toon4.Region);
         Assert.AreEqual(StormRegion.US, toon4.StormRegion);
-        Assert.IsTrue(toon4.ShortcutId.StartsWith("T:5705"));
-        Assert.IsTrue(toon4.ShortcutId.EndsWith("#989"));
+        Assert.StartsWith("T:5705", toon4.ShortcutId);
+        Assert.EndsWith("#989", toon4.ShortcutId);
     }
 
     [TestMethod]

@@ -23,7 +23,7 @@ public class IndustrialDistrictMacPlayers1ReplayParserTests
     [TestMethod]
     public void PlayerOnMacPlatformTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         Assert.IsFalse(players[0].IsPlatformMac);
         Assert.IsTrue(players[1].IsPlatformMac);
         Assert.IsFalse(players[2].IsPlatformMac);

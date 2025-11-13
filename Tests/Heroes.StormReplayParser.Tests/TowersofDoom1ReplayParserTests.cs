@@ -41,7 +41,7 @@ public class TowersofDoom1ReplayParserTests
         Assert.AreEqual(4013533878, _stormReplay.RandomValue);
         Assert.AreEqual(StormGameMode.QuickMatch, _stormReplay.GameMode);
 
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player0 = players[0];
 
         Assert.AreEqual(string.Empty, player0.PlayerLoadout.SkinAndSkinTint);
@@ -65,7 +65,7 @@ public class TowersofDoom1ReplayParserTests
     {
         var draft = _stormReplay.DraftPicks.ToList();
 
-        Assert.AreEqual(0, draft.Count);
+        Assert.IsEmpty(draft);
     }
 
     [TestMethod]
@@ -90,22 +90,22 @@ public class TowersofDoom1ReplayParserTests
     {
         List<IStormMessage> messages = [.. _stormReplay.Messages];
 
-        Assert.AreEqual(262, messages.Count);
+        Assert.HasCount(262, messages);
     }
 
     [TestMethod]
     public void ChatMessagesTest()
     {
-        List<IStormMessage> messages = _stormReplay.ChatMessages.ToList();
+        List<IStormMessage> messages = [.. _stormReplay.ChatMessages];
 
-        Assert.AreEqual(26, messages.Count);
+        Assert.HasCount(26, messages);
         Assert.IsTrue(messages.All(x => !string.IsNullOrEmpty(x.Message)));
     }
 
     [TestMethod]
     public void GameEventsTest()
     {
-        Assert.AreEqual(120572, _stormReplay.GameEvents.Count);
+        Assert.HasCount(120572, _stormReplay.GameEvents);
         Assert.AreEqual("Rexxar", _stormReplay.Owner!.PlayerHero!.HeroName);
     }
 }

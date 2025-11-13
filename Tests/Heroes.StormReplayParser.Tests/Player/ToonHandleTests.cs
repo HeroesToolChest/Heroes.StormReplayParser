@@ -63,7 +63,6 @@ public class ToonHandleTests
     [DataRow(1, 123456789, 2, 345345)]
     [DataRow(5, 123456789, 2, 345345)]
     [DataRow(5, 123456789, 4, 345345)]
-    [DataRow(5, 123456789, 2, 345345)]
     [DataRow(5, 11111, 2, 345345)]
     [DataRow(5, 123456789, 2, 45757)]
     public void NotEqualsTest(int region, int programId, int realm, long id)
@@ -108,7 +107,7 @@ public class ToonHandleTests
 #pragma warning disable SA1131 // Use readable conditions
         Assert.IsFalse(null! == toonHandle2);
 #pragma warning restore SA1131 // Use readable conditions
-        Assert.IsFalse(toonHandle2 is null);
+        Assert.IsNotNull(toonHandle2);
 
         Assert.IsTrue(null! == (ToonHandle)null!);
         Assert.IsTrue(toonHandle == toonHandle2);
@@ -142,7 +141,7 @@ public class ToonHandleTests
 #pragma warning disable SA1131 // Use readable conditions
         Assert.IsTrue(null! != toonHandle2);
 #pragma warning restore SA1131 // Use readable conditions
-        Assert.IsTrue(toonHandle2 is not null);
+        Assert.IsNotNull(toonHandle2);
 
         Assert.IsFalse(null! != (ToonHandle)null!);
         Assert.IsTrue(toonHandle != toonHandle2);

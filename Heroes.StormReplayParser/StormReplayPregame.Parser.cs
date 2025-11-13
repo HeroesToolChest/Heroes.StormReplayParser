@@ -63,7 +63,7 @@ public partial class StormReplayPregame
         using FileStream fileStream = new(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         Span<byte> buffer = stackalloc byte[(int)fileStream.Length];
-        fileStream.Read(buffer);
+        fileStream.ReadExactly(buffer);
 
         ReplayServerBattlelobby.Parse(stormReplayPregame, buffer, true);
 

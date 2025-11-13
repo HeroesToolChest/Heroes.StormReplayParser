@@ -51,7 +51,7 @@ public class AIBraxisHoldout1ReplayParserTests
     [TestMethod]
     public void StormReplayDetailsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player0 = players[0];
 
         Assert.AreEqual("Player 1", player0.Name);
@@ -76,7 +76,7 @@ public class AIBraxisHoldout1ReplayParserTests
     [TestMethod]
     public void StormReplayAttributeEventsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
         StormPlayer player = players[9];
 
         Assert.AreEqual("5v5", _stormReplay.TeamSize);
@@ -104,7 +104,7 @@ public class AIBraxisHoldout1ReplayParserTests
     {
         var draft = _stormReplay.DraftPicks.ToList();
 
-        Assert.AreEqual(0, draft.Count);
+        Assert.IsEmpty(draft);
     }
 
     [TestMethod]
@@ -118,9 +118,9 @@ public class AIBraxisHoldout1ReplayParserTests
     [TestMethod]
     public void ChatMessagesTest()
     {
-        List<IStormMessage> messages = _stormReplay.ChatMessages.ToList();
+        List<IStormMessage> messages = [.. _stormReplay.ChatMessages];
 
-        Assert.AreEqual(0, messages.Count);
+        Assert.IsEmpty(messages);
         Assert.IsTrue(messages.All(x => !string.IsNullOrEmpty(x.Message)));
     }
 

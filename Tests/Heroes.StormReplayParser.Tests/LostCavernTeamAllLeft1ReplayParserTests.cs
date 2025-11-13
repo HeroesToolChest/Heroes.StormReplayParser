@@ -30,8 +30,8 @@ public class LostCavernTeamAllLeft1ReplayParserTests
     [TestMethod]
     public void TeamLevelsTest()
     {
-        Assert.AreEqual(1, _stormReplay.GetTeamLevels(StormTeam.Blue)!.Count);
-        Assert.AreEqual(1, _stormReplay.GetTeamLevels(StormTeam.Red)!.Count);
+        Assert.HasCount(1, _stormReplay.GetTeamLevels(StormTeam.Blue)!);
+        Assert.HasCount(1, _stormReplay.GetTeamLevels(StormTeam.Red)!);
     }
 
     [TestMethod]
@@ -44,20 +44,20 @@ public class LostCavernTeamAllLeft1ReplayParserTests
     [TestMethod]
     public void PlayerDisconnectsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
 
-        Assert.AreEqual(1, players[0].PlayerDisconnects.Count);
-        Assert.AreEqual(0, players[1].PlayerDisconnects.Count);
-        Assert.AreEqual(0, players[2].PlayerDisconnects.Count);
-        Assert.AreEqual(0, players[3].PlayerDisconnects.Count);
-        Assert.AreEqual(0, players[4].PlayerDisconnects.Count);
+        Assert.HasCount(1, players[0].PlayerDisconnects);
+        Assert.IsEmpty(players[1].PlayerDisconnects);
+        Assert.IsEmpty(players[2].PlayerDisconnects);
+        Assert.IsEmpty(players[3].PlayerDisconnects);
+        Assert.IsEmpty(players[4].PlayerDisconnects);
 
-        Assert.AreEqual(1, players[5].PlayerDisconnects.Count);
+        Assert.HasCount(1, players[5].PlayerDisconnects);
         Assert.AreEqual(new TimeSpan(168125000), players[5].PlayerDisconnects[0].From);
         Assert.IsNull(players[5].PlayerDisconnects[0].To);
-        Assert.AreEqual(1, players[6].PlayerDisconnects.Count);
-        Assert.AreEqual(1, players[7].PlayerDisconnects.Count);
-        Assert.AreEqual(1, players[8].PlayerDisconnects.Count);
+        Assert.HasCount(1, players[6].PlayerDisconnects);
+        Assert.HasCount(1, players[7].PlayerDisconnects);
+        Assert.HasCount(1, players[8].PlayerDisconnects);
         Assert.AreEqual(new TimeSpan(426250000), players[9].PlayerDisconnects[0].From);
         Assert.IsNull(players[9].PlayerDisconnects[0].To);
     }

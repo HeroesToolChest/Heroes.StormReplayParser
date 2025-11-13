@@ -24,7 +24,7 @@ public class CustomHGC2018BattlefieldofEternity1ReplayParserTests
     {
         var draft = _stormReplay.DraftPicks.ToList();
 
-        Assert.AreEqual(20, draft.Count);
+        Assert.HasCount(20, draft);
 
         Assert.AreEqual("Medivh", draft[0].HeroSelected);
         Assert.AreEqual(StormDraftPickType.Banned, draft[0].PickType);
@@ -50,16 +50,16 @@ public class CustomHGC2018BattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void BattleLobbyPlayerDataTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayersWithObservers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayersWithObservers];
 
         Assert.IsNull(players[1].AccountLevel);
         Assert.AreEqual(1369706131243, players[1].PartyValue);
         Assert.IsNull(players[2].AccountLevel);
         Assert.AreEqual(1369706131243, players[2].PartyValue);
 
-        Assert.IsTrue(players[0].BattleTagName.StartsWith(players[0].Name));
-        Assert.IsTrue(players[0].BattleTagName.Contains('#'));
-        Assert.IsTrue(players[0].BattleTagName.EndsWith("41"));
+        Assert.StartsWith(players[0].Name, players[0].BattleTagName);
+        Assert.Contains('#', players[0].BattleTagName);
+        Assert.EndsWith("41", players[0].BattleTagName);
 
         Assert.AreEqual(485855, players[0].ToonHandle!.Id);
         Assert.AreEqual(1214607983, players[0].ToonHandle!.ProgramId);
@@ -77,7 +77,7 @@ public class CustomHGC2018BattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void PlayerScoreResultsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayersWithObservers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayersWithObservers];
 
         Assert.IsNull(players[0].ScoreResult);
         Assert.IsNull(players[1].ScoreResult);
@@ -100,7 +100,7 @@ public class CustomHGC2018BattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void PlayerDisconnectsTest()
     {
-        List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
 
         Assert.IsTrue(players.All(x => x.PlayerDisconnects.Count == 0));
     }

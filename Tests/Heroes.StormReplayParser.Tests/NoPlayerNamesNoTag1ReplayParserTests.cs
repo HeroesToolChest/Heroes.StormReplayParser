@@ -26,6 +26,6 @@ public class NoPlayerNamesNoTag1ReplayParserTests
     {
         StormPlayer player = _stormReplay.StormPlayers.ToList()[0];
         Assert.AreEqual(string.Empty, player.BattleTagName);
-        Assert.IsTrue(player.ToonHandle!.Id.ToString().StartsWith("1289"));
+        Assert.StartsWith("1289", player.ToonHandle!.Id.ToString());
     }
 }
