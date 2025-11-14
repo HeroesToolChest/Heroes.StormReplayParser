@@ -110,7 +110,7 @@ Besides providing the file name of the replay, `ParsePregameOptions()` may also 
 Some data returned will be references to the game data, such as `PlayerHero.HeroAttributeId`. Such data can be obtained from [HeroesDataParser](https://github.com/HeroesToolChest/HeroesDataParser). From there other resource links can be found.
 
 ## Developing
-To build and compile the code, it is recommended to use the latest version of [Visual Studio 2022 or Visual Studio Code](https://visualstudio.microsoft.com/downloads/).
+To build and compile the code, it is recommended to use the latest version of [Visual Studio 2026 or Visual Studio Code](https://visualstudio.microsoft.com/downloads/).
 
 Another option is to use the dotnet CLI tools from the latest [.NET SDK](https://dotnet.microsoft.com/download).
 
