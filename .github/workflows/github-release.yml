@@ -10,7 +10,7 @@ jobs:
     with:
       title: 'Heroes Storm Replay Parser'
       app-name: Heroes.StormReplayParser
-      artificats-workflow: build.yml
+      artifacts-workflow: build.yml
       github-release-env: Github Release
       github-release-url: https://github.com/HeroesToolChest/Heroes.StormReplayParser/releases
     secrets:
