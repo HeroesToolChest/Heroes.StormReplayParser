@@ -8,7 +8,6 @@ jobs:
     permissions:
       contents: write
     with:
-      title: 'Heroes Storm Replay Parser'
       app-name: Heroes.StormReplayParser
       artifacts-workflow: build.yml
       github-release-env: Github Release
