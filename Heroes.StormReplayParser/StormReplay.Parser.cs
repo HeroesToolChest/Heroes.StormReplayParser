@@ -10,15 +10,25 @@ public partial class StormReplay
 
     private readonly string _fileName;
     private readonly ParseOptions _parseOptions;
-    private readonly MpqHeroesArchive _stormMpqArchive;
+    private readonly MpqHeroesArchive? _stormMpqArchive;
 
     private StormReplay(string fileName, ParseOptions parseOptions)
     {
         _fileName = fileName;
         _parseOptions = parseOptions;
 
-        _stormMpqArchive = MpqHeroesFile.Open(_fileName);
+        try
+        {
+            _stormMpqArchive = MpqHeroesFile.Open(_fileName);
+        }
+        catch (Exception exception)
+        {
+            _failedReplayException = new StormParseException("An exception has occured during the parsing of the replay.", exception);
+            _stormReplayParseResult = StormReplayParseStatus.Exception;
+        }
     }
+
+    private delegate void MpqFileParser(StormReplay replay, ReadOnlySpan<byte> source);
 
     /// <summary>
     /// Parses a .StormReplay file.
@@ -57,7 +67,22 @@ public partial class StormReplay
 
     private static void FinalPlayerData(StormReplay stormReplay)
     {
-        TimeSpan latestCameraUpdateEvent = stormReplay.ClientListByUserID.Where(x => x is not null).Max(x => x!.LastCameraUpdateEvent);
+        TimeSpan latestCameraUpdateEvent = TimeSpan.MinValue;
+        bool foundPlayer = false;
+
+        foreach (StormPlayer? player in stormReplay.ClientListByUserID)
+        {
+            if (player is null)
+                continue;
+
+            foundPlayer = true;
+
+            if (player.LastCameraUpdateEvent > latestCameraUpdateEvent)
+                latestCameraUpdateEvent = player.LastCameraUpdateEvent;
+        }
+
+        if (!foundPlayer)
+            throw new InvalidOperationException("Sequence contains no elements");
 
         // remove the occurrence where the players leaves at the end of the match
         foreach (StormPlayer? player in stormReplay.ClientListByUserID)
@@ -65,14 +90,18 @@ public partial class StormReplay
             if (player is null)
                 continue;
 
-            PlayerDisconnect? lastOccurrence = player.PlayerDisconnectsInternal.LastOrDefault();
-            if (lastOccurrence is not null && lastOccurrence.From > latestCameraUpdateEvent)
-                player.PlayerDisconnectsInternal.Remove(lastOccurrence);
+            List<PlayerDisconnect> disconnects = player.PlayerDisconnectsInternal;
+
+            if (disconnects.Count > 0 && disconnects[^1].From > latestCameraUpdateEvent)
+                disconnects.RemoveAt(disconnects.Count - 1);
         }
     }
 
     private void Parse(StormReplay stormReplay)
     {
+        if (_stormMpqArchive is null)
+            return;
+
         using MpqHeroesArchive stormMpqArchive = _stormMpqArchive;
 
         ParseReplayHeader(stormReplay);
@@ -85,7 +114,7 @@ public partial class StormReplay
 
         ArrayPool<byte> pool = ArrayPool<byte>.Shared;
 
-        ParseReplayDetails(stormReplay, pool);
+        ParseMpqFile(stormReplay, pool, ReplayDetails.FileName, ReplayDetails.Parse);
 
         if (stormReplay.Timestamp == DateTime.MinValue)
         {
@@ -98,178 +127,58 @@ public partial class StormReplay
             return;
         }
 
-        ParseReplayInit(stormReplay, pool);
-        ParseReplayAttributeEvents(stormReplay, pool);
+        ParseMpqFile(stormReplay, pool, ReplayInitData.FileName, ReplayInitData.Parse);
+        ParseMpqFile(stormReplay, pool, ReplayAttributeEvents.FileName, ReplayAttributeEvents.Parse);
         ParseReplayServerBattlelobby(stormReplay, pool);
 
         if (_parseOptions.ShouldParseGameEvents)
-            ParseReplayGameEvents(stormReplay, pool);
+            ParseMpqFile(stormReplay, pool, ReplayGameEvents.FileName, ReplayGameEvents.Parse);
 
         if (_parseOptions.ShouldParseTrackerEvents)
-            ParseReplayTrackerEvents(stormReplay, pool);
+            ParseMpqFile(stormReplay, pool, ReplayTrackerEvents.FileName, ReplayTrackerEvents.Parse);
 
         if (_parseOptions.ShouldParseMessageEvents)
-            ParseReplayMessageEvents(stormReplay, pool);
+            ParseMpqFile(stormReplay, pool, ReplayMessageEvents.FileName, ReplayMessageEvents.Parse);
 
         ValidateResult(stormReplay);
 
         FinalPlayerData(stormReplay);
     }
 
+    private void ParseMpqFile(StormReplay stormReplay, ArrayPool<byte> pool, string fileName, MpqFileParser parser)
+    {
+        MpqHeroesArchiveEntry entry = _stormMpqArchive!.GetEntry(fileName);
+        int size = (int)entry.FileSize;
+        byte[] poolBuffer = pool.Rent(size);
+
+        try
+        {
+            Span<byte> buffer = poolBuffer.AsSpan(..size);
+            _stormMpqArchive.DecompressEntry(entry, buffer);
+            parser(stormReplay, buffer);
+        }
+        finally
+        {
+            pool.Return(poolBuffer);
+        }
+    }
+
     private void ParseReplayHeader(StormReplay stormReplay)
     {
         Span<byte> headerBuffer = stackalloc byte[MpqHeroesArchive.HeaderSize];
 
-        _stormMpqArchive.GetHeaderBytes(headerBuffer);
+        _stormMpqArchive!.GetHeaderBytes(headerBuffer);
         StormReplayHeader.Parse(stormReplay, headerBuffer);
-    }
-
-    private void ParseReplayDetails(StormReplay stormReplay, ArrayPool<byte> pool)
-    {
-        MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayDetails.FileName);
-
-        int size = (int)entry.FileSize;
-        byte[] poolBuffer = pool.Rent(size);
-
-        try
-        {
-            Span<byte> buffer = poolBuffer.AsSpan(..size);
-
-            _stormMpqArchive.DecompressEntry(entry, buffer);
-            ReplayDetails.Parse(stormReplay, buffer);
-        }
-        finally
-        {
-            pool.Return(poolBuffer);
-        }
-    }
-
-    private void ParseReplayInit(StormReplay stormReplay, ArrayPool<byte> pool)
-    {
-        MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayInitData.FileName);
-
-        int size = (int)entry.FileSize;
-        byte[] poolBuffer = pool.Rent(size);
-
-        try
-        {
-            Span<byte> buffer = poolBuffer.AsSpan(..size);
-
-            _stormMpqArchive.DecompressEntry(entry, buffer);
-            ReplayInitData.Parse(stormReplay, buffer);
-        }
-        finally
-        {
-            pool.Return(poolBuffer);
-        }
-    }
-
-    private void ParseReplayAttributeEvents(StormReplay stormReplay, ArrayPool<byte> pool)
-    {
-        MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayAttributeEvents.FileName);
-
-        int size = (int)entry.FileSize;
-        byte[] poolBuffer = pool.Rent(size);
-
-        try
-        {
-            Span<byte> buffer = poolBuffer.AsSpan(..size);
-
-            _stormMpqArchive.DecompressEntry(entry, buffer);
-            ReplayAttributeEvents.Parse(stormReplay, buffer);
-        }
-        finally
-        {
-            pool.Return(poolBuffer);
-        }
-    }
-
-    private void ParseReplayTrackerEvents(StormReplay stormReplay, ArrayPool<byte> pool)
-    {
-        MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayTrackerEvents.FileName);
-
-        int size = (int)entry.FileSize;
-        byte[] poolBuffer = pool.Rent(size);
-
-        try
-        {
-            Span<byte> buffer = poolBuffer.AsSpan(..size);
-
-            _stormMpqArchive.DecompressEntry(entry, buffer);
-            ReplayTrackerEvents.Parse(stormReplay, buffer);
-        }
-        finally
-        {
-            pool.Return(poolBuffer);
-        }
-    }
-
-    private void ParseReplayMessageEvents(StormReplay stormReplay, ArrayPool<byte> pool)
-    {
-        MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayMessageEvents.FileName);
-
-        int size = (int)entry.FileSize;
-        byte[] poolBuffer = pool.Rent(size);
-
-        try
-        {
-            Span<byte> buffer = poolBuffer.AsSpan(..size);
-
-            _stormMpqArchive.DecompressEntry(entry, buffer);
-            ReplayMessageEvents.Parse(stormReplay, buffer);
-        }
-        finally
-        {
-            pool.Return(poolBuffer);
-        }
-    }
-
-    private void ParseReplayGameEvents(StormReplay stormReplay, ArrayPool<byte> pool)
-    {
-        MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayGameEvents.FileName);
-
-        int size = (int)entry.FileSize;
-        byte[] poolBuffer = pool.Rent(size);
-
-        try
-        {
-            Span<byte> buffer = poolBuffer.AsSpan(..size);
-
-            _stormMpqArchive.DecompressEntry(entry, buffer);
-            ReplayGameEvents.Parse(stormReplay, buffer);
-        }
-        finally
-        {
-            pool.Return(poolBuffer);
-        }
     }
 
     private void ParseReplayServerBattlelobby(StormReplay stormReplay, ArrayPool<byte> pool)
     {
-        MpqHeroesArchiveEntry entry = _stormMpqArchive.GetEntry(ReplayServerBattlelobby.FileName);
-
-        int size = (int)entry.FileSize;
-        byte[] poolBuffer = pool.Rent(size);
-
-        try
+        ParseMpqFile(stormReplay, pool, ReplayServerBattlelobby.FileName, (replay, buffer) =>
         {
-            Span<byte> buffer = poolBuffer.AsSpan(..size);
-
-            _stormMpqArchive.DecompressEntry(entry, buffer);
-
-            StormReplayPregame replayPregame = new()
-            {
-                ReplayBuild = stormReplay.ReplayBuild,
-            };
-
+            StormReplayPregame replayPregame = new() { ReplayBuild = replay.ReplayBuild };
             ReplayServerBattlelobby.Parse(replayPregame, buffer);
-
-            replayPregame.TransferTo(stormReplay);
-        }
-        finally
-        {
-            pool.Return(poolBuffer);
-        }
+            replayPregame.TransferTo(replay);
+        });
     }
 
     private void ValidateResult(StormReplay stormReplay)
