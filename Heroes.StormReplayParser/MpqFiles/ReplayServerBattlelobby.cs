@@ -991,7 +991,7 @@ internal static class ReplayServerBattlelobby
 
     private static string? GetMapId(string battleNetCachePath)
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             battleNetCachePath = battleNetCachePath.Replace('\\', Path.DirectorySeparatorChar);
 
         try
