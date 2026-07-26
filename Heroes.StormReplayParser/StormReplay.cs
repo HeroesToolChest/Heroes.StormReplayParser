@@ -41,7 +41,7 @@ public partial class StormReplay
     public StormMapInfo MapInfo { get; set; } = new StormMapInfo();
 
     /// <summary>
-    /// Gets or sets the date and time of the when the replay was created.
+    /// Gets or sets the date and time of when the replay was created in UTC.
     /// </summary>
     public DateTime Timestamp { get; set; }
 
