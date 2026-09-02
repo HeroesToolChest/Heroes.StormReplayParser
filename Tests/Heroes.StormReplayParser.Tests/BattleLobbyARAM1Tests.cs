@@ -12,7 +12,7 @@ public class BattleLobbyARAM1Tests
 
     public BattleLobbyARAM1Tests()
     {
-        StormReplayPregameResult result = StormReplayPregame.Parse(Path.Combine(_replaysFolder, _replayFile));
+        StormReplayPregameResult result = StormReplayPregame.Parse(File.OpenRead(Path.Combine(_replaysFolder, _replayFile)));
         _stormReplay = result.ReplayBattleLobby;
         _result = result.Status;
     }

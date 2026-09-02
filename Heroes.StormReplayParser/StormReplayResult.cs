@@ -10,15 +10,11 @@ public class StormReplayResult
     /// </summary>
     /// <param name="stormReplay">The parsed <see cref="StormReplay"/>.</param>
     /// <param name="stormReplayParseStatus">The <see cref="StormReplayParseStatus"/>.</param>
-    /// <param name="fileName">The file name of the replay file.</param>
     /// <param name="exception">The exception, if any.</param>
-    /// <exception cref="ArgumentException"><paramref name="fileName"/> is <see langword="null"/> or emtpy.</exception>
-    /// <exception cref="ArgumentNullException"><paramref name="fileName"/> or <paramref name="stormReplay"/> is <see langword="null"/>.</exception>
-    internal StormReplayResult(StormReplay stormReplay, StormReplayParseStatus stormReplayParseStatus, string fileName, StormParseException? exception = null)
+    internal StormReplayResult(StormReplay stormReplay, StormReplayParseStatus stormReplayParseStatus, StormParseException? exception = null)
     {
-        Replay = stormReplay ?? throw new ArgumentNullException(nameof(stormReplay));
+        Replay = stormReplay;
         Status = stormReplayParseStatus;
-        FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
         Exception = exception;
     }
 
@@ -36,9 +32,4 @@ public class StormReplayResult
     /// Gets the parsed <see cref="StormReplay"/>.
     /// </summary>
     public StormReplay Replay { get; }
-
-    /// <summary>
-    /// Gets the file name (includes the path).
-    /// </summary>
-    public string FileName { get; }
 }

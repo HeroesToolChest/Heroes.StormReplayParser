@@ -769,7 +769,7 @@ internal static class ReplayGameEvents
                     {
                         [0] = new StormGameEventData(bitReader.ReadBits(16)), // m_abilLink
                         [1] = new StormGameEventData(bitReader.ReadBits(5)), // m_abilCmdIndex
-                        [2] = new StormGameEventData((int)(bitReader.ReadBits(8) - 128)), // m_abilCmdIndex
+                        [2] = new StormGameEventData((int)(bitReader.ReadBits(8) - 128)), // m_state
                     };
 
                     gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));

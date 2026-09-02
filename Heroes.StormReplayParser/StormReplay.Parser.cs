@@ -5,72 +5,96 @@
 /// </summary>
 public partial class StormReplay
 {
-    private static StormReplayParseStatus _stormReplayParseResult = StormReplayParseStatus.Incomplete;
-    private static StormParseException? _failedReplayException = null;
-
-    private readonly string _fileName;
     private readonly ParseOptions _parseOptions;
     private readonly MpqHeroesArchive? _stormMpqArchive;
 
-    private StormReplay(string fileName, ParseOptions parseOptions)
+    private StormReplayParseStatus _parseStatus = StormReplayParseStatus.Incomplete;
+    private StormParseException? _failedReplayException;
+
+    private StormReplay(string path, ParseOptions parseOptions)
     {
-        _fileName = fileName;
         _parseOptions = parseOptions;
 
         try
         {
-            _stormMpqArchive = MpqHeroesFile.Open(_fileName);
+            _stormMpqArchive = MpqHeroesFile.Open(path);
         }
         catch (Exception exception)
         {
-            _failedReplayException = new StormParseException("An exception has occured during the parsing of the replay.", exception);
-            _stormReplayParseResult = StormReplayParseStatus.Exception;
+            SetFailed(exception);
+        }
+    }
+
+    private StormReplay(Stream stream, ParseOptions parseOptions)
+    {
+        _parseOptions = parseOptions;
+
+        try
+        {
+            _stormMpqArchive = MpqHeroesFile.Open(stream);
+        }
+        catch (Exception exception)
+        {
+            SetFailed(exception);
         }
     }
 
     private delegate void MpqFileParser(StormReplay replay, ReadOnlySpan<byte> source);
 
     /// <summary>
-    /// Parses a .StormReplay file.
+    /// Parses a <c>.StormReplay</c> file.
     /// </summary>
-    /// <param name="fileName">The file name which may contain the path.</param>
+    /// <param name="path">The path to the <c>.StormReplay</c> file.</param>
     /// <param name="parseOptions">Sets the parsing options. If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</param>
     /// <returns>A <see cref="StormReplayResult"/>.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="fileName"/> is null.</exception>
-    public static StormReplayResult Parse(string fileName, ParseOptions? parseOptions = null)
+    /// <exception cref="ArgumentException"><paramref name="path"/> cannot be <see langword="null"/> or empty.</exception>
+    public static StormReplayResult Parse(string path, ParseOptions? parseOptions = null)
     {
-        ArgumentNullException.ThrowIfNull(fileName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
 
-        parseOptions ??= ParseOptions.DefaultParsing;
-
-        StormReplay stormReplay = ParseStormReplay(fileName, parseOptions);
-
-        return new StormReplayResult(stormReplay, _stormReplayParseResult, fileName, _failedReplayException);
+        return ParseStormReplay(new StormReplay(path, parseOptions ?? ParseOptions.DefaultParsing));
     }
 
-    private static StormReplay ParseStormReplay(string fileName, ParseOptions parseOptions)
+    /// <summary>
+    /// Parses a <c>.StormReplay</c> stream.
+    /// </summary>
+    /// <param name="stream">The stream containing the <c>.StormReplay</c> data.</param>
+    /// <param name="parseOptions">Sets the parsing options. If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</param>
+    /// <returns>A <see cref="StormReplayResult"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
+    public static StormReplayResult Parse(Stream stream, ParseOptions? parseOptions = null)
     {
-        StormReplay stormReplay = new(fileName, parseOptions);
+        ArgumentNullException.ThrowIfNull(stream);
 
+        return ParseStormReplay(new StormReplay(stream, parseOptions ?? ParseOptions.DefaultParsing));
+    }
+
+    private static StormReplayResult ParseStormReplay(StormReplay stormReplay)
+    {
         try
         {
-            stormReplay.Parse(stormReplay);
+            stormReplay.Parse();
         }
         catch (Exception exception)
         {
-            _failedReplayException = new StormParseException("An exception has occured during the parsing of the replay.", exception);
-            _stormReplayParseResult = StormReplayParseStatus.Exception;
+            stormReplay.SetFailed(exception);
         }
 
-        return stormReplay;
+        return new StormReplayResult(stormReplay, stormReplay._parseStatus, stormReplay._failedReplayException);
     }
 
-    private static void FinalPlayerData(StormReplay stormReplay)
+    private void SetFailed(Exception exception)
+    {
+        _failedReplayException = new StormParseException("An exception has occurred during the parsing of the replay.", exception);
+        _parseStatus = StormReplayParseStatus.Exception;
+    }
+
+    private void FinalPlayerData()
     {
         TimeSpan latestCameraUpdateEvent = TimeSpan.MinValue;
         bool foundPlayer = false;
 
-        foreach (StormPlayer? player in stormReplay.ClientListByUserID)
+        foreach (StormPlayer? player in ClientListByUserID)
         {
             if (player is null)
                 continue;
@@ -85,7 +109,7 @@ public partial class StormReplay
             throw new InvalidOperationException("Sequence contains no elements");
 
         // remove the occurrence where the players leaves at the end of the match
-        foreach (StormPlayer? player in stormReplay.ClientListByUserID)
+        foreach (StormPlayer? player in ClientListByUserID)
         {
             if (player is null)
                 continue;
@@ -97,55 +121,55 @@ public partial class StormReplay
         }
     }
 
-    private void Parse(StormReplay stormReplay)
+    private void Parse()
     {
         if (_stormMpqArchive is null)
             return;
 
         using MpqHeroesArchive stormMpqArchive = _stormMpqArchive;
 
-        ParseReplayHeader(stormReplay);
+        ParseReplayHeader();
 
-        if (stormReplay.ReplayBuild < 32455)
+        if (ReplayBuild < 32455)
         {
-            _stormReplayParseResult = StormReplayParseStatus.PreAlphaWipe;
+            _parseStatus = StormReplayParseStatus.PreAlphaWipe;
             return;
         }
 
         ArrayPool<byte> pool = ArrayPool<byte>.Shared;
 
-        ParseMpqFile(stormReplay, pool, ReplayDetails.FileName, ReplayDetails.Parse);
+        ParseMpqFile(pool, ReplayDetails.FileName, ReplayDetails.Parse);
 
-        if (stormReplay.Timestamp == DateTime.MinValue)
+        if (Timestamp == DateTime.MinValue)
         {
             // Uncommon issue when parsing replay.details
             return;
         }
-        else if (stormReplay.Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
+        else if (Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
         {
             // Technical Alpha replays
             return;
         }
 
-        ParseMpqFile(stormReplay, pool, ReplayInitData.FileName, ReplayInitData.Parse);
-        ParseMpqFile(stormReplay, pool, ReplayAttributeEvents.FileName, ReplayAttributeEvents.Parse);
-        ParseReplayServerBattlelobby(stormReplay, pool);
+        ParseMpqFile(pool, ReplayInitData.FileName, ReplayInitData.Parse);
+        ParseMpqFile(pool, ReplayAttributeEvents.FileName, ReplayAttributeEvents.Parse);
+        ParseReplayServerBattlelobby(pool);
 
         if (_parseOptions.ShouldParseGameEvents)
-            ParseMpqFile(stormReplay, pool, ReplayGameEvents.FileName, ReplayGameEvents.Parse);
+            ParseMpqFile(pool, ReplayGameEvents.FileName, ReplayGameEvents.Parse);
 
         if (_parseOptions.ShouldParseTrackerEvents)
-            ParseMpqFile(stormReplay, pool, ReplayTrackerEvents.FileName, ReplayTrackerEvents.Parse);
+            ParseMpqFile(pool, ReplayTrackerEvents.FileName, ReplayTrackerEvents.Parse);
 
         if (_parseOptions.ShouldParseMessageEvents)
-            ParseMpqFile(stormReplay, pool, ReplayMessageEvents.FileName, ReplayMessageEvents.Parse);
+            ParseMpqFile(pool, ReplayMessageEvents.FileName, ReplayMessageEvents.Parse);
 
-        ValidateResult(stormReplay);
+        ValidateResult();
 
-        FinalPlayerData(stormReplay);
+        FinalPlayerData();
     }
 
-    private void ParseMpqFile(StormReplay stormReplay, ArrayPool<byte> pool, string fileName, MpqFileParser parser)
+    private void ParseMpqFile(ArrayPool<byte> pool, string fileName, MpqFileParser parser)
     {
         MpqHeroesArchiveEntry entry = _stormMpqArchive!.GetEntry(fileName);
         int size = (int)entry.FileSize;
@@ -155,7 +179,7 @@ public partial class StormReplay
         {
             Span<byte> buffer = poolBuffer.AsSpan(..size);
             _stormMpqArchive.DecompressEntry(entry, buffer);
-            parser(stormReplay, buffer);
+            parser(this, buffer);
         }
         finally
         {
@@ -163,17 +187,17 @@ public partial class StormReplay
         }
     }
 
-    private void ParseReplayHeader(StormReplay stormReplay)
+    private void ParseReplayHeader()
     {
         Span<byte> headerBuffer = stackalloc byte[MpqHeroesArchive.HeaderSize];
 
         _stormMpqArchive!.GetHeaderBytes(headerBuffer);
-        StormReplayHeader.Parse(stormReplay, headerBuffer);
+        StormReplayHeader.Parse(this, headerBuffer);
     }
 
-    private void ParseReplayServerBattlelobby(StormReplay stormReplay, ArrayPool<byte> pool)
+    private void ParseReplayServerBattlelobby(ArrayPool<byte> pool)
     {
-        ParseMpqFile(stormReplay, pool, ReplayServerBattlelobby.FileName, (replay, buffer) =>
+        ParseMpqFile(pool, ReplayServerBattlelobby.FileName, static (replay, buffer) =>
         {
             StormReplayPregame replayPregame = new() { ReplayBuild = replay.ReplayBuild };
             ReplayServerBattlelobby.Parse(replayPregame, buffer);
@@ -181,21 +205,21 @@ public partial class StormReplay
         });
     }
 
-    private void ValidateResult(StormReplay stormReplay)
+    private void ValidateResult()
     {
-        if (stormReplay.PlayersCount == 1)
-            _stormReplayParseResult = StormReplayParseStatus.TryMeMode;
-        else if (stormReplay.Players.All(x => x is not null && !x.IsWinner) || stormReplay.ReplayLength.TotalSeconds < 45)
-            _stormReplayParseResult = StormReplayParseStatus.Incomplete;
-        else if (stormReplay.Timestamp == DateTime.MinValue)
-            _stormReplayParseResult = StormReplayParseStatus.UnexpectedResult;
-        else if (stormReplay.Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
-            _stormReplayParseResult = StormReplayParseStatus.PreAlphaWipe;
-        else if (!_parseOptions.AllowPTR && stormReplay.Players.Any(x => x is not null && x.ToonHandle?.Region >= 90))
-            _stormReplayParseResult = StormReplayParseStatus.PTRRegion;
-        else if (!(stormReplay.Players.Count(x => x is not null && x.IsWinner) == 5 && stormReplay.PlayersCount == 10 && StormGameMode.AllGameModes.HasFlag(stormReplay.GameMode)))
-            _stormReplayParseResult = StormReplayParseStatus.UnexpectedResult;
+        if (PlayersCount == 1)
+            _parseStatus = StormReplayParseStatus.TryMeMode;
+        else if (Players.All(x => x is not null && !x.IsWinner) || ReplayLength.TotalSeconds < 45)
+            _parseStatus = StormReplayParseStatus.Incomplete;
+        else if (Timestamp == DateTime.MinValue)
+            _parseStatus = StormReplayParseStatus.UnexpectedResult;
+        else if (Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
+            _parseStatus = StormReplayParseStatus.PreAlphaWipe;
+        else if (!_parseOptions.AllowPTR && Players.Any(x => x is not null && x.ToonHandle?.Region >= 90))
+            _parseStatus = StormReplayParseStatus.PTRRegion;
+        else if (!(Players.Count(x => x is not null && x.IsWinner) == 5 && PlayersCount == 10 && StormGameMode.AllGameModes.HasFlag(GameMode)))
+            _parseStatus = StormReplayParseStatus.UnexpectedResult;
         else
-            _stormReplayParseResult = StormReplayParseStatus.Success;
+            _parseStatus = StormReplayParseStatus.Success;
     }
 }

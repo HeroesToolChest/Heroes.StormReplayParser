@@ -10,15 +10,11 @@ public class StormReplayPregameResult
     /// </summary>
     /// <param name="stormReplayPregame">The parsed <see cref="StormReplayPregame"/>.</param>
     /// <param name="stormReplayPregameParseStatus">The <see cref="StormReplayPregameParseStatus"/>.</param>
-    /// <param name="fileName">The file name of the heroes of the storm battlelobby file.</param>
     /// <param name="exception">The exception, if any.</param>
-    /// <exception cref="ArgumentException"><paramref name="fileName"/> is <see langword="null"/> or emtpy.</exception>
-    /// <exception cref="ArgumentNullException"><paramref name="fileName"/> or <paramref name="stormReplayPregame"/> is <see langword="null"/>.</exception>
-    internal StormReplayPregameResult(StormReplayPregame stormReplayPregame, StormReplayPregameParseStatus stormReplayPregameParseStatus, string fileName, StormParseException? exception = null)
+    internal StormReplayPregameResult(StormReplayPregame stormReplayPregame, StormReplayPregameParseStatus stormReplayPregameParseStatus, StormParseException? exception = null)
     {
-        ReplayBattleLobby = stormReplayPregame ?? throw new ArgumentNullException(nameof(stormReplayPregame));
+        ReplayBattleLobby = stormReplayPregame;
         Status = stormReplayPregameParseStatus;
-        FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
         Exception = exception;
     }
 
@@ -36,9 +32,4 @@ public class StormReplayPregameResult
     /// Gets the parsed <see cref="StormReplayPregame"/>.
     /// </summary>
     public StormReplayPregame ReplayBattleLobby { get; }
-
-    /// <summary>
-    /// Gets the file name (includes the path).
-    /// </summary>
-    public string FileName { get; }
 }

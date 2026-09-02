@@ -5,76 +5,105 @@
 /// </summary>
 public partial class StormReplayPregame
 {
-    private static StormReplayPregameParseStatus _stormReplayPregameParseResult = StormReplayPregameParseStatus.Unknown;
-    private static StormParseException? _failedReplayException = null;
-
-    private readonly string _fileName;
     private readonly ParsePregameOptions _parsePregameOptions;
+    private readonly Stream? _battlelobbyStream;
+
+    private StormReplayPregameParseStatus _parseStatus = StormReplayPregameParseStatus.Unknown;
+    private StormParseException? _failedReplayException;
 
     internal StormReplayPregame()
     {
-        _fileName = string.Empty;
         _parsePregameOptions = ParsePregameOptions.DefaultParsing;
     }
 
-    private StormReplayPregame(string fileName, ParsePregameOptions parsePregameOptions)
+    private StormReplayPregame(string path, ParsePregameOptions parsePregameOptions)
     {
-        _fileName = fileName;
+        try
+        {
+            _battlelobbyStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        }
+        catch (Exception exception)
+        {
+            SetFailed(exception);
+        }
+
+        _parsePregameOptions = parsePregameOptions;
+    }
+
+    private StormReplayPregame(Stream stream, ParsePregameOptions parsePregameOptions)
+    {
+        _battlelobbyStream = stream;
         _parsePregameOptions = parsePregameOptions;
     }
 
     /// <summary>
-    /// Parses a replay.server.battlelobby file.
+    /// Parses a <c>replay.server.battlelobby</c> file.
     /// </summary>
-    /// <param name="fileName">The file name which may contain the path.</param>
-    /// <param name="parsePregameOptions">Sets the parsing options. If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</param>
+    /// <param name="path">The path to the <c>replay.server.battlelobby</c> file.</param>
+    /// <param name="parsePregameOptions">Sets the pregame parsing options.</param>
     /// <returns>A <see cref="StormReplayPregameResult"/>.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="fileName"/> is null.</exception>
-    public static StormReplayPregameResult Parse(string fileName, ParsePregameOptions? parsePregameOptions = null)
+    /// <exception cref="ArgumentException"><paramref name="path"/> cannot be <see langword="null"/> or empty.</exception>
+    public static StormReplayPregameResult Parse(string path, ParsePregameOptions? parsePregameOptions = null)
     {
-        ArgumentNullException.ThrowIfNull(fileName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
 
-        parsePregameOptions ??= ParsePregameOptions.DefaultParsing;
-
-        StormReplayPregame stormReplayPregame = ParseStormReplayPregame(fileName, parsePregameOptions);
-
-        return new StormReplayPregameResult(stormReplayPregame, _stormReplayPregameParseResult, fileName, _failedReplayException);
+        return ParseStormReplayPregame(new StormReplayPregame(path, parsePregameOptions ?? ParsePregameOptions.DefaultParsing));
     }
 
-    private static StormReplayPregame ParseStormReplayPregame(string fileName, ParsePregameOptions parsePregameOptions)
+    /// <summary>
+    /// Parses a <c>replay.server.battlelobby</c> stream.
+    /// </summary>
+    /// <param name="stream">The stream containing the <c>replay.server.battlelobby</c> data.</param>
+    /// <param name="parsePregameOptions">Sets the pregame parsing options.</param>
+    /// <returns>A <see cref="StormReplayPregameResult"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
+    public static StormReplayPregameResult Parse(Stream stream, ParsePregameOptions? parsePregameOptions = null)
     {
-        StormReplayPregame stormReplayPregame = new(fileName, parsePregameOptions);
+        ArgumentNullException.ThrowIfNull(stream);
 
+        return ParseStormReplayPregame(new StormReplayPregame(stream, parsePregameOptions ?? ParsePregameOptions.DefaultParsing));
+    }
+
+    private static StormReplayPregameResult ParseStormReplayPregame(StormReplayPregame stormReplayPregame)
+    {
         try
         {
-            stormReplayPregame.Parse(stormReplayPregame);
+            stormReplayPregame.Parse();
         }
         catch (Exception exception)
         {
-            _failedReplayException = new StormParseException("An exception has occured during the parsing of the battlelobby.", exception);
-            _stormReplayPregameParseResult = StormReplayPregameParseStatus.Exception;
+            stormReplayPregame.SetFailed(exception);
         }
 
-        return stormReplayPregame;
+        return new StormReplayPregameResult(stormReplayPregame, stormReplayPregame._parseStatus, stormReplayPregame._failedReplayException);
     }
 
-    private void Parse(StormReplayPregame stormReplayPregame)
+    private void SetFailed(Exception exception)
     {
-        using FileStream fileStream = new(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+        _failedReplayException = new StormParseException("An exception has occurred during the parsing of the battlelobby.", exception);
+        _parseStatus = StormReplayPregameParseStatus.Exception;
+    }
+
+    private void Parse()
+    {
+        if (_battlelobbyStream is null)
+            return;
+
+        using Stream fileStream = _battlelobbyStream;
 
         Span<byte> buffer = stackalloc byte[(int)fileStream.Length];
         fileStream.ReadExactly(buffer);
 
-        ReplayServerBattlelobby.Parse(stormReplayPregame, buffer, true);
+        ReplayServerBattlelobby.Parse(this, buffer, true);
 
-        ValidateResult(stormReplayPregame);
+        ValidateResult();
     }
 
-    private void ValidateResult(StormReplayPregame stormReplayPregame)
+    private void ValidateResult()
     {
-        if (!_parsePregameOptions.AllowPTR && stormReplayPregame.StormPlayers.Any(x => x.ToonHandle?.Region >= 90))
-            _stormReplayPregameParseResult = StormReplayPregameParseStatus.PTRRegion;
+        if (!_parsePregameOptions.AllowPTR && StormPlayers.Any(x => x.ToonHandle?.Region >= 90))
+            _parseStatus = StormReplayPregameParseStatus.PTRRegion;
         else
-            _stormReplayPregameParseResult = StormReplayPregameParseStatus.Success;
+            _parseStatus = StormReplayPregameParseStatus.Success;
     }
 }

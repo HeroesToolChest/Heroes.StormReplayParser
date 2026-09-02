@@ -632,6 +632,34 @@ public class VolskayaFoundry1ReplayParserTests
     }
 
     [TestMethod]
+    [TestCategory("Parsing Options")]
+    public void MinimalParsingTestsWithStream()
+    {
+        using FileStream stream = File.OpenRead(Path.Combine(_replaysFolder, _replayFile));
+        StormReplayResult result = StormReplay.Parse(stream, ParseOptions.MinimalParsing);
+
+        StormReplay replay = result.Replay!;
+
+        Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+
+        Assert.IsEmpty(replay.TrackerEvents);
+        Assert.IsNull(replay.GetTeamLevels(StormTeam.Blue));
+        Assert.IsNull(replay.GetTeamLevels(StormTeam.Red));
+        Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Blue));
+        Assert.IsNull(replay.GetTeamXPBreakdown(StormTeam.Red));
+        Assert.IsEmpty(replay.DraftPicks);
+
+        List<StormPlayer> players = [.. replay.StormPlayers];
+        Assert.IsEmpty(players[0].Talents);
+        Assert.IsNull(players[0].ScoreResult);
+        Assert.IsNull(players[0].MatchAwards);
+        Assert.IsNull(players[0].MatchAwardsCount);
+
+        NoGameEvents(result);
+        NoMessageEvents(result);
+    }
+
+    [TestMethod]
     public void TrackerEventsVersionedDecoderToJsonTest()
     {
         int i = 0;
