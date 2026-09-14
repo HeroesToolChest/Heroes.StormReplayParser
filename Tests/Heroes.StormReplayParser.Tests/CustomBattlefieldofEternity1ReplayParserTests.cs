@@ -352,7 +352,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.IsNull(players[9].PartyValue);
 
         Assert.StartsWith(players[0].Name, players[0].BattleTagName);
-        Assert.Contains('#', players[0].BattleTagName);
+        Assert.Contains("#", players[0].BattleTagName);
         Assert.EndsWith("34", players[0].BattleTagName);
 
         Assert.AreEqual(6462480, players[8].ToonHandle!.Id);
@@ -363,7 +363,7 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.AreEqual("T:93796888#558", players[8].ToonHandle!.ShortcutId);
         Assert.AreEqual("1-Hero-1-6462480", players[8].ToonHandle!.ToString());
         Assert.StartsWith(players[8].Name, players[8].BattleTagName);
-        Assert.Contains('#', players[8].BattleTagName);
+        Assert.Contains("#", players[8].BattleTagName);
         Assert.EndsWith("27", players[8].BattleTagName);
     }
 

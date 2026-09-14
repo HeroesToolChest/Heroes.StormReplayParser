@@ -58,7 +58,7 @@ public class CustomHGC2018BattlefieldofEternity1ReplayParserTests
         Assert.AreEqual(1369706131243, players[2].PartyValue);
 
         Assert.StartsWith(players[0].Name, players[0].BattleTagName);
-        Assert.Contains('#', players[0].BattleTagName);
+        Assert.Contains("#", players[0].BattleTagName);
         Assert.EndsWith("41", players[0].BattleTagName);
 
         Assert.AreEqual(485855, players[0].ToonHandle!.Id);

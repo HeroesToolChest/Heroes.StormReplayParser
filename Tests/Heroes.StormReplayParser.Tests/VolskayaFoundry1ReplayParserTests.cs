@@ -470,7 +470,7 @@ public class VolskayaFoundry1ReplayParserTests
         Assert.IsNull(players[9].PartyValue);
 
         Assert.StartsWith(players[0].Name, players[0].BattleTagName);
-        Assert.Contains('#', players[0].BattleTagName);
+        Assert.Contains("#", players[0].BattleTagName);
         Assert.EndsWith("88", players[0].BattleTagName);
 
         Assert.AreEqual("T:56372890#167", players[6].ToonHandle!.ShortcutId);
