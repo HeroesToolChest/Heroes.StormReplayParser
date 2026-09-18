@@ -50,7 +50,7 @@ Game Event parsing provides the following:
 - Talent timestamps
 - Player disconnects
 - Replay owner
-- Teams (both) chat messages
+- Team (both) chat messages
 
 Tracker Event parsing provides the following:
 - Hero unit ids
