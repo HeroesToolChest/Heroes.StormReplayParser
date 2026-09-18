@@ -166,14 +166,25 @@ public partial class StormReplay
     public IReadOnlyList<StormGameEvent> GameEvents => GameEventsInternal.AsReadOnly();
 
     /// <summary>
+    /// Gets a collection of chat messages.
+    /// These chat messages are from the perspective of the replay <see cref="Owner"/>'s team which includes the enemy team's team chat messages but do not contain the <see cref="StormTeam.Observer"/> team's team chat messages.
+    ///
+    /// <para>
+    /// These do not contain the message channel of the chat message, so it cannot be determined if the message was sent to the team chat or to all players.
+    /// </para>
+    /// </summary>
+    public IReadOnlyList<ChatMessage> TeamChatMessages => ChatMessageEventInternal.AsReadOnly();
+
+    /// <summary>
     /// Gets a collection of all messages.
     /// </summary>
     public IReadOnlyList<IStormMessage> Messages => MessagesInternal.AsReadOnly();
 
     /// <summary>
     /// Gets a collection of only chat messages.
+    /// These chat messages are from the perspective of the replay <see cref="Owner"/>'s team and do not contain the other teams' team chat messages (enemy and observer).
     /// </summary>
-    public IEnumerable<IStormMessage> ChatMessages => MessagesInternal.AsReadOnly().Where(x => x.MessageEventType == StormMessageEventType.SChatMessage);
+    public IEnumerable<IStormMessage> ChatMessages => MessagesInternal.Where(x => x.MessageEventType == StormMessageEventType.SChatMessage);
 
     /// <summary>
     /// Gets a collection of the draft order.
@@ -230,6 +241,9 @@ public partial class StormReplay
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<IStormMessage> MessagesInternal { get; private set; } = [];
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    internal List<ChatMessage> ChatMessageEventInternal { get; private set; } = [];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<StormDraftPick> DraftPicksInternal { get; private set; } = [];

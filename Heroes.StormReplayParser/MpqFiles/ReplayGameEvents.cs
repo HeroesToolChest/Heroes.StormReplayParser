@@ -429,6 +429,16 @@ internal static class ReplayGameEvents
                     };
 
                     gameEvent = new StormGameEvent(player, timeStamp, gameEventType, new StormGameEventData(structure));
+
+                    replay.ChatMessageEventInternal.Add(new ChatMessage()
+                    {
+                        MessageTarget = StormMessageTarget.Unknown,
+                        MessageEventType = StormMessageEventType.SChatMessage,
+                        MessageSender = gameEvent.Value.MessageSender,
+                        Text = gameEvent.Value.Data!.Structure![0]!.Blob!,
+                        Timestamp = gameEvent.Value.Timestamp,
+                    });
+
                     break;
                 case StormGameEventType.SDynamicButtonSwapEvent:
                     structure = new StormDataStructure<StormGameEventData>(3)

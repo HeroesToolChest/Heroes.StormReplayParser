@@ -89,6 +89,15 @@ public partial class StormReplay
         _parseStatus = StormReplayParseStatus.Exception;
     }
 
+    private void SortMessages()
+    {
+        // no gameevents means that the message will be in order
+        if (!_parseOptions.ShouldParseGameEvents)
+            return;
+
+        MessagesInternal.Sort((a, b) => a.Timestamp.CompareTo(b.Timestamp));
+    }
+
     private void FinalPlayerData()
     {
         TimeSpan latestCameraUpdateEvent = TimeSpan.MinValue;
@@ -165,7 +174,7 @@ public partial class StormReplay
             ParseMpqFile(pool, ReplayMessageEvents.FileName, ReplayMessageEvents.Parse);
 
         ValidateResult();
-
+        SortMessages();
         FinalPlayerData();
     }
 

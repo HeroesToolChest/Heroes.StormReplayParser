@@ -6,7 +6,7 @@
 public class ChatMessage : StormMessageBase
 {
     /// <summary>
-    /// Gets or sets the target of the message.
+    /// Gets or sets the message channel the message was sent to.
     /// </summary>
     public StormMessageTarget MessageTarget { get; set; }
 
