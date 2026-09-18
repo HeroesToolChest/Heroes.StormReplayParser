@@ -1,14 +1,32 @@
 name: Nuget Release
 
 on: workflow_dispatch
-  
+
+env:
+  ARTIFACTS: ./artifacts
+
 jobs:
-  deploy:
-    uses: koliva8245/github.workflows/.github/workflows/nuget-release.yml@main
-    with:
-      artifacts-workflow: build.yml
-      nuget-publish-env: Nuget Publish
-      nuget-publish-url: https://www.nuget.org/packages/Heroes.StormReplayParser/
-    secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
-      nuget-api-token: ${{ secrets.NUGET_API_TOKEN }}
+  nuget-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    environment:
+      name: Nuget Publish
+    steps:
+      - name: Download artifacts
+        uses: dawidd6/action-download-artifact@v21
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: build.yml
+          name: "-Nuget$"
+          name_is_regexp: true
+          path: ${{ env.ARTIFACTS }}
+
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: NuGet push
+        run: dotnet nuget push ${{ env.ARTIFACTS }}/**/*.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
