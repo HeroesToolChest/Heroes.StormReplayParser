@@ -49,6 +49,8 @@ Game Event parsing provides the following:
 - Hero names (localized)
 - Talent timestamps
 - Player disconnects
+- Replay owner
+- Team (both) chat messages
 
 Tracker Event parsing provides the following:
 - Hero unit ids
