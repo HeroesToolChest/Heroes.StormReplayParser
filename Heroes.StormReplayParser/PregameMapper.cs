@@ -29,6 +29,12 @@ internal static class PregameMapper
                 stormPlayer.IsVoiceSilenced = stormPregamePlayer.IsVoiceSilenced;
                 stormPlayer.HasActiveBoost = stormPregamePlayer.HasActiveBoost;
 
+                if (stormPregamePlayer.IsReplayOwner)
+                {
+                    stormPlayer.IsReplayOwner = true;
+                    replay.Owner = stormPlayer;
+                }
+
                 stormPlayer.ToonHandle ??= new()
                 {
                     Realm = stormPregamePlayer.ToonHandle!.Realm,

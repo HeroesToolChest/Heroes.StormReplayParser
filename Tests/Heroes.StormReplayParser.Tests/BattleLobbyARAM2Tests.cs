@@ -47,4 +47,26 @@ public class BattleLobbyARAM2Tests
         PregameStormPlayer player9 = _stormReplay.StormPlayers.ToList()[9];
         Assert.IsFalse(player9.IsVoiceSilenced);
     }
+
+    [TestMethod]
+    public void ReplayOwnerTest()
+    {
+        List<PregameStormPlayer> players = [.. _stormReplay.StormPlayers];
+
+        Assert.IsTrue(players[3].IsReplayOwner);
+        Assert.StartsWith("lavakill", players[3].BattleTagName);
+        Assert.ContainsSingle(x => x.IsReplayOwner, players);
+    }
+
+    [TestMethod]
+    public void PlayerHeroMasteryTiersTest()
+    {
+        PregameStormPlayer player3 = _stormReplay.StormPlayers.ToList()[3];
+
+        Assert.AreEqual(85, player3.HeroMasteryTiersCount);
+        Assert.AreEqual("Abat", player3.HeroMasteryTiers[0].HeroAttributeId);
+        Assert.AreEqual(3, player3.HeroMasteryTiers[0].TierLevel);
+        Assert.AreEqual("Zera", player3.HeroMasteryTiers[^1].HeroAttributeId);
+        Assert.AreEqual(3, player3.HeroMasteryTiers[^1].TierLevel);
+    }
 }

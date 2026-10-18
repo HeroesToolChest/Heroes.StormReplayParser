@@ -99,4 +99,23 @@ public class PregameStormPlayer
     /// Gets or sets the computer player difficulty.
     /// </summary>
     public ComputerDifficulty ComputerDifficulty { get; set; } = ComputerDifficulty.Unknown;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the player is the owner of this replay.
+    /// </summary>
+    public bool IsReplayOwner { get; set; }
+
+    /// <summary>
+    /// Gets the player's hero's mastery tier levels. Only heroes with a tier level are included.
+    /// <para>Only parsed for build 89754 and later.</para>
+    /// </summary>
+    public IReadOnlyList<HeroMasteryTier> HeroMasteryTiers => [.. HeroMasteryTiersByHeroAttributeIdInternal.Values];
+
+    /// <summary>
+    /// Gets the amount of hero mastery tiers.
+    /// </summary>
+    public int HeroMasteryTiersCount => HeroMasteryTiersByHeroAttributeIdInternal.Count;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    internal Dictionary<string, HeroMasteryTier> HeroMasteryTiersByHeroAttributeIdInternal { get; set; } = new(StringComparer.Ordinal);
 }

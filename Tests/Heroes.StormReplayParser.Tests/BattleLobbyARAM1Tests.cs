@@ -122,4 +122,30 @@ public class BattleLobbyARAM1Tests
         Assert.AreEqual(string.Empty, redBans[1]);
         Assert.AreEqual(string.Empty, redBans[2]);
     }
+
+    [TestMethod]
+    public void ReplayOwnerTest()
+    {
+        List<PregameStormPlayer> players = [.. _stormReplay.StormPlayers];
+
+        Assert.IsTrue(players[8].IsReplayOwner);
+        Assert.StartsWith("Edimus", players[8].BattleTagName);
+        Assert.ContainsSingle(x => x.IsReplayOwner, players);
+    }
+
+    [TestMethod]
+    public void PlayerHeroMasteryTiersTest()
+    {
+        List<PregameStormPlayer> players = [.. _stormReplay.StormPlayers];
+        PregameStormPlayer player4 = players[4];
+
+        Assert.AreEqual(19, player4.HeroMasteryTiersCount);
+        Assert.AreEqual("Abat", player4.HeroMasteryTiers[0].HeroAttributeId);
+        Assert.AreEqual(1, player4.HeroMasteryTiers[0].TierLevel);
+        Assert.AreEqual("Zaga", player4.HeroMasteryTiers[^1].HeroAttributeId);
+        Assert.AreEqual(1, player4.HeroMasteryTiers[^1].TierLevel);
+
+        Assert.AreEqual(0, players[0].HeroMasteryTiersCount);
+        Assert.AreEqual(2, players[7].HeroMasteryTiersCount);
+    }
 }

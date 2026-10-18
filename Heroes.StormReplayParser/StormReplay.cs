@@ -203,20 +203,20 @@ public partial class StormReplay
 
     /// <summary>
     /// Gets or sets the list of all players (no observers).
+    /// <para>Contains AI.</para>
     /// </summary>
-    /// <remarks>Contains AI.</remarks>
     internal StormPlayer?[] Players { get; set; } = new StormPlayer?[10];
 
     /// <summary>
     /// Gets the list of all players connected to the game, using 'm_userId' as index.
+    /// <para>Contains observers. No AI.</para>
     /// </summary>
-    /// <remarks>Contains observers. No AI.</remarks>
     internal StormPlayer?[] ClientListByUserID { get; private set; } = new StormPlayer?[16];
 
     /// <summary>
     /// Gets the list of all players connected to the game, using 'm_workingSetSlotId' as index.
+    /// <para>Contains AI. No observers.</para>
     /// </summary>
-    /// <remarks>Contains AI. No observers.</remarks>
     internal StormPlayer?[] ClientListByWorkingSetSlotID { get; private set; } = new StormPlayer?[16];
 
     /// <summary>
@@ -227,8 +227,8 @@ public partial class StormReplay
 
     /// <summary>
     /// Gets the collection of open slot players. In some places, this is used instead of the 'Player' array, in games with less than 10 players.
+    /// <para>Contains AI. No observers.</para>
     /// </summary>
-    /// <remarks>Contains AI. No observers.</remarks>
     internal StormPlayer?[] PlayersWithOpenSlots { get; private set; } = new StormPlayer?[10];
 
     internal string?[][] TeamHeroAttributeIdBans { get; private set; } = [[null, null, null], [null, null, null]];

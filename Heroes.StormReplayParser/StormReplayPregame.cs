@@ -77,6 +77,11 @@ public partial class StormReplayPregame
     public IReadOnlyCollection<string> DisabledHeroes => DisabledHeroAttributeIdList.AsReadOnly();
 
     /// <summary>
+    /// Gets or sets the owner of this replay.
+    /// </summary>
+    public PregameStormPlayer? Owner { get; set; } = null;
+
+    /// <summary>
     /// Gets a collection of playing players (no observers, has AI).
     /// </summary>
     public IEnumerable<PregameStormPlayer> StormPlayers => ClientListByWorkingSetSlotID.Where(PlayersFunc());
@@ -128,8 +133,8 @@ public partial class StormReplayPregame
 
     /// <summary>
     /// Gets the list of all players connected to the game, using 'm_workingSetSlotId' as index.
+    /// <para>Contains AI. No observers.</para>
     /// </summary>
-    /// <remarks>Contains AI. No observers.</remarks>
     internal PregameStormPlayer[] ClientListByWorkingSetSlotID { get; private set; } = new PregameStormPlayer[16];
 
     internal string?[][] TeamHeroAttributeIdBans { get; private set; } = [[null, null, null], [null, null, null]];

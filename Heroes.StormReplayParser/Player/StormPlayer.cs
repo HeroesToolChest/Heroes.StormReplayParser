@@ -40,12 +40,12 @@ public class StormPlayer
     /// <summary>
     /// Gets the player's hero's mastery tier levels.
     /// </summary>
-    public IReadOnlyList<HeroMasteryTier> HeroMasteryTiers => HeroMasteryTiersInternal.AsReadOnly();
+    public IReadOnlyList<HeroMasteryTier> HeroMasteryTiers => [.. HeroMasteryTiersByHeroAttributeIdInternal.Values];
 
     /// <summary>
     /// Gets the amount of hero mastery tiers.
     /// </summary>
-    public int HeroMasteryTiersCount => HeroMasteryTiersInternal.Count;
+    public int HeroMasteryTiersCount => HeroMasteryTiersByHeroAttributeIdInternal.Count;
 
     /// <summary>
     /// Gets or sets the player's team id.
@@ -117,6 +117,11 @@ public class StormPlayer
     public bool IsPlatformMac { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the player is the owner of this replay.
+    /// </summary>
+    public bool IsReplayOwner { get; set; }
+
+    /// <summary>
     /// Gets or sets the computer player difficulty.
     /// </summary>
     public ComputerDifficulty ComputerDifficulty { get; set; } = ComputerDifficulty.Unknown;
@@ -147,7 +152,7 @@ public class StormPlayer
     public int? MatchAwardsCount => ScoreResult?.MatchAwards.Count;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<HeroMasteryTier> HeroMasteryTiersInternal { get; set; } = [];
+    internal Dictionary<string, HeroMasteryTier> HeroMasteryTiersByHeroAttributeIdInternal { get; set; } = new(StringComparer.Ordinal);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<HeroTalent> TalentsInternal { get; set; } = new(7);

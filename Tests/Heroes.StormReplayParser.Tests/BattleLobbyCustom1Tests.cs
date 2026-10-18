@@ -65,4 +65,23 @@ public class BattleLobbyCustom1Tests
         Assert.StartsWith("T:563", player0.ToonHandle!.ShortcutId.ToString());
         Assert.EndsWith("#167", player0.ToonHandle!.ShortcutId.ToString());
     }
+
+    [TestMethod]
+    public void ObserverReplayOwnerTest()
+    {
+        PregameStormPlayer player0 = _stormReplay.StormObservers.ToList()[0];
+
+        Assert.IsTrue(player0.IsReplayOwner);
+        Assert.DoesNotContain(x => x.IsReplayOwner, _stormReplay.StormPlayers);
+    }
+
+    [TestMethod]
+    public void ObserverHeroMasteryTiersTest()
+    {
+        PregameStormPlayer player0 = _stormReplay.StormObservers.ToList()[0];
+
+        Assert.AreEqual(83, player0.HeroMasteryTiersCount);
+        Assert.AreEqual("Abat", player0.HeroMasteryTiers[0].HeroAttributeId);
+        Assert.AreEqual(3, player0.HeroMasteryTiers[0].TierLevel);
+    }
 }

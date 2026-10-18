@@ -114,4 +114,14 @@ public class BattleLobbyStormLeague1Tests
         Assert.AreEqual("Tych", redBans[1]);
         Assert.AreEqual("Faer", redBans[2]);
     }
+
+    [TestMethod]
+    public void ReplayOwnerTest()
+    {
+        List<PregameStormPlayer> players = [.. _stormReplay.StormPlayers];
+
+        Assert.IsTrue(players[2].IsReplayOwner);
+        Assert.StartsWith("XiaoPiHai", players[2].BattleTagName);
+        Assert.ContainsSingle(x => x.IsReplayOwner, players);
+    }
 }

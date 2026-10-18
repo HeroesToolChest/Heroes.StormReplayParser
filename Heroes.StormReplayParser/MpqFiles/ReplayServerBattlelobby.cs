@@ -377,18 +377,17 @@ internal static class ReplayServerBattlelobby
         }
 
         /* Collection section */
+        uint collectionLength = bitReader.ReadBits(16);
 
-        uint ollectionLength = bitReader.ReadBits(16);
-
-        for (int i = 0; i < ollectionLength; i++)
+        for (int i = 0; i < collectionLength; i++)
         {
             bitReader.ReadAlignedBytes(8);
         }
 
         uint hasCollectionLength = bitReader.ReadBits(32);
 
-        if (ollectionLength != hasCollectionLength)
-            throw new StormParseException($"{_exceptionHeader}: skin collection lengths do not match: {ollectionLength} != {hasCollectionLength}");
+        if (collectionLength != hasCollectionLength)
+            throw new StormParseException($"{_exceptionHeader}: skin collection lengths do not match: {collectionLength} != {hasCollectionLength}");
 
         for (int i = 0; i < hasCollectionLength; i++)
         {
@@ -414,18 +413,22 @@ internal static class ReplayServerBattlelobby
 
         replay.RandomValue = bitReader.ReadBits(32); // m_randomSeed
 
-        bitReader.ReadBitArray(32);
-
+        uint replayOwnerLobbyId = bitReader.ReadBits(32); // the lobby id of the player whose game client created this file (owner of the replay file)
         uint playersLength = bitReader.ReadBits(5);
 
         for (int i = 0; i < playersLength; i++)
         {
-            bitReader.ReadBitArray(32); // m_Unk1
-
+            uint playerLobbyId = bitReader.ReadBits(32); // sequential for each player in the lobby
             uint playerIndex = bitReader.ReadBits(5); // m_workingSetSlotId
 
             PregameStormPlayer player = replay.ClientListByWorkingSetSlotID[playerIndex];
             ToonHandle playerToonHandle = player.ToonHandle ??= new();
+
+            if (replayOwnerLobbyId == playerLobbyId)
+            {
+                replay.Owner = player;
+                player.IsReplayOwner = true;
+            }
 
             // toon handle
             playerToonHandle.Region = (int)bitReader.ReadBits(8); // m_region
@@ -456,7 +459,7 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadBitArray(1); // m_flags
             }
 
-            // m_Unk2
+            // m_Unk2 - per lobby value that increments with each player, followed by a per player value, the rest is all 0s
             bitReader.ReadBitArray(198);
 
             // m_unk3
@@ -525,12 +528,13 @@ internal static class ReplayServerBattlelobby
 
         for (int i = 0; i < a38Length; i++)
         {
-            bitReader.ReadBitArray(38);
+            bitReader.ReadBits(5); // m_workingSetSlotId
+            bitReader.ReadBitArray(33); // so far, always 0 (except in older builds)
         }
 
         bitReader.ReadBits(1); // unk
 
-        // Neut
+        // always "Neut" (neutral race, likely a SC2 remnant)
         uint neutLength = bitReader.ReadBits(4) + 1;
 
         for (int i = 0; i < neutLength; i++)
@@ -538,21 +542,21 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBitArray(32);
         }
 
-        // hero
-        uint heroLength2 = bitReader.ReadBits(5);
+        // key value pairs for each player, such as "GEM", "GOLD", "XP", "XHC", "LOOT", "Lcns", "PORT", "POVT", and "ICON"
+        uint playerKeyValuesLength = bitReader.ReadBits(5);
 
-        for (int i = 0; i < heroLength2; i++)
+        for (int i = 0; i < playerKeyValuesLength; i++)
         {
-            bitReader.ReadBits(32); // b32
+            bitReader.ReadBits(32); // playerLobbyId
 
-            uint heroIconLength = bitReader.ReadBits(11);
+            uint keyValuesLength = bitReader.ReadBits(11);
 
-            for (int j = 0; j < heroIconLength; j++)
+            for (int j = 0; j < keyValuesLength; j++)
             {
-                bitReader.ReadStringFromUnalignedBytes(4); // HERO
-                bitReader.ReadStringFromUnalignedBytes(4); // ICON
+                bitReader.ReadStringFromUnalignedBytes(4); // namespace - "Hero"
+                bitReader.ReadStringFromUnalignedBytes(4); // key
 
-                bitReader.ReadBits(32); // b32
+                bitReader.ReadBits(32); // value
             }
 
             bitReader.ReadBitArray(11); // b11
@@ -570,7 +574,7 @@ internal static class ReplayServerBattlelobby
 
         for (int i = 0; i < a48Length; i++)
         {
-            bitReader.ReadBitArray(32); // b32
+            bitReader.ReadBits(32); // playerLobbyId
 
             if (replay.ReplayBuild >= 77406)
                 bitReader.ReadBits(16); // b16
@@ -585,13 +589,29 @@ internal static class ReplayServerBattlelobby
 
         bitReader.ReadBitArray(32); // b32
 
-        uint allHeroesLength = bitReader.ReadBits(10);
+        // same as m_heroMasteryTiers in the replay.initData, but for all heroes (including those with 0 tiers) and all players
+        uint heroMasteryTiersLength = bitReader.ReadBits(10);
 
-        for (int i = 0; i < allHeroesLength; i++)
+        for (int i = 0; i < heroMasteryTiersLength; i++)
         {
-            bitReader.ReadStringFromUnalignedBytes(4);
-            bitReader.ReadBitArray(5); // b5
-            bitReader.ReadBitArray(128); // b128
+            string heroAttributeName = bitReader.ReadStringFromUnalignedBytes(4);
+
+            uint slotsLength = bitReader.ReadBits(5); // total player slots, indexed by m_workingSetSlotId
+
+            for (int j = 0; j < slotsLength; j++)
+            {
+                int tier = (int)bitReader.ReadBits(8); // m_tier
+
+                // only for tiers greater than 0
+                if (tier > 0 && j < replay.ClientListByWorkingSetSlotID.Length)
+                {
+                    replay.ClientListByWorkingSetSlotID[j].HeroMasteryTiersByHeroAttributeIdInternal[heroAttributeName] = new HeroMasteryTier()
+                    {
+                        HeroAttributeId = heroAttributeName,
+                        TierLevel = tier,
+                    };
+                }
+            }
         }
 
         if (replay.ReplayBuild >= 77406) // 68509
@@ -900,6 +920,7 @@ internal static class ReplayServerBattlelobby
         {
             case 0:
                 {
+                    // older builds, a bit for each item in the collection section
                     bitReader.ReadBitArray(bitReader.ReadBits(12));
                     bitReader.ReadBoolean();
                     break;

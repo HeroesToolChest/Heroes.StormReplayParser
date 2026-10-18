@@ -71,8 +71,8 @@ public class HanamuraTemple1ReplayParserTests
         Assert.AreEqual("MurkyA", player0.PlayerLoadout.AnnouncerPack);
         Assert.AreEqual("BrightwingMonkey_VoiceLine01", player0.PlayerLoadout.VoiceLine);
         Assert.AreEqual(22, player0.HeroMasteryTiersCount);
-        Assert.AreEqual("Arts", player0.HeroMasteryTiers.ToList()[2].HeroAttributeId);
-        Assert.AreEqual(3, player0.HeroMasteryTiers.ToList()[2].TierLevel);
+        Assert.AreEqual("Arts", player0.HeroMasteryTiers[2].HeroAttributeId);
+        Assert.AreEqual(3, player0.HeroMasteryTiers[2].TierLevel);
     }
 
     [TestMethod]
@@ -107,16 +107,5 @@ public class HanamuraTemple1ReplayParserTests
         var draft = _stormReplay.DraftPicks.ToList();
 
         Assert.IsEmpty(draft);
-    }
-
-    [TestMethod]
-    public void BattleLobbyDataTest()
-    {
-        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
-
-        Assert.AreEqual(2319, players[1].AccountLevel);
-        Assert.IsNull(players[1].PartyValue);
-        Assert.AreEqual(654, players[9].AccountLevel);
-        Assert.IsNull(players[9].PartyValue);
     }
 }

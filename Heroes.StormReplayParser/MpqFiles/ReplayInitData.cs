@@ -300,17 +300,17 @@ internal static class ReplayInitData
                     uint heroMasteryTiersLength = bitReader.ReadBits(10);
                     for (int j = 0; j < heroMasteryTiersLength; j++)
                     {
-                        string heroAttributeName = bitReader.ReadStringFromBits(32);
+                        string heroAttributeName = bitReader.ReadStringFromUnalignedBytes(4);
 
-                        int tier = (int)bitReader.ReadBits(8); // m_tier
+                        int tier = (int)bitReader.ReadBits(8); // m_tier, greater than 0
 
                         if (userId.HasValue)
                         {
-                            replay.ClientListByUserID[userId.Value]!.HeroMasteryTiersInternal.Add(new HeroMasteryTier()
+                            replay.ClientListByUserID[userId.Value]!.HeroMasteryTiersByHeroAttributeIdInternal[heroAttributeName] = new HeroMasteryTier()
                             {
                                 HeroAttributeId = heroAttributeName,
                                 TierLevel = tier,
-                            });
+                            };
                         }
                     }
                 }

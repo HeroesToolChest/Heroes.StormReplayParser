@@ -1111,7 +1111,20 @@ internal static class ReplayGameEvents
         }
 
         if (replay.GameEventsInternal[^1].GameEventType == StormGameEventType.SGameUserLeaveEvent)
+        {
             replay.Owner = replay.GameEventsInternal[^1].MessageSender;
+
+            foreach (StormPlayer? player in replay.ClientListByUserID)
+            {
+                if (replay.Owner is null || player is null)
+                    continue;
+
+                if (player.ToonHandle == replay.Owner.ToonHandle)
+                    player.IsReplayOwner = true;
+                else
+                    player.IsReplayOwner = false;
+            }
+        }
     }
 
     // ('_choice',[(0,2),{0:('None',86),1:('Mask',52),2:('OneIndices',100),3:('ZeroIndices',100)}]),  #101

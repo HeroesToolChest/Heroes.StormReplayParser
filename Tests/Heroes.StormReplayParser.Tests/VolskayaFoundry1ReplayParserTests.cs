@@ -105,8 +105,8 @@ public class VolskayaFoundry1ReplayParserTests
         Assert.AreEqual("GreymaneBase_VoiceLine04", player0.PlayerLoadout.VoiceLine);
         Assert.AreEqual("Greymane", player0.PlayerHero!.HeroId);
         Assert.AreEqual(24, player0.HeroMasteryTiersCount);
-        Assert.AreEqual("Auri", player0.HeroMasteryTiers.ToList()[2].HeroAttributeId);
-        Assert.AreEqual(1, player0.HeroMasteryTiers.ToList()[2].TierLevel);
+        Assert.AreEqual("Auri", player0.HeroMasteryTiers[2].HeroAttributeId);
+        Assert.AreEqual(1, player0.HeroMasteryTiers[2].TierLevel);
     }
 
     [TestMethod]
@@ -715,6 +715,19 @@ public class VolskayaFoundry1ReplayParserTests
         Assert.IsTrue(players.All(x => x.PlayerDisconnects.Count == 0));
     }
 
+    [TestMethod]
+    public void ReplayOwnerTest()
+    {
+        StormPlayer? owner = _stormReplay.Owner;
+        Assert.IsNotNull(owner);
+
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
+
+        Assert.IsTrue(players[6].IsReplayOwner);
+        Assert.AreSame(owner, players[6]);
+        Assert.ContainsSingle(x => x.IsReplayOwner, players);
+    }
+
     private static void NoTrackerEvents(StormReplayResult result)
     {
         StormReplay replay = result.Replay!;
@@ -740,7 +753,7 @@ public class VolskayaFoundry1ReplayParserTests
         StormReplay replay = result.Replay!;
 
         Assert.IsEmpty(replay.GameEvents);
-        Assert.IsNull(replay.Owner?.PlayerHero?.HeroName);
+        Assert.IsNotNull(replay.Owner?.PlayerHero?.HeroName);
     }
 
     private static void NoMessageEvents(StormReplayResult result)

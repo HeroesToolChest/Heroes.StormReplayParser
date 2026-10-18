@@ -12,7 +12,7 @@ public enum VitalType
 
     /// <summary>
     /// Indicates an energy vital.
+    /// <para>Energy is <c>mana</c>, <c>fury</c>, <c>brew</c>, etc...</para>
     /// </summary>
-    /// <remarks>Energy is mana, fury, brew, etc...</remarks>
     Energy = 2,
 }

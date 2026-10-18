@@ -428,6 +428,6 @@ public class AIDragonShire1ReplayParserTests
         StormReplay replay = result.Replay!;
 
         Assert.IsEmpty(replay.GameEvents);
-        Assert.IsNull(replay.Owner?.PlayerHero?.HeroName);
+        Assert.IsNotNull(replay.Owner?.PlayerHero?.HeroName);
     }
 }
