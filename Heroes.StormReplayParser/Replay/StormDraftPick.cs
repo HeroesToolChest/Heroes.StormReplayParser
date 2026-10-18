@@ -25,22 +25,27 @@ public class StormDraftPick
     /// </summary>
     public StormTeam Team
     {
+#if NET10_0_OR_GREATER
         get
         {
-#if NET10_0_OR_GREATER
             if (Player is null)
                 return field;
             else
                 return Player.Team;
         }
-        set => field = value;
+        set;
 #else
+        get
+        {
             if (Player is null)
                 return _team;
             else
                 return Player.Team;
         }
-        set => _team = value;
+        set
+        {
+            _team = value;
+        }
 #endif
     }
 

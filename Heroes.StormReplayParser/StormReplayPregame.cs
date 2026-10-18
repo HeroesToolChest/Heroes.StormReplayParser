@@ -1,9 +1,9 @@
 ﻿namespace Heroes.StormReplayParser;
 
-/// <summary>
+/// <content>
 /// Contains the properties and methods for the battle lobby.
 /// Used to obtain data from the loading screen part of the match.
-/// </summary>
+/// </content>
 public partial class StormReplayPregame
 {
     /// <summary>

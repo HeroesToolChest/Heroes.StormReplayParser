@@ -1,8 +1,8 @@
 ﻿namespace Heroes.StormReplayParser;
 
-/// <summary>
+/// <content>
 /// Contains the information to parse a Heroes of the Storm replay.
-/// </summary>
+/// </content>
 public partial class StormReplay
 {
     private readonly ParseOptions _parseOptions;
