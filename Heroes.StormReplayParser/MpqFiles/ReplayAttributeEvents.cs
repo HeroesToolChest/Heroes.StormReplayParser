@@ -232,6 +232,20 @@ internal static class ReplayAttributeEvents
 
                     break;
 
+                case ReplayAttributeEventType.DraftTeam1BanChooserSlot:
+                    {
+                        replay.TeamBanChoosers[0] = SetBanChooser(replay, value);
+
+                        break;
+                    }
+
+                case ReplayAttributeEventType.DraftTeam2BanChooserSlot:
+                    {
+                        replay.TeamBanChoosers[1] = SetBanChooser(replay, value);
+
+                        break;
+                    }
+
                 case ReplayAttributeEventType.FirstReadyingTeam:
                     {
                         replay.FirstDraftTeam = GetFirstReadyingTeam(value);
@@ -257,6 +271,29 @@ internal static class ReplayAttributeEvents
                     break;
             }
         }
+    }
+
+    // the value is "Hmmr" (ranked games), a player slot (m_workingSetSlotId) for custom games, or 22 when bans are not used
+    internal static StormBanChooser GetBanChooser(string value, out int? playerSlot)
+    {
+        playerSlot = null;
+
+        if (value == "Hmmr")
+            return StormBanChooser.HighestMmr;
+
+        if (!int.TryParse(value, out int slot))
+            return StormBanChooser.Unknown;
+
+        if (slot == 22)
+            return StormBanChooser.None;
+
+        // 16 total player slots
+        if (slot < 0 || slot >= 16)
+            return StormBanChooser.Unknown;
+
+        playerSlot = slot;
+
+        return StormBanChooser.Player;
     }
 
     internal static StormLobbyMode GetLobbyMode(string value) => value switch
@@ -343,4 +380,15 @@ internal static class ReplayAttributeEvents
 
         _ => ComputerDifficulty.Unknown,
     };
+
+    private static StormBanChooser SetBanChooser(StormReplay replay, string value)
+    {
+        StormBanChooser banChooser = GetBanChooser(value, out int? playerSlot);
+
+        // the ban chooser is a participant, so they will be in the replay.details
+        if (playerSlot.HasValue && replay.ClientListByWorkingSetSlotID[playerSlot.Value] is StormPlayer player)
+            player.IsBanChooser = true;
+
+        return banChooser;
+    }
 }

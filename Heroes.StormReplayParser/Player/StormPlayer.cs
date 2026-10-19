@@ -122,6 +122,13 @@ public class StormPlayer
     public bool IsReplayOwner { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the player chooses the bans for their team.
+    /// <para>In ranked games it is the player with the highest MMR, which is currently not known.</para>
+    /// <para>For custom games, it is the specific player chosen to select the bans.</para>
+    /// </summary>
+    public bool IsBanChooser { get; set; }
+
+    /// <summary>
     /// Gets or sets the computer player difficulty.
     /// </summary>
     public ComputerDifficulty ComputerDifficulty { get; set; } = ComputerDifficulty.Unknown;

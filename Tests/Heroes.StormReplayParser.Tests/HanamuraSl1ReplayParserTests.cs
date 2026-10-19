@@ -34,4 +34,12 @@ public class HanamuraSl1ReplayParserTests
         Assert.AreEqual(StormLobbyMode.Draft, _stormReplay.LobbyMode);
         Assert.AreEqual(StormReadyMode.FCFS, _stormReplay.ReadyMode);
     }
+
+    [TestMethod]
+    public void BanChooserTest()
+    {
+        Assert.AreEqual(StormBanChooser.HighestMmr, _stormReplay.GetTeamBanChooser(StormTeam.Blue));
+        Assert.AreEqual(StormBanChooser.HighestMmr, _stormReplay.GetTeamBanChooser(StormTeam.Red));
+        Assert.DoesNotContain(x => x.IsBanChooser, _stormReplay.StormPlayers);
+    }
 }

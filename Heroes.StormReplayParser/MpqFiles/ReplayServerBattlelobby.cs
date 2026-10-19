@@ -710,6 +710,20 @@ internal static class ReplayServerBattlelobby
 
                 break;
 
+            case ReplayAttributeEventType.DraftTeam1BanChooserSlot:
+                {
+                    replay.TeamBanChoosers[0] = SetBanChooser(replay, value);
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.DraftTeam2BanChooserSlot:
+                {
+                    replay.TeamBanChoosers[1] = SetBanChooser(replay, value);
+
+                    break;
+                }
+
             case ReplayAttributeEventType.PrivacyOption:
                 {
                     replay.GamePrivacy = ReplayAttributeEvents.GetPrivacyOption(value);
@@ -763,6 +777,16 @@ internal static class ReplayServerBattlelobby
             default:
                 break;
         }
+    }
+
+    private static StormBanChooser SetBanChooser(StormReplayPregame replay, string value)
+    {
+        StormBanChooser banChooser = ReplayAttributeEvents.GetBanChooser(value, out int? playerSlot);
+
+        if (playerSlot.HasValue)
+            replay.ClientListByWorkingSetSlotID[playerSlot.Value].IsBanChooser = true;
+
+        return banChooser;
     }
 
     private static void SetPlayerAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int playerSlotIndex, int attributeValueIndex)

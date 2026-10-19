@@ -99,6 +99,10 @@ public class HanamuraTemple1ReplayParserTests
 
         Assert.AreEqual(string.Empty, ban0List[1]);
         Assert.AreEqual(string.Empty, ban1List[1]);
+
+        Assert.AreEqual(StormBanChooser.None, _stormReplay.GetTeamBanChooser(StormTeam.Blue));
+        Assert.AreEqual(StormBanChooser.None, _stormReplay.GetTeamBanChooser(StormTeam.Red));
+        Assert.DoesNotContain(x => x.IsBanChooser, players);
     }
 
     [TestMethod]

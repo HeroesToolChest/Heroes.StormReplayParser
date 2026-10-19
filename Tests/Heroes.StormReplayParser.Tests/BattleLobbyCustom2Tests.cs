@@ -68,4 +68,23 @@ public class BattleLobbyCustom2Tests
         Assert.AreEqual(StormTeam.Observer, playersWithObs[11].Team);
         Assert.AreEqual(StormTeam.Red, playersWithObs[12].Team);
     }
+
+    [TestMethod]
+    public void BanChooserTest()
+    {
+        Assert.AreEqual(StormBanChooser.Player, _stormReplay.GetTeamBanChooser(StormTeam.Blue));
+        Assert.AreEqual(StormBanChooser.Player, _stormReplay.GetTeamBanChooser(StormTeam.Red));
+
+        List<PregameStormPlayer> players = [.. _stormReplay.StormPlayers];
+
+        Assert.IsTrue(players[3].IsBanChooser);
+        Assert.AreEqual(StormTeam.Blue, players[3].Team);
+        Assert.StartsWith("Player", players[3].BattleTagName);
+
+        Assert.IsTrue(players[6].IsBanChooser);
+        Assert.AreEqual(StormTeam.Red, players[6].Team);
+        Assert.StartsWith("MasonBlaze", players[6].BattleTagName);
+
+        Assert.AreEqual(2, _stormReplay.StormPlayersWithObservers.Count(x => x.IsBanChooser));
+    }
 }
