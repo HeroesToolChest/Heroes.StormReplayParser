@@ -18,9 +18,9 @@ internal static class ReplayServerBattlelobby
         for (int i = 0; i < 16; i++)
             replay.ClientListByWorkingSetSlotID[i] = new();
 
-        Dictionary<ReplayAttributeEventType, StormBattleLobbyAttribute> lobbyAttributesByAttributeEventType = new();
-        List<StormS2mFiles> s2mvFiles = new();
-        List<string> battleNetCachePaths = new();
+        Dictionary<ReplayAttributeEventType, StormBattleLobbyAttribute> lobbyAttributesByAttributeEventType = [];
+        List<StormS2mFiles> s2mvFiles = [];
+        List<string> battleNetCachePaths = [];
 
         BitReader bitReader = new(source, EndianType.BigEndian);
 
@@ -97,7 +97,7 @@ internal static class ReplayServerBattlelobby
                 bitReader.ReadBitArray(1); // f1
                 bitReader.ReadBitArray(1); // f1
 
-                stormBattleLobbyAttribute.AttributeValues.Add(stormBattleLobbyAttributeValue);
+                stormBattleLobbyAttribute.Values.Add(stormBattleLobbyAttributeValue);
             }
 
             // EnabledWithAttribs
@@ -113,7 +113,7 @@ internal static class ReplayServerBattlelobby
 
                     bitReader.ReadInt32Unaligned(); // namespace
 
-                    stormBattleLobbyAttribute.ReplayAttributeEnabledEventType = (ReplayAttributeEventType)bitReader.ReadInt32Unaligned();
+                    stormBattleLobbyAttribute.EnabledEventType = (ReplayAttributeEventType)bitReader.ReadInt32Unaligned();
 
                     int enabledAttributeCount = (int)bitReader.ReadBits(12);
 
@@ -124,7 +124,7 @@ internal static class ReplayServerBattlelobby
                             Value = bitReader.ReadStringFromUnalignedBytes(4), // attribute value
                         };
 
-                        stormBattleLobbyAttribute.EnabledValueAttributes.Add(stormBattleLobbyEnabledAttributeValue);
+                        stormBattleLobbyAttribute.EnabledValues.Add(stormBattleLobbyEnabledAttributeValue);
                     }
                 }
             }
@@ -149,7 +149,7 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBits(1); // f1
             bitReader.ReadBits(9); // b9
 
-            if (!lobbyAttributesByAttributeEventType.TryAdd(stormBattleLobbyAttribute.ReplayAttributeEventType, stormBattleLobbyAttribute))
+            if (!lobbyAttributesByAttributeEventType.TryAdd(stormBattleLobbyAttribute.EventType, stormBattleLobbyAttribute))
                 throw new StormParseException($"{_exceptionHeader}: duplicate attribute");
         }
 
@@ -169,6 +169,9 @@ internal static class ReplayServerBattlelobby
 
             PlayerSelectedAttributeChoice(ref bitReader, replay, lobbyAttributesByAttributeEventType[attributeEventType]);
         }
+
+        // the selections are not in attribute id order, so this can only be done once they have all been read
+        SetPlayerTeams(replay);
 
         /* Local/locales section */
 
@@ -666,9 +669,9 @@ internal static class ReplayServerBattlelobby
 
     private static void SetGlobalAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int attributeValueIndex)
     {
-        string value = attribute.AttributeValues[attributeValueIndex].Value;
+        string value = attribute.Values[attributeValueIndex].Value;
 
-        switch (attribute.ReplayAttributeEventType)
+        switch (attribute.EventType)
         {
             case ReplayAttributeEventType.GameSpeed:
                 {
@@ -683,7 +686,7 @@ internal static class ReplayServerBattlelobby
             case ReplayAttributeEventType.DraftTeam2Ban1:
             case ReplayAttributeEventType.DraftTeam2Ban2:
             case ReplayAttributeEventType.DraftTeam2Ban3:
-                switch (attribute.ReplayAttributeEventType)
+                switch (attribute.EventType)
                 {
                     case ReplayAttributeEventType.DraftTeam1Ban1:
                         replay.TeamHeroAttributeIdBans[0][0] = value;
@@ -764,16 +767,35 @@ internal static class ReplayServerBattlelobby
 
     private static void SetPlayerAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int playerSlotIndex, int attributeValueIndex)
     {
-        string value = attribute.AttributeValues[attributeValueIndex].Value;
+        string value = attribute.Values[attributeValueIndex].Value;
         PregameStormPlayer player = replay.ClientListByWorkingSetSlotID[playerSlotIndex];
 
         player.PlayerHero ??= new();
 
-        switch (attribute.ReplayAttributeEventType)
+        switch (attribute.EventType)
         {
             case ReplayAttributeEventType.PlayerType:
                 {
                     player.PlayerSlotType = ReplayAttributeEvents.GetPlayerType(value);
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.PlayerTeam1v1:
+            case ReplayAttributeEventType.PlayerTeam2v2:
+            case ReplayAttributeEventType.PlayerTeam3v3:
+            case ReplayAttributeEventType.PlayerTeam4v4:
+            case ReplayAttributeEventType.PlayerTeam5v5:
+            case ReplayAttributeEventType.PlayerTeam6v6:
+                {
+                    player.PlayerTeamValueByAttributeEventType.TryAdd(attribute.EventType, value);
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.DifficultyLevel:
+                {
+                    player.ComputerDifficulty = ReplayAttributeEvents.GetComputerDifficultyLevel(value);
 
                     break;
                 }
@@ -785,30 +807,16 @@ internal static class ReplayServerBattlelobby
                     break;
                 }
 
+            case ReplayAttributeEventType.HeroAttributeId:
+                {
+                    player.PlayerHero.HeroAttributeId = value;
+
+                    break;
+                }
+
             case ReplayAttributeEventType.SkinAndSkinTint:
                 {
                     player.PlayerLoadout.SkinAndSkinTintAttributeId = value;
-
-                    break;
-                }
-
-            case ReplayAttributeEventType.Banner:
-                {
-                    player.PlayerLoadout.BannerAttributeId = value;
-
-                    break;
-                }
-
-            case ReplayAttributeEventType.VoiceLine:
-                {
-                    player.PlayerLoadout.VoiceLineAttributeId = value;
-
-                    break;
-                }
-
-            case ReplayAttributeEventType.Spray:
-                {
-                    player.PlayerLoadout.SprayAttributeId = value;
 
                     break;
                 }
@@ -820,30 +828,37 @@ internal static class ReplayServerBattlelobby
                     break;
                 }
 
+            case ReplayAttributeEventType.HeroLevel:
+                {
+                    player.PlayerHero.HeroLevel = int.Parse(value);
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.Banner:
+                {
+                    player.PlayerLoadout.BannerAttributeId = value;
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.Spray:
+                {
+                    player.PlayerLoadout.SprayAttributeId = value;
+
+                    break;
+                }
+
+            case ReplayAttributeEventType.VoiceLine:
+                {
+                    player.PlayerLoadout.VoiceLineAttributeId = value;
+
+                    break;
+                }
+
             case ReplayAttributeEventType.Announcer:
                 {
                     player.PlayerLoadout.AnnouncerPackAttributeId = value;
-
-                    break;
-                }
-
-            case ReplayAttributeEventType.HeroAttributeId:
-                {
-                    player.PlayerHero!.HeroAttributeId = value;
-
-                    break;
-                }
-
-            case ReplayAttributeEventType.HeroLevel:
-                {
-                    player.PlayerHero!.HeroLevel = int.Parse(value);
-
-                    break;
-                }
-
-            case ReplayAttributeEventType.DifficultyLevel:
-                {
-                    player.ComputerDifficulty = ReplayAttributeEvents.GetComputerDifficultyLevel(value);
 
                     break;
                 }
@@ -857,7 +872,7 @@ internal static class ReplayServerBattlelobby
                     else
                     {
                         if (int.TryParse(value[^1..], out int tierLevel))
-                            player.PlayerHero!.HeroMasteryTier = tierLevel;
+                            player.PlayerHero.HeroMasteryTier = tierLevel;
                     }
 
                     break;
@@ -865,6 +880,45 @@ internal static class ReplayServerBattlelobby
 
             default:
                 break;
+        }
+    }
+
+    private static void SetPlayerTeams(StormReplayPregame replay)
+    {
+        ReplayAttributeEventType? playerTeamAttributeEventType = replay.TeamSize switch
+        {
+            "1v1" => ReplayAttributeEventType.PlayerTeam1v1,
+            "2v2" => ReplayAttributeEventType.PlayerTeam2v2,
+            "3v3" => ReplayAttributeEventType.PlayerTeam3v3,
+            "4v4" => ReplayAttributeEventType.PlayerTeam4v4,
+            "5v5" => ReplayAttributeEventType.PlayerTeam5v5,
+            "6v6" => ReplayAttributeEventType.PlayerTeam6v6,
+            _ => null,
+        };
+
+        if (playerTeamAttributeEventType is null)
+            return;
+
+        for (int i = 0; i < replay.ClientListByWorkingSetSlotID.Length; i++)
+        {
+            PregameStormPlayer player = replay.ClientListByWorkingSetSlotID[i];
+
+            if (player.PlayerSlotType is not (PlayerSlotType.Human or PlayerSlotType.Computer))
+                continue;
+
+            // the team attribute is only enabled for participants
+            if (player.PlayerType == PlayerType.Observer)
+            {
+                player.Team = StormTeam.Observer;
+                continue;
+            }
+
+            player.Team = player.PlayerTeamValueByAttributeEventType[playerTeamAttributeEventType.Value] switch
+            {
+                "T1" => StormTeam.Blue,
+                "T2" => StormTeam.Red,
+                _ => StormTeam.Unknown,
+            };
         }
     }
 

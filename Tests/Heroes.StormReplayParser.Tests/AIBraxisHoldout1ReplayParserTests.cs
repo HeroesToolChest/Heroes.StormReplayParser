@@ -1,4 +1,6 @@
-﻿namespace Heroes.StormReplayParser.Tests;
+﻿using Heroes.StormReplayParser.Pregame.Player;
+
+namespace Heroes.StormReplayParser.Tests;
 
 [TestClass]
 public class AIBraxisHoldout1ReplayParserTests
@@ -16,6 +18,12 @@ public class AIBraxisHoldout1ReplayParserTests
     }
 
     [TestMethod]
+    public void ParseResult()
+    {
+        Assert.AreEqual(StormReplayParseStatus.Success, _result);
+    }
+
+    [TestMethod]
     public void PlayerCountTest()
     {
         Assert.AreEqual(1, _stormReplay.PlayersWithObserversCount);
@@ -25,14 +33,19 @@ public class AIBraxisHoldout1ReplayParserTests
     [TestMethod]
     public void PlayerListTest()
     {
-        Assert.AreEqual(10, _stormReplay.StormPlayers.Count());
-        Assert.AreEqual(1, _stormReplay.StormPlayersWithObservers.Count());
+        Assert.HasCount(10, _stormReplay.StormPlayers);
+        Assert.HasCount(1, _stormReplay.StormPlayersWithObservers);
     }
 
     [TestMethod]
-    public void ParseResult()
+    public void PlayerTeamTest()
     {
-        Assert.AreEqual(StormReplayParseStatus.Success, _result);
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
+        Assert.IsTrue(players[..5].All(x => x.Team == StormTeam.Blue));
+        Assert.IsTrue(players[5..10].All(x => x.Team == StormTeam.Red));
+
+        List<StormPlayer> playersWithObs = [.. _stormReplay.StormPlayersWithObservers];
+        Assert.AreEqual(StormTeam.Red, playersWithObs[0].Team);
     }
 
     [TestMethod]

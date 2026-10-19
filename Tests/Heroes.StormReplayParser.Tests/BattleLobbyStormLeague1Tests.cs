@@ -124,4 +124,13 @@ public class BattleLobbyStormLeague1Tests
         Assert.StartsWith("XiaoPiHai", players[2].BattleTagName);
         Assert.ContainsSingle(x => x.IsReplayOwner, players);
     }
+
+    [TestMethod]
+    public void PlayerTeamTest()
+    {
+        List<PregameStormPlayer> players = [.. _stormReplay.StormPlayers];
+
+        Assert.IsTrue(players[..5].All(x => x.Team == StormTeam.Blue));
+        Assert.IsTrue(players[5..].All(x => x.Team == StormTeam.Red));
+    }
 }

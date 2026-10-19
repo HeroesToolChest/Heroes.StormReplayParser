@@ -4,14 +4,14 @@ internal class StormBattleLobbyAttribute
 {
     public StormBattleLobbyAttribute(ReplayAttributeEventType replayAttributeEventType)
     {
-        ReplayAttributeEventType = replayAttributeEventType;
+        EventType = replayAttributeEventType;
     }
 
-    public ReplayAttributeEventType ReplayAttributeEventType { get; }
+    public ReplayAttributeEventType EventType { get; }
 
-    public List<StormBattleLobbyAttributeValue> AttributeValues { get; set; } = new();
+    public List<StormBattleLobbyAttributeValue> Values { get; set; } = new();
 
-    public ReplayAttributeEventType? ReplayAttributeEnabledEventType { get; set; }
+    public ReplayAttributeEventType? EnabledEventType { get; set; }
 
-    public List<StormBattleLobbyEnabledAttributeValue> EnabledValueAttributes { get; set; } = new();
+    public List<StormBattleLobbyEnabledAttributeValue> EnabledValues { get; set; } = new();
 }

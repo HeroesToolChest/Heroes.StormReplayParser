@@ -84,4 +84,17 @@ public class BattleLobbyCustom1Tests
         Assert.AreEqual("Abat", player0.HeroMasteryTiers[0].HeroAttributeId);
         Assert.AreEqual(3, player0.HeroMasteryTiers[0].TierLevel);
     }
+
+    [TestMethod]
+    public void PlayerTeamTest()
+    {
+        Assert.AreEqual(StormTeam.Observer, _stormReplay.StormObservers.ToList()[0].Team);
+
+        // the observer is in the first slot, so the first 5 players are not all on the same team
+        List<PregameStormPlayer> players = [.. _stormReplay.StormPlayers];
+
+        Assert.IsTrue(players[..4].All(x => x.Team == StormTeam.Blue));
+        Assert.IsTrue(players[4..9].All(x => x.Team == StormTeam.Red));
+        Assert.AreEqual(StormTeam.Blue, players[9].Team);
+    }
 }

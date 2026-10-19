@@ -15,6 +15,8 @@ internal enum ReplayAttributeEventType
     PlayerTeam3v3 = 2004,
     PlayerTeam4v4 = 2005,
     PlayerTeamFFA = 2006,
+    PlayerTeam5v5 = 2007,
+    PlayerTeam6v6 = 2008,
 
     GameSpeed = 3000,
     PlayerRace = 3001,

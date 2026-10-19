@@ -42,6 +42,11 @@ public class PregameStormPlayer
     public PlayerType PlayerType { get; set; } = PlayerType.Unknown;
 
     /// <summary>
+    /// Gets or sets the player's team. Observers are <see cref="StormTeam.Observer"/>.
+    /// </summary>
+    public StormTeam Team { get; set; } = StormTeam.Unknown;
+
+    /// <summary>
     /// Gets or sets the player's hero information.
     /// </summary>
     public PregamePlayerHero? PlayerHero { get; set; } = null;
@@ -82,7 +87,7 @@ public class PregameStormPlayer
     public int? AccountLevel
     {
 #if NET10_0_OR_GREATER
-        get => field;
+        get;
         set => field = value == 0 ? null : value;
 #else
         get => _accountLevel;
@@ -117,5 +122,8 @@ public class PregameStormPlayer
     public int HeroMasteryTiersCount => HeroMasteryTiersByHeroAttributeIdInternal.Count;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal Dictionary<string, HeroMasteryTier> HeroMasteryTiersByHeroAttributeIdInternal { get; set; } = new(StringComparer.Ordinal);
+    internal Dictionary<string, HeroMasteryTier> HeroMasteryTiersByHeroAttributeIdInternal { get; } = new(StringComparer.Ordinal);
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    internal Dictionary<ReplayAttributeEventType, string> PlayerTeamValueByAttributeEventType { get; } = [];
 }
