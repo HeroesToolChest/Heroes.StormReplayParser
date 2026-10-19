@@ -913,7 +913,11 @@ internal static class ReplayServerBattlelobby
                 continue;
             }
 
-            player.Team = player.PlayerTeamValueByAttributeEventType[playerTeamAttributeEventType.Value] switch
+            // if not found, leave as unknown
+            if (!player.PlayerTeamValueByAttributeEventType.TryGetValue(playerTeamAttributeEventType.Value, out string? teamValue))
+                continue;
+
+            player.Team = teamValue switch
             {
                 "T1" => StormTeam.Blue,
                 "T2" => StormTeam.Red,
