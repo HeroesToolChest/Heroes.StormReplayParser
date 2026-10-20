@@ -38,8 +38,12 @@ public class HanamuraSl1ReplayParserTests
     [TestMethod]
     public void BanChooserTest()
     {
-        Assert.AreEqual(StormBanChooser.HighestMmr, _stormReplay.GetTeamBanChooser(StormTeam.Blue));
-        Assert.AreEqual(StormBanChooser.HighestMmr, _stormReplay.GetTeamBanChooser(StormTeam.Red));
+        Assert.AreEqual(StormBanChooserType.HighestMmr, _stormReplay.GetTeamBanChooserType(StormTeam.Blue));
+        Assert.AreEqual(StormBanChooserType.HighestMmr, _stormReplay.GetTeamBanChooserType(StormTeam.Red));
         Assert.DoesNotContain(x => x.IsBanChooser, _stormReplay.StormPlayers);
+
+        Assert.IsNull(_stormReplay.GetTeamBanPlayerChooser(StormTeam.Blue));
+        Assert.IsNull(_stormReplay.GetTeamBanPlayerChooser(StormTeam.Red));
+        Assert.IsNull(_stormReplay.GetTeamBanPlayerChooser(StormTeam.Observer));
     }
 }

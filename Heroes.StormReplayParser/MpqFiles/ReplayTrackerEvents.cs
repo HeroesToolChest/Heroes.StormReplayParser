@@ -33,7 +33,7 @@ internal static class ReplayTrackerEvents
         switch (stormTrackerEvent.TrackerEventType)
         {
             case StormTrackerEventType.PlayerSetupEvent:
-                if (replay.NoWorkingSetSlotID)
+                if (replay.NoDetailsWorkingSetSlotID)
                 {
                     uint playerId = stormTrackerEvent.VersionedDecoder!.Structure![3].OptionalData!.GetValueAsUInt32();
                     uint workingSetSlotId = stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.GetValueAsUInt32();

@@ -779,9 +779,9 @@ internal static class ReplayServerBattlelobby
         }
     }
 
-    private static StormBanChooser SetBanChooser(StormReplayPregame replay, string value)
+    private static StormBanChooserType SetBanChooser(StormReplayPregame replay, string value)
     {
-        StormBanChooser banChooser = ReplayAttributeEvents.GetBanChooser(value, out int? playerSlot);
+        StormBanChooserType banChooser = ReplayAttributeEvents.GetBanChooser(value, out int? playerSlot);
 
         if (playerSlot.HasValue)
             replay.ClientListByWorkingSetSlotID[playerSlot.Value].IsBanChooser = true;

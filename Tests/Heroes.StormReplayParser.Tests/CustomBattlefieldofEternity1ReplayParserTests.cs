@@ -77,6 +77,8 @@ public class CustomBattlefieldofEternity1ReplayParserTests
         Assert.IsFalse(_stormReplay.HasAI);
         Assert.AreEqual(1, _stormReplay.PlayersObserversCount);
         Assert.IsNull(_stormReplay.StormObservers.ToList()[0].PlayerHero);
+
+        Assert.IsFalse(_stormReplay.NoDetailsWorkingSetSlotID);
     }
 
     [TestMethod]

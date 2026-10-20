@@ -58,7 +58,7 @@ internal static class ReplayDetails
             if (stormPlayer.WorkingSetSlotId.HasValue)
                 replay.ClientListByWorkingSetSlotID[stormPlayer.WorkingSetSlotId.Value] = stormPlayer;
             else
-                replay.NoWorkingSetSlotID = true;
+                replay.NoDetailsWorkingSetSlotID = true;
         }
 
         replay.MapInfo.MapName = versionedDecoder.Structure?[1].GetValueAsString() ?? string.Empty;

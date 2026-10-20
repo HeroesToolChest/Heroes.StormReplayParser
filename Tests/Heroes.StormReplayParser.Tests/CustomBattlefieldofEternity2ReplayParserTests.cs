@@ -65,8 +65,8 @@ public class CustomBattlefieldofEternity2ReplayParserTests
     [TestMethod]
     public void BanChooserTest()
     {
-        Assert.AreEqual(StormBanChooser.Player, _stormReplay.GetTeamBanChooser(StormTeam.Blue));
-        Assert.AreEqual(StormBanChooser.Player, _stormReplay.GetTeamBanChooser(StormTeam.Red));
+        Assert.AreEqual(StormBanChooserType.Player, _stormReplay.GetTeamBanChooserType(StormTeam.Blue));
+        Assert.AreEqual(StormBanChooserType.Player, _stormReplay.GetTeamBanChooserType(StormTeam.Red));
 
         List<StormPlayer> players = [.. _stormReplay.StormPlayers];
 
@@ -77,6 +77,9 @@ public class CustomBattlefieldofEternity2ReplayParserTests
         Assert.IsTrue(players[6].IsBanChooser);
         Assert.AreEqual(StormTeam.Red, players[6].Team);
         Assert.AreEqual("MasonBlaze", players[6].Name);
+
+        Assert.AreSame(players[3], _stormReplay.GetTeamBanPlayerChooser(StormTeam.Blue));
+        Assert.AreSame(players[6], _stormReplay.GetTeamBanPlayerChooser(StormTeam.Red));
 
         Assert.AreEqual(2, _stormReplay.StormPlayersWithObservers.Count(x => x.IsBanChooser));
     }

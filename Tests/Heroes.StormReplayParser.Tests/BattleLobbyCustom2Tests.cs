@@ -72,8 +72,8 @@ public class BattleLobbyCustom2Tests
     [TestMethod]
     public void BanChooserTest()
     {
-        Assert.AreEqual(StormBanChooser.Player, _stormReplay.GetTeamBanChooser(StormTeam.Blue));
-        Assert.AreEqual(StormBanChooser.Player, _stormReplay.GetTeamBanChooser(StormTeam.Red));
+        Assert.AreEqual(StormBanChooserType.Player, _stormReplay.GetTeamBanChooser(StormTeam.Blue));
+        Assert.AreEqual(StormBanChooserType.Player, _stormReplay.GetTeamBanChooser(StormTeam.Red));
 
         List<PregameStormPlayer> players = [.. _stormReplay.StormPlayers];
 

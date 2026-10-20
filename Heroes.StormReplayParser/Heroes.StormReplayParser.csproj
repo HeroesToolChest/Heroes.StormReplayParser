@@ -46,5 +46,10 @@
       <_Parameter1>BitLocator</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
-    
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Heroes.StormReplayParser.Tests"/>
+    <InternalsVisibleTo Include="HeroesParser"/>
+   
+  </ItemGroup>
 </Project>

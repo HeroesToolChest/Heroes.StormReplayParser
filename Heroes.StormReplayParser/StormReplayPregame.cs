@@ -139,7 +139,7 @@ public partial class StormReplayPregame
 
     internal string?[][] TeamHeroAttributeIdBans { get; private set; } = [[null, null, null], [null, null, null]];
 
-    internal StormBanChooser[] TeamBanChoosers { get; private set; } = [StormBanChooser.Unknown, StormBanChooser.Unknown];
+    internal StormBanChooserType[] TeamBanChoosers { get; private set; } = [StormBanChooserType.Unknown, StormBanChooserType.Unknown];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<string> DisabledHeroAttributeIdList { get; private set; } = [];
@@ -161,11 +161,11 @@ public partial class StormReplayPregame
     /// Gets how a team's ban chooser is determined.
     /// </summary>
     /// <param name="stormTeam">The <see cref="StormTeam"/> to obtain the ban chooser for.</param>
-    /// <returns>A <see cref="StormBanChooser"/>.</returns>
-    public StormBanChooser GetTeamBanChooser(StormTeam stormTeam)
+    /// <returns>A <see cref="StormBanChooserType"/>.</returns>
+    public StormBanChooserType GetTeamBanChooser(StormTeam stormTeam)
     {
         if (!(stormTeam == StormTeam.Blue || stormTeam == StormTeam.Red))
-            return StormBanChooser.Unknown;
+            return StormBanChooserType.Unknown;
 
         return TeamBanChoosers[(int)stormTeam];
     }

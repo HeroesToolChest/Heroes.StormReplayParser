@@ -4,7 +4,7 @@
 public class MissingWorkSetSlotId1ReplayParserTests
 {
     private readonly string _replaysFolder = "Replays";
-    private readonly string _replayFile = "MissingWorkSetSlotId1.StormR";
+    private readonly string _replayFile = "MissingWorkSetSlotId1_72649.StormR";
     private readonly StormReplay _stormReplay;
     private readonly StormReplayParseStatus _result;
 
@@ -39,6 +39,8 @@ public class MissingWorkSetSlotId1ReplayParserTests
         Assert.AreEqual(1, player0.ToonHandle.Realm);
         Assert.AreEqual(StormRegion.EU, player0.ToonHandle.StormRegion);
         Assert.AreEqual(StormTeam.Blue, _stormReplay.WinningTeam);
+
+        Assert.IsTrue(_stormReplay.NoDetailsWorkingSetSlotID);
     }
 
     [TestMethod]

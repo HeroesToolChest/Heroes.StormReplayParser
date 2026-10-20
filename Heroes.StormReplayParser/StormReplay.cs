@@ -220,10 +220,10 @@ public partial class StormReplay
     internal StormPlayer?[] ClientListByWorkingSetSlotID { get; private set; } = new StormPlayer?[16];
 
     /// <summary>
-    /// Gets or sets a value indicating whether the replay does not contain the working set slot ids and as such <see cref=" ClientListByWorkingSetSlotID"/>
+    /// Gets or sets a value indicating whether the replay does not contain the working set slot ids from <c>replay.details</c> and as such <see cref=" ClientListByWorkingSetSlotID"/>
     /// will contain all <see langword="null"/>s.
     /// </summary>
-    internal bool NoWorkingSetSlotID { get; set; } = false;
+    internal bool NoDetailsWorkingSetSlotID { get; set; } = false;
 
     /// <summary>
     /// Gets the collection of open slot players. In some places, this is used instead of the 'Player' array, in games with less than 10 players.
@@ -233,7 +233,9 @@ public partial class StormReplay
 
     internal string?[][] TeamHeroAttributeIdBans { get; private set; } = [[null, null, null], [null, null, null]];
 
-    internal StormBanChooser[] TeamBanChoosers { get; private set; } = [StormBanChooser.Unknown, StormBanChooser.Unknown];
+    internal StormBanChooserType[] TeamBanChooserTypes { get; private set; } = [StormBanChooserType.Unknown, StormBanChooserType.Unknown];
+
+    internal StormPlayer?[] TeamBanPlayerChooser { get; private set; } = [null, null];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<StormGameEvent> GameEventsInternal { get; private set; } = [];
@@ -273,14 +275,27 @@ public partial class StormReplay
     /// <summary>
     /// Gets how a team's ban chooser is determined.
     /// </summary>
-    /// <param name="stormTeam">The <see cref="StormTeam"/> to obtain the ban chooser for.</param>
-    /// <returns>A <see cref="StormBanChooser"/>.</returns>
-    public StormBanChooser GetTeamBanChooser(StormTeam stormTeam)
+    /// <param name="stormTeam">The <see cref="StormTeam"/> to obtain the ban chooser type for.</param>
+    /// <returns>A <see cref="StormBanChooserType"/>.</returns>
+    public StormBanChooserType GetTeamBanChooserType(StormTeam stormTeam)
     {
         if (!(stormTeam == StormTeam.Blue || stormTeam == StormTeam.Red))
-            return StormBanChooser.Unknown;
+            return StormBanChooserType.Unknown;
 
-        return TeamBanChoosers[(int)stormTeam];
+        return TeamBanChooserTypes[(int)stormTeam];
+    }
+
+    /// <summary>
+    /// Gets the player marked as the ban chooser for the specified team.
+    /// </summary>
+    /// <param name="stormTeam">The <see cref="StormTeam"/>.</param>
+    /// <returns>The ban chooser for the specified team, or <see langword="null"/> no ban chooser is found.</returns>
+    public StormPlayer? GetTeamBanPlayerChooser(StormTeam stormTeam)
+    {
+        if (!(stormTeam == StormTeam.Blue || stormTeam == StormTeam.Red))
+            return null;
+
+        return TeamBanPlayerChooser[(int)stormTeam];
     }
 
     /// <summary>

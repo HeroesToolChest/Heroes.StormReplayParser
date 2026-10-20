@@ -3,7 +3,7 @@ namespace Heroes.StormReplayParser.Replay;
 /// <summary>
 /// Specifies how a team's ban chooser is determined.
 /// </summary>
-public enum StormBanChooser
+public enum StormBanChooserType
 {
     /// <summary>
     /// Indicates an unknown ban chooser.

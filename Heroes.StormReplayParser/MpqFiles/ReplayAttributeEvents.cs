@@ -234,14 +234,16 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.DraftTeam1BanChooserSlot:
                     {
-                        replay.TeamBanChoosers[0] = SetBanChooser(replay, value);
+                        replay.TeamBanChooserTypes[0] = SetBanChooser(replay, value, out StormPlayer? stormPlayer);
+                        replay.TeamBanPlayerChooser[0] = stormPlayer;
 
                         break;
                     }
 
                 case ReplayAttributeEventType.DraftTeam2BanChooserSlot:
                     {
-                        replay.TeamBanChoosers[1] = SetBanChooser(replay, value);
+                        replay.TeamBanChooserTypes[1] = SetBanChooser(replay, value, out StormPlayer? stormPlayer);
+                        replay.TeamBanPlayerChooser[1] = stormPlayer;
 
                         break;
                     }
@@ -274,26 +276,26 @@ internal static class ReplayAttributeEvents
     }
 
     // the value is "Hmmr" (ranked games), a player slot (m_workingSetSlotId) for custom games, or 22 when bans are not used
-    internal static StormBanChooser GetBanChooser(string value, out int? playerSlot)
+    internal static StormBanChooserType GetBanChooser(string value, out int? playerSlot)
     {
         playerSlot = null;
 
         if (value == "Hmmr")
-            return StormBanChooser.HighestMmr;
+            return StormBanChooserType.HighestMmr;
 
         if (!int.TryParse(value, out int slot))
-            return StormBanChooser.Unknown;
+            return StormBanChooserType.Unknown;
 
         if (slot == 22)
-            return StormBanChooser.None;
+            return StormBanChooserType.None;
 
         // 16 total player slots
         if (slot < 0 || slot >= 16)
-            return StormBanChooser.Unknown;
+            return StormBanChooserType.Unknown;
 
         playerSlot = slot;
 
-        return StormBanChooser.Player;
+        return StormBanChooserType.Player;
     }
 
     internal static StormLobbyMode GetLobbyMode(string value) => value switch
@@ -381,14 +383,23 @@ internal static class ReplayAttributeEvents
         _ => ComputerDifficulty.Unknown,
     };
 
-    private static StormBanChooser SetBanChooser(StormReplay replay, string value)
+    private static StormBanChooserType SetBanChooser(StormReplay replay, string value, out StormPlayer? stormPlayer)
     {
-        StormBanChooser banChooser = GetBanChooser(value, out int? playerSlot);
+        StormBanChooserType banChooser = GetBanChooser(value, out int? playerSlot);
+
+        if (playerSlot is null)
+        {
+            stormPlayer = null;
+            return banChooser;
+        }
 
         // the ban chooser is a participant, so they will be in the replay.details
-        if (playerSlot.HasValue && replay.ClientListByWorkingSetSlotID[playerSlot.Value] is StormPlayer player)
+        StormPlayer? player = replay.ClientListByWorkingSetSlotID[playerSlot.Value];
+
+        if (player is not null)
             player.IsBanChooser = true;
 
+        stormPlayer = player;
         return banChooser;
     }
 }

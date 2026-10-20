@@ -226,8 +226,12 @@ internal static class ReplayInitData
                 }
                 else if (!string.IsNullOrEmpty(toonHandle) && observerStatus == 0)
                 {
+                    // no WorkingSetSlotID from replay.details, so we have to find the player (data) by their toonhandle to update to set to ClientListByUserID
                     replay.ClientListByUserID[userId.Value] = replay.Players.FirstOrDefault(x => x is not null && x.ToonHandle?.ToString() == toonHandle)
                         ?? throw new StormParseException($"Unable to set {nameof(replay.ClientListByUserID)}, could not find player with a toonhandle of {toonHandle}");
+
+                    // then we set the ClientListByWorkingSetSlotID from the ClientListByUserID
+                    replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value] = replay.ClientListByUserID[userId.Value];
                 }
                 else if (observerStatus == 0)
                 {

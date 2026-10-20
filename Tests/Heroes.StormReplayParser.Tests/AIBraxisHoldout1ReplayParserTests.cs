@@ -84,6 +84,8 @@ public class AIBraxisHoldout1ReplayParserTests
 
         Assert.IsFalse(_stormReplay.HasObservers);
         Assert.IsTrue(_stormReplay.HasAI);
+
+        Assert.IsFalse(_stormReplay.NoDetailsWorkingSetSlotID);
     }
 
     [TestMethod]

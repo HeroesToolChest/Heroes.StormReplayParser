@@ -82,6 +82,8 @@ public class VolskayaFoundry1ReplayParserTests
 
         Assert.IsEmpty(_stormReplay.StormObservers.ToList());
         Assert.AreEqual(0, _stormReplay.PlayersObserversCount);
+
+        Assert.IsFalse(_stormReplay.NoDetailsWorkingSetSlotID);
     }
 
     [TestMethod]

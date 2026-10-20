@@ -118,8 +118,8 @@ public class BattleLobbyStormLeague1Tests
     [TestMethod]
     public void BanChooserTest()
     {
-        Assert.AreEqual(StormBanChooser.HighestMmr, _stormReplay.GetTeamBanChooser(StormTeam.Blue));
-        Assert.AreEqual(StormBanChooser.HighestMmr, _stormReplay.GetTeamBanChooser(StormTeam.Red));
+        Assert.AreEqual(StormBanChooserType.HighestMmr, _stormReplay.GetTeamBanChooser(StormTeam.Blue));
+        Assert.AreEqual(StormBanChooserType.HighestMmr, _stormReplay.GetTeamBanChooser(StormTeam.Red));
         Assert.DoesNotContain(x => x.IsBanChooser, _stormReplay.StormPlayers);
     }
 
