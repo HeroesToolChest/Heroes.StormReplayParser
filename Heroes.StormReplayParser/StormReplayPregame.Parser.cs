@@ -41,13 +41,22 @@ public partial class StormReplayPregame
     /// </summary>
     /// <param name="path">The path to the <c>replay.server.battlelobby</c> file.</param>
     /// <param name="parsePregameOptions">Sets the pregame parsing options.</param>
+    /// <param name="licenseIdCatalog">
+    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) are owned by the players in the replay.
+    /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
+    /// </param>
     /// <returns>A <see cref="StormReplayPregameResult"/>.</returns>
     /// <exception cref="ArgumentException"><paramref name="path"/> cannot be <see langword="null"/> or empty.</exception>
-    public static StormReplayPregameResult Parse(string path, ParsePregameOptions? parsePregameOptions = null)
+    public static StormReplayPregameResult Parse(string path, ParsePregameOptions? parsePregameOptions = null, IReadOnlySet<long>? licenseIdCatalog = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
 
-        return ParseStormReplayPregame(new StormReplayPregame(path, parsePregameOptions ?? ParsePregameOptions.DefaultParsing));
+        ParsePregameOptions options = parsePregameOptions ?? ParsePregameOptions.DefaultParsing;
+
+        return ParseStormReplayPregame(new StormReplayPregame(path, options)
+        {
+            LicenseIdCatalog = licenseIdCatalog,
+        });
     }
 
     /// <summary>
@@ -55,13 +64,22 @@ public partial class StormReplayPregame
     /// </summary>
     /// <param name="stream">The stream containing the <c>replay.server.battlelobby</c> data.</param>
     /// <param name="parsePregameOptions">Sets the pregame parsing options.</param>
+    /// <param name="licenseIdCatalog">
+    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) are owned by the players in the replay.
+    /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
+    /// </param>
     /// <returns>A <see cref="StormReplayPregameResult"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
-    public static StormReplayPregameResult Parse(Stream stream, ParsePregameOptions? parsePregameOptions = null)
+    public static StormReplayPregameResult Parse(Stream stream, ParsePregameOptions? parsePregameOptions = null, IReadOnlySet<long>? licenseIdCatalog = null)
     {
         ArgumentNullException.ThrowIfNull(stream);
 
-        return ParseStormReplayPregame(new StormReplayPregame(stream, parsePregameOptions ?? ParsePregameOptions.DefaultParsing));
+        ParsePregameOptions options = parsePregameOptions ?? ParsePregameOptions.DefaultParsing;
+
+        return ParseStormReplayPregame(new StormReplayPregame(stream, options)
+        {
+            LicenseIdCatalog = licenseIdCatalog,
+        });
     }
 
     private static StormReplayPregameResult ParseStormReplayPregame(StormReplayPregame stormReplayPregame)
@@ -94,7 +112,7 @@ public partial class StormReplayPregame
         Span<byte> buffer = stackalloc byte[(int)fileStream.Length];
         fileStream.ReadExactly(buffer);
 
-        ReplayServerBattlelobby.Parse(this, buffer, true);
+        ReplayServerBattlelobby.Parse(this, buffer, true, _parsePregameOptions.ShouldParseLicenseCatalog);
 
         ValidateResult();
     }

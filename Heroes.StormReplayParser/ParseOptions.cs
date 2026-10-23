@@ -39,4 +39,12 @@ public class ParseOptions
     /// Gets or sets a value indicating whether message events should be parsed.
     /// </summary>
     public bool ShouldParseMessageEvents { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to parse the license catalog.
+    /// <para>
+    /// If <see langword="false"/>, <see cref="StormPlayer.PortraitLicenseId"/> will be <see langword="null"/> and <see cref="StormPlayer.OwnedLicenseIds"/> will be empty.
+    /// </para>
+    /// </summary>
+    public bool ShouldParseLicenseCatalog { get; set; } = false;
 }

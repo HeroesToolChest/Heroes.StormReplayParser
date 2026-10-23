@@ -173,7 +173,7 @@ internal static class ReplayInitData
         for (int i = 0; i < slotsLength; i++)
         {
             uint? userId = null;
-            uint? workingSetSlotID = null;
+            uint? workingSetSlotId = null;
 
             bitReader.ReadBits(8); // m_control
 
@@ -209,20 +209,27 @@ internal static class ReplayInitData
             }
 
             if (bitReader.ReadBoolean())
-                workingSetSlotID = bitReader.ReadBits(8); // m_workingSetSlotId
+                workingSetSlotId = bitReader.ReadBits(8); // m_workingSetSlotId
 
             // m_rewards
             uint rewardsLength = bitReader.ReadBits(17);
+
+            uint[] rewards = rewardsLength == 0
+                ? []
+                : new uint[rewardsLength];
+
             for (uint j = 0; j < rewardsLength; j++)
-                bitReader.ReadBits(32);
+            {
+                rewards[j] = bitReader.ReadBits(32);
+            }
 
             string toonHandle = bitReader.ReadBlobAsString(7); // m_toonHandle
 
-            if (userId.HasValue && workingSetSlotID.HasValue)
+            if (userId.HasValue && workingSetSlotId.HasValue)
             {
-                if (replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value] is not null)
+                if (replay.ClientListByWorkingSetSlotID[workingSetSlotId.Value] is not null)
                 {
-                    replay.ClientListByUserID[userId.Value] = replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value];
+                    replay.ClientListByUserID[userId.Value] = replay.ClientListByWorkingSetSlotID[workingSetSlotId.Value];
                 }
                 else if (!string.IsNullOrEmpty(toonHandle) && observerStatus == 0)
                 {
@@ -231,7 +238,8 @@ internal static class ReplayInitData
                         ?? throw new StormParseException($"Unable to set {nameof(replay.ClientListByUserID)}, could not find player with a toonhandle of {toonHandle}");
 
                     // then we set the ClientListByWorkingSetSlotID from the ClientListByUserID
-                    replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value] = replay.ClientListByUserID[userId.Value];
+                    replay.ClientListByWorkingSetSlotID[workingSetSlotId.Value] = replay.ClientListByUserID[userId.Value];
+                    replay.ClientListByWorkingSetSlotID[workingSetSlotId.Value]!.WorkingSetSlotId = workingSetSlotId;
                 }
                 else if (observerStatus == 0)
                 {
@@ -267,6 +275,9 @@ internal static class ReplayInitData
 
                 bitReader.ReadBits(32); // m_commanderLevel - So far, always 0
             }
+
+            if (userId.HasValue)
+                replay.ClientListByUserID[userId.Value]!.RewardHashes = rewards;
 
             if (userId.HasValue)
                 replay.ClientListByUserID[userId.Value]!.IsSilenced = bitReader.ReadBoolean(); // m_hasSilencePenalty

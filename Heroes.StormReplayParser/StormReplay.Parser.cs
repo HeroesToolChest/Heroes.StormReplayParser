@@ -46,13 +46,22 @@ public partial class StormReplay
     /// </summary>
     /// <param name="path">The path to the <c>.StormReplay</c> file.</param>
     /// <param name="parseOptions">Sets the parsing options. If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</param>
+    /// <param name="licenseIdCatalog">
+    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) are owned by the players in the replay.
+    /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
+    /// </param>
     /// <returns>A <see cref="StormReplayResult"/>.</returns>
     /// <exception cref="ArgumentException"><paramref name="path"/> cannot be <see langword="null"/> or empty.</exception>
-    public static StormReplayResult Parse(string path, ParseOptions? parseOptions = null)
+    public static StormReplayResult Parse(string path, ParseOptions? parseOptions = null, IReadOnlySet<long>? licenseIdCatalog = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
 
-        return ParseStormReplay(new StormReplay(path, parseOptions ?? ParseOptions.DefaultParsing));
+        ParseOptions options = parseOptions ?? ParseOptions.DefaultParsing;
+
+        return ParseStormReplay(new StormReplay(path, options)
+        {
+            LicenseIdCatalog = licenseIdCatalog,
+        });
     }
 
     /// <summary>
@@ -60,13 +69,22 @@ public partial class StormReplay
     /// </summary>
     /// <param name="stream">The stream containing the <c>.StormReplay</c> data.</param>
     /// <param name="parseOptions">Sets the parsing options. If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</param>
+    /// <param name="licenseIdCatalog">
+    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) are owned by the players in the replay.
+    /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
+    /// </param>
     /// <returns>A <see cref="StormReplayResult"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
-    public static StormReplayResult Parse(Stream stream, ParseOptions? parseOptions = null)
+    public static StormReplayResult Parse(Stream stream, ParseOptions? parseOptions = null, IReadOnlySet<long>? licenseIdCatalog = null)
     {
         ArgumentNullException.ThrowIfNull(stream);
 
-        return ParseStormReplay(new StormReplay(stream, parseOptions ?? ParseOptions.DefaultParsing));
+        ParseOptions options = parseOptions ?? ParseOptions.DefaultParsing;
+
+        return ParseStormReplay(new StormReplay(stream, options)
+        {
+            LicenseIdCatalog = licenseIdCatalog,
+        });
     }
 
     private static StormReplayResult ParseStormReplay(StormReplay stormReplay)
@@ -89,24 +107,30 @@ public partial class StormReplay
         _parseStatus = StormReplayParseStatus.Exception;
     }
 
-    private void FinalPlayerData()
+    private void FinalPlayerDataProcessing()
     {
         TimeSpan latestCameraUpdateEvent = TimeSpan.MinValue;
-        bool foundPlayer = false;
 
         foreach (StormPlayer? player in ClientListByUserID)
         {
             if (player is null)
                 continue;
 
-            foundPlayer = true;
-
             if (player.LastCameraUpdateEvent > latestCameraUpdateEvent)
                 latestCameraUpdateEvent = player.LastCameraUpdateEvent;
-        }
 
-        if (!foundPlayer)
-            throw new InvalidOperationException("Sequence contains no elements");
+            if (player.PortraitHash is not null && player.RewardTagsCount.HasValue && player.RewardHashes.Length - player.RewardTagsCount == player.OwnedLicenseIdsInternal.Count)
+            {
+                // can be -1 if portrait is default
+                int ownedIndex = player.RewardHashes.AsSpan(player.RewardTagsCount.Value).IndexOf(player.PortraitHash.Value);
+
+                if (ownedIndex >= 0)
+                    player.PortraitLicenseId = player.OwnedLicenseIdsInternal[ownedIndex];
+            }
+
+            // empty since no longer needed
+            player.RewardHashes = [];
+        }
 
         // remove the occurrence where the players leaves at the end of the match
         foreach (StormPlayer? player in ClientListByUserID)
@@ -164,8 +188,8 @@ public partial class StormReplay
         if (_parseOptions.ShouldParseMessageEvents)
             ParseMpqFile(pool, ReplayMessageEvents.FileName, ReplayMessageEvents.Parse);
 
+        FinalPlayerDataProcessing();
         ValidateResult();
-        FinalPlayerData();
     }
 
     private void ParseMpqFile(ArrayPool<byte> pool, string fileName, MpqFileParser parser)
@@ -198,8 +222,13 @@ public partial class StormReplay
     {
         ParseMpqFile(pool, ReplayServerBattlelobby.FileName, static (replay, buffer) =>
         {
-            StormReplayPregame replayPregame = new() { ReplayBuild = replay.ReplayBuild };
-            ReplayServerBattlelobby.Parse(replayPregame, buffer);
+            StormReplayPregame replayPregame = new()
+            {
+                ReplayBuild = replay.ReplayBuild,
+                LicenseIdCatalog = replay.LicenseIdCatalog,
+            };
+
+            ReplayServerBattlelobby.Parse(replayPregame, buffer, shouldParseLicenseCatalog: replay._parseOptions.ShouldParseLicenseCatalog);
             replayPregame.TransferTo(replay);
         });
     }

@@ -9,7 +9,7 @@ internal static class ReplayServerBattlelobby
 
     public static string FileName { get; } = "replay.server.battlelobby";
 
-    public static void Parse(StormReplayPregame replay, ReadOnlySpan<byte> source, bool pregameMode = false)
+    public static void Parse(StormReplayPregame replay, ReadOnlySpan<byte> source, bool pregameMode = false, bool shouldParseLicenseCatalog = false)
     {
         // just return if too old
         if (replay.ReplayBuild <= 61718)
@@ -380,27 +380,21 @@ internal static class ReplayServerBattlelobby
         }
 
         /* Collection section */
-        uint collectionLength = bitReader.ReadBits(16);
 
-        for (int i = 0; i < collectionLength; i++)
-        {
-            bitReader.ReadAlignedBytes(8);
-        }
+        // all the collection items (heroes, skins, mounts, portraits, sprays, etc.) as their License values from the game data, 8 bytes each
+        int collectionLength = (int)bitReader.ReadBits(16);
 
-        uint hasCollectionLength = bitReader.ReadBits(32);
+        ReadOnlySpan<byte> collectionLicenses = bitReader.ReadAlignedBytes(collectionLength * 8);
+
+        int hasCollectionLength = (int)bitReader.ReadBits(32);
 
         if (collectionLength != hasCollectionLength)
-            throw new StormParseException($"{_exceptionHeader}: skin collection lengths do not match: {collectionLength} != {hasCollectionLength}");
+            throw new StormParseException($"{_exceptionHeader}: collection license lengths do not match: {collectionLength} != {hasCollectionLength}");
 
-        for (int i = 0; i < hasCollectionLength; i++)
-        {
-            // 16 is total player slots
-            for (int j = 0; j < 16; j++)
-            {
-                bitReader.ReadAlignedByte();
-                bitReader.ReadAlignedByte();
-            }
-        }
+        // for each item, 2 bytes for each of the 16 player slots (m_workingSetSlotId), non-zero if the player owns the item
+        ReadOnlySpan<byte> collectionOwnedFlags = bitReader.ReadAlignedBytes(hasCollectionLength * 16 * 2);
+
+        SetLicenseIds(replay, collectionLicenses, collectionLength, collectionOwnedFlags, shouldParseLicenseCatalog);
 
         /* init data section */
         if (replay.ReplayBuild >= 85027)
@@ -419,10 +413,14 @@ internal static class ReplayServerBattlelobby
         uint replayOwnerLobbyId = bitReader.ReadBits(32); // the lobby id of the player whose game client created this file (owner of the replay file)
         uint playersLength = bitReader.ReadBits(5);
 
+        Dictionary<uint, uint> workingSetSlotIdByPlayerLobbyId = [];
+
         for (int i = 0; i < playersLength; i++)
         {
             uint playerLobbyId = bitReader.ReadBits(32); // sequential for each player in the lobby
             uint playerIndex = bitReader.ReadBits(5); // m_workingSetSlotId
+
+            workingSetSlotIdByPlayerLobbyId[playerLobbyId] = playerIndex;
 
             PregameStormPlayer player = replay.ClientListByWorkingSetSlotID[playerIndex];
             ToonHandle playerToonHandle = player.ToonHandle ??= new();
@@ -545,24 +543,37 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBitArray(32);
         }
 
-        // key value pairs for each player, such as "GEM", "GOLD", "XP", "XHC", "LOOT", "Lcns", "PORT", "POVT", and "ICON"
-        uint playerKeyValuesLength = bitReader.ReadBits(5);
+        // for each player, such as "GEM (none)", "GOLD (HeroGold)", "XP (HeroXP)", "XHC (HeroGem)", "LOOT (HeroLootChest)", "Lcns (HeroLicense)", "PORT (HeroPortrait)", "POVT (HeroPortraitOverlay)", and "ICON (HeroIcon)"
+        // these refer to the gamedata CReward type elements for Catatogry Tag
+        // the values are 0 or hashed licenses, "PORT" is the hashed license of the player's portrait
+        uint playerRewardTagsLength = bitReader.ReadBits(5); // num of players
 
-        for (int i = 0; i < playerKeyValuesLength; i++)
+        for (int i = 0; i < playerRewardTagsLength; i++)
         {
-            bitReader.ReadBits(32); // playerLobbyId
+            uint playerLobbyId = bitReader.ReadBits(32);
+            uint rewardsTagsLength = bitReader.ReadBits(11);
 
-            uint keyValuesLength = bitReader.ReadBits(11);
+            if (!workingSetSlotIdByPlayerLobbyId.TryGetValue(playerLobbyId, out uint workingSetSlotId))
+                throw new StormParseException($"{_exceptionHeader}: player lobby id not found");
 
-            for (int j = 0; j < keyValuesLength; j++)
+            PregameStormPlayer player = replay.ClientListByWorkingSetSlotID[workingSetSlotId];
+
+            uint? portraitHash = null;
+
+            for (int j = 0; j < rewardsTagsLength; j++)
             {
                 bitReader.ReadStringFromUnalignedBytes(4); // namespace - "Hero"
-                bitReader.ReadStringFromUnalignedBytes(4); // key
+                string tag = bitReader.ReadStringFromUnalignedBytes(4); // tag - "GEM, GOLD, XP, etc.
+                uint value = bitReader.ReadBits(32);
 
-                bitReader.ReadBits(32); // value
+                if (tag == "PORT")
+                    portraitHash = value;
             }
 
             bitReader.ReadBitArray(11); // b11
+
+            player.PortraitHash = portraitHash;
+            player.RewardTagsCount = (int)rewardsTagsLength;
         }
 
         // CSTM
@@ -994,6 +1005,52 @@ internal static class ReplayServerBattlelobby
             default:
                 throw new NotImplementedException();
         }
+    }
+
+    // the license id catalog is the same for all replays of the same build, so a provided catalog is used as is and never modified
+    private static void SetLicenseIds(StormReplayPregame replay, ReadOnlySpan<byte> licenseIds, int licenseIdsLength, ReadOnlySpan<byte> ownedFlags, bool shouldParseLicenseCatalog)
+    {
+        IReadOnlySet<long>? providedCatalog = replay.LicenseIdCatalog;
+
+        if (providedCatalog is null && !shouldParseLicenseCatalog)
+            return;
+
+        // only build a new catalog when one was not provided
+        HashSet<long>? newCatalog = providedCatalog is null ? new HashSet<long>(licenseIdsLength) : null;
+        bool isSameCatalog = providedCatalog?.Count == licenseIdsLength;
+
+        for (int item = 0; item < licenseIdsLength; item++)
+        {
+            long licenseId = BinaryPrimitives.ReadInt64BigEndian(licenseIds.Slice(item * 8, 8));
+
+            newCatalog?.Add(licenseId);
+
+            if (isSameCatalog && !providedCatalog!.Contains(licenseId))
+                isSameCatalog = false;
+
+            for (int i = 0; i < replay.ClientListByWorkingSetSlotID.Length; i++)
+            {
+                int flagIndex = ((item * 16) + i) * 2;
+
+                if ((ownedFlags[flagIndex] | ownedFlags[flagIndex + 1]) != 0)
+                    replay.ClientListByWorkingSetSlotID[i].OwnedLicenseIdsInternal.Add(licenseId);
+            }
+        }
+
+        if (newCatalog is not null)
+            replay.LicenseIdCatalog = newCatalog;
+        else if (!isSameCatalog)
+            replay.LicenseIdCatalog = CreateLicenseIdCatalog(licenseIds, licenseIdsLength); // provided catalog is from a different build
+    }
+
+    private static HashSet<long> CreateLicenseIdCatalog(ReadOnlySpan<byte> licenseIds, int licenseIdsLength)
+    {
+        HashSet<long> catalog = new(licenseIdsLength);
+
+        for (int item = 0; item < licenseIdsLength; item++)
+            catalog.Add(BinaryPrimitives.ReadInt64BigEndian(licenseIds.Slice(item * 8, 8)));
+
+        return catalog;
     }
 
     private static void PlayerCollectionChoice(ref BitReader bitReader)

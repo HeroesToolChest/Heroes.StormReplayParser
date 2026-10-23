@@ -48,7 +48,7 @@ internal static class ReplayDetails
             // x.StructureByIndex[7] // m_observe
 
             stormPlayer.IsWinner = versionDecoders[i].Structure?[8].GetValueAsUInt32() == 1; // m_result
-            stormPlayer.WorkingSetSlotId = (int?)versionDecoders[i].Structure?[9].OptionalData?.GetValueAsUInt32(); // m_workingSetSlotId
+            stormPlayer.WorkingSetSlotId = versionDecoders[i].Structure?[9].OptionalData?.GetValueAsUInt32(); // m_workingSetSlotId
 
             stormPlayer.PlayerHero ??= new PlayerHero();
             stormPlayer.PlayerHero.HeroName = versionDecoders[i].Structure![10].GetValueAsString(); // m_hero (name)

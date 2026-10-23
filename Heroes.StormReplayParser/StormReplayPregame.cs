@@ -127,6 +127,17 @@ public partial class StormReplayPregame
     }
 
     /// <summary>
+    /// Gets the set of license ids. This is all of the collection items of a build.
+    /// <para>
+    /// This will be <see langword="null"/> if not set or parsed.
+    /// </para>
+    /// <para>
+    /// This is the same for all replays of the same build.
+    /// </para>
+    /// </summary>
+    public IReadOnlySet<long>? LicenseIdCatalog { get; internal set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the battle lobby data was parsed successfully.
     /// </summary>
     public bool IsBattleLobbyPlayerInfoParsed { get; set; }

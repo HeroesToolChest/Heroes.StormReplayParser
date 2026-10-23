@@ -83,4 +83,94 @@ public class CustomBattlefieldofEternity2ReplayParserTests
 
         Assert.AreEqual(2, _stormReplay.StormPlayersWithObservers.Count(x => x.IsBanChooser));
     }
+
+    [TestMethod]
+    public void PortraitLicenseWithNoLicenseParsingTest()
+    {
+        Assert.IsTrue(_stormReplay.StormPlayersWithObservers.All(x => x.PortraitLicenseId is null));
+        Assert.IsNull(_stormReplay.LicenseIdCatalog);
+    }
+
+    [TestMethod]
+    public void PortraitLicenseParsingTest()
+    {
+        using FileStream stream = File.OpenRead(Path.Combine(_replaysFolder, _replayFile));
+        StormReplayResult result = StormReplay.Parse(stream, new ParseOptions()
+        {
+            ShouldParseLicenseCatalog = true,
+        });
+
+        StormReplay replay = result.Replay;
+
+        Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+
+        List<StormPlayer> players = [.. replay.StormPlayers];
+
+        Assert.AreEqual(52780, players[0].PortraitLicenseId); // ToonThunderGoddessCassiaPortrait
+        Assert.AreEqual(92261, players[6].PortraitLicenseId); // ClassicRexxarPortrait03
+        Assert.AreEqual(26912, players[9].PortraitLicenseId); // HGC2018P1TeamFreedomPortrait
+        Assert.IsNull(players[3].PortraitLicenseId); // portrait without a license
+
+        Assert.IsNotNull(replay.LicenseIdCatalog);
+        Assert.HasCount(5418, replay.LicenseIdCatalog);
+
+        // no collection data for observers
+        Assert.IsTrue(replay.StormObservers.All(x => x.PortraitLicenseId is null));
+    }
+
+    [TestMethod]
+    public void PortraitLicenseNoParsingTest()
+    {
+        using FileStream stream = File.OpenRead(Path.Combine(_replaysFolder, _replayFile));
+        StormReplayResult result = StormReplay.Parse(stream, new ParseOptions()
+        {
+            ShouldParseLicenseCatalog = false,
+        });
+
+        StormReplay replay = result.Replay;
+
+        Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+
+        Assert.IsTrue(replay.StormPlayersWithObservers.All(x => x.PortraitLicenseId is null));
+        Assert.IsNull(replay.LicenseIdCatalog);
+    }
+
+    [TestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public void PortraitLicenseWithProvidedCatalogTestWithParsing(bool catalogParsing)
+    {
+        HashSet<long> licenseCatalog =
+        [
+            52780,
+            92261,
+            26912,
+        ];
+
+        using FileStream stream = File.OpenRead(Path.Combine(_replaysFolder, _replayFile));
+        StormReplayResult result = StormReplay.Parse(
+            stream,
+            new ParseOptions()
+            {
+                ShouldParseLicenseCatalog = catalogParsing,
+            },
+            licenseCatalog);
+
+        StormReplay replay = result.Replay;
+
+        Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+
+        List<StormPlayer> players = [.. replay.StormPlayers];
+
+        Assert.AreEqual(52780, players[0].PortraitLicenseId); // ToonThunderGoddessCassiaPortrait
+        Assert.AreEqual(92261, players[6].PortraitLicenseId); // ClassicRexxarPortrait03
+        Assert.AreEqual(26912, players[9].PortraitLicenseId); // HGC2018P1TeamFreedomPortrait
+        Assert.IsNull(players[3].PortraitLicenseId); // portrait without a license
+
+        Assert.IsNotNull(replay.LicenseIdCatalog);
+        Assert.HasCount(5418, replay.LicenseIdCatalog);
+
+        // no collection data for observers
+        Assert.IsTrue(replay.StormObservers.All(x => x.PortraitLicenseId is null));
+    }
 }

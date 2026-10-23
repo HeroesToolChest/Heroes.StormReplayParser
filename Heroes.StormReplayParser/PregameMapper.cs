@@ -4,6 +4,7 @@ internal static class PregameMapper
 {
     public static void TransferTo(this StormReplayPregame pregameReplay, StormReplay replay)
     {
+        replay.LicenseIdCatalog = pregameReplay.LicenseIdCatalog;
         replay.IsBattleLobbyPlayerInfoParsed = pregameReplay.IsBattleLobbyPlayerInfoParsed;
 
         int userIndex = 0;
@@ -32,6 +33,9 @@ internal static class PregameMapper
             stormPlayer.IsSilenced = stormPregamePlayer.IsSilenced;
             stormPlayer.IsVoiceSilenced = stormPregamePlayer.IsVoiceSilenced;
             stormPlayer.HasActiveBoost = stormPregamePlayer.HasActiveBoost;
+            stormPlayer.PortraitHash = stormPregamePlayer.PortraitHash;
+            stormPlayer.OwnedLicenseIdsInternal = stormPregamePlayer.OwnedLicenseIdsInternal;
+            stormPlayer.RewardTagsCount = stormPregamePlayer.RewardTagsCount;
 
             if (stormPregamePlayer.IsReplayOwner)
             {

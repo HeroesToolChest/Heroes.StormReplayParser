@@ -87,4 +87,76 @@ public class BattleLobbyCustom2Tests
 
         Assert.AreEqual(2, _stormReplay.StormPlayersWithObservers.Count(x => x.IsBanChooser));
     }
+
+    [TestMethod]
+    public void PortraitLicenseWithNoLicenseParsingTest()
+    {
+        Assert.IsNull(_stormReplay.LicenseIdCatalog);
+    }
+
+    [TestMethod]
+    public void PortraitLicenseParsingTest()
+    {
+        using FileStream stream = File.OpenRead(Path.Combine(_replaysFolder, _replayFile));
+        StormReplayPregameResult result = StormReplayPregame.Parse(stream, new ParsePregameOptions()
+        {
+            ShouldParseLicenseCatalog = true,
+        });
+
+        StormReplayPregame replay = result.ReplayBattleLobby;
+
+        Assert.AreEqual(StormReplayPregameParseStatus.Success, result.Status);
+
+        List<PregameStormPlayer> players = [.. replay.StormPlayers];
+
+        Assert.IsNotNull(replay.LicenseIdCatalog);
+        Assert.HasCount(5418, replay.LicenseIdCatalog);
+    }
+
+    [TestMethod]
+    public void PortraitLicenseNoParsingTest()
+    {
+        using FileStream stream = File.OpenRead(Path.Combine(_replaysFolder, _replayFile));
+        StormReplayPregameResult result = StormReplayPregame.Parse(stream, new ParsePregameOptions()
+        {
+            ShouldParseLicenseCatalog = false,
+        });
+
+        StormReplayPregame replay = result.ReplayBattleLobby;
+
+        Assert.AreEqual(StormReplayPregameParseStatus.Success, result.Status);
+
+        Assert.IsNull(replay.LicenseIdCatalog);
+    }
+
+    [TestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public void PortraitLicenseWithProvidedCatalogTestWithParsing(bool catalogParsing)
+    {
+        HashSet<long> licenseCatalog =
+        [
+            52780,
+            92261,
+            26912,
+        ];
+
+        using FileStream stream = File.OpenRead(Path.Combine(_replaysFolder, _replayFile));
+        StormReplayPregameResult result = StormReplayPregame.Parse(
+            stream,
+            new ParsePregameOptions()
+            {
+                ShouldParseLicenseCatalog = catalogParsing,
+            },
+            licenseCatalog);
+
+        StormReplayPregame replay = result.ReplayBattleLobby;
+
+        Assert.AreEqual(StormReplayPregameParseStatus.Success, result.Status);
+
+        List<PregameStormPlayer> players = [.. replay.StormPlayers];
+
+        Assert.IsNotNull(replay.LicenseIdCatalog);
+        Assert.HasCount(5418, replay.LicenseIdCatalog);
+    }
 }

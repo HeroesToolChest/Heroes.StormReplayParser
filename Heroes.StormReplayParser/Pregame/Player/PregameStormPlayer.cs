@@ -128,9 +128,21 @@ public class PregameStormPlayer
     /// </summary>
     public int HeroMasteryTiersCount => HeroMasteryTiersByHeroAttributeIdInternal.Count;
 
+    /// <summary>
+    /// Gets a collection of owned license ids.
+    /// </summary>
+    public IReadOnlyList<long> OwnedLicenseIds => OwnedLicenseIdsInternal.AsReadOnly();
+
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal Dictionary<string, HeroMasteryTier> HeroMasteryTiersByHeroAttributeIdInternal { get; } = new(StringComparer.Ordinal);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal Dictionary<ReplayAttributeEventType, string> PlayerTeamValueByAttributeEventType { get; } = [];
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    internal List<long> OwnedLicenseIdsInternal { get; set; } = [];
+
+    internal uint? PortraitHash { get; set; }
+
+    internal int? RewardTagsCount { get; set; }
 }

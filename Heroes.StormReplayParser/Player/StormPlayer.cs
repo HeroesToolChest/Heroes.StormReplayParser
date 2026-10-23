@@ -129,6 +129,17 @@ public class StormPlayer
     public bool IsBanChooser { get; set; }
 
     /// <summary>
+    /// Gets or sets the license of the player's selected portrait. This is the <c>License</c> value of the <c>CRewardPortrait</c> in the game data.
+    /// <para>
+    /// This is only available in replays from build 89754 and later.
+    /// </para>
+    /// <para>
+    /// Will be <see langword="null"/> if the portrait does not have a license, which are mostly progression and achievement portraits, or if the player is an observer.
+    /// </para>
+    /// </summary>
+    public long? PortraitLicenseId { get; set; }
+
+    /// <summary>
     /// Gets or sets the computer player difficulty.
     /// </summary>
     public ComputerDifficulty ComputerDifficulty { get; set; } = ComputerDifficulty.Unknown;
@@ -158,6 +169,14 @@ public class StormPlayer
     /// </summary>
     public int? MatchAwardsCount => ScoreResult?.MatchAwards.Count;
 
+    /// <summary>
+    /// Gets a collection of owned license ids.
+    /// <para>
+    /// This is used to determine if the player owns a specific hero, skin, mount, announcer, or other content.
+    /// </para>
+    /// </summary>
+    public IReadOnlyList<long> OwnedLicenseIds => OwnedLicenseIdsInternal.AsReadOnly();
+
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal Dictionary<string, HeroMasteryTier> HeroMasteryTiersByHeroAttributeIdInternal { get; set; } = new(StringComparer.Ordinal);
 
@@ -172,7 +191,18 @@ public class StormPlayer
 
     internal TimeSpan LastCameraUpdateEvent { get; set; }
 
-    internal int? WorkingSetSlotId { get; set; }
+    internal uint? WorkingSetSlotId { get; set; }
+
+    // from replay.initData, m_rewards
+    internal uint[] RewardHashes { get; set; } = [];
+
+    internal uint? PortraitHash { get; set; }
+
+    // from replay.server.battlelobby, license ids
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    internal List<long> OwnedLicenseIdsInternal { get; set; } = [];
+
+    internal int? RewardTagsCount { get; set; }
 
     /// <inheritdoc/>
     public override string ToString()

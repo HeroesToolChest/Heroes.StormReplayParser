@@ -192,14 +192,25 @@ public partial class StormReplay
     public IReadOnlyList<StormDraftPick> DraftPicks => DraftPicksInternal.AsReadOnly();
 
     /// <summary>
-    /// Gets or sets a value indicating whether battle lobby data was parsed successfully.
-    /// </summary>
-    public bool IsBattleLobbyPlayerInfoParsed { get; set; }
-
-    /// <summary>
     /// Gets a collection of disabled heroes as attributeIds.
     /// </summary>
     public IReadOnlyCollection<string> DisabledHeroes => DisabledHeroAttributeIdList;
+
+    /// <summary>
+    /// Gets the set of license ids. This is all of the collection items of a build.
+    /// <para>
+    /// This will be <see langword="null"/> if not set or parsed.
+    /// </para>
+    /// <para>
+    /// This is the same for all replays of the same build.
+    /// </para>
+    /// </summary>
+    public IReadOnlySet<long>? LicenseIdCatalog { get; internal set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether battle lobby data was parsed successfully.
+    /// </summary>
+    public bool IsBattleLobbyPlayerInfoParsed { get; set; }
 
     /// <summary>
     /// Gets or sets the list of all players (no observers).

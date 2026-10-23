@@ -640,7 +640,7 @@ public class VolskayaFoundry1ReplayParserTests
         using FileStream stream = File.OpenRead(Path.Combine(_replaysFolder, _replayFile));
         StormReplayResult result = StormReplay.Parse(stream, ParseOptions.MinimalParsing);
 
-        StormReplay replay = result.Replay!;
+        StormReplay replay = result.Replay;
 
         Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
 
