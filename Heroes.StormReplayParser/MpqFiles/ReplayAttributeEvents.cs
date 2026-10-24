@@ -57,7 +57,8 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.DifficultyLevel:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
+                        if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
+                            break;
 
                         player.ComputerDifficulty = GetComputerDifficultyLevel(value);
 
@@ -93,7 +94,8 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.HeroAttributeId:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
+                        if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
+                            break;
 
                         if (!player.IsAutoSelect)
                             player.IsAutoSelect = value == "rand";
@@ -105,7 +107,8 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.SkinAndSkinTint:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
+                        if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
+                            break;
 
                         if (!player.IsAutoSelect)
                             player.IsAutoSelect = value == "rand";
@@ -117,7 +120,8 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.MountAndMountTint:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
+                        if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
+                            break;
 
                         player.PlayerLoadout.MountAndMountTintAttributeId = value;
 
@@ -126,7 +130,8 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.Banner:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
+                        if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
+                            break;
 
                         player.PlayerLoadout.BannerAttributeId = value;
 
@@ -135,7 +140,8 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.Spray:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
+                        if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
+                            break;
 
                         player.PlayerLoadout.SprayAttributeId = value;
 
@@ -144,7 +150,8 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.VoiceLine:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
+                        if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
+                            break;
 
                         player.PlayerLoadout.VoiceLineAttributeId = value;
 
@@ -153,7 +160,8 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.Announcer:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
+                        if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
+                            break;
 
                         player.PlayerLoadout.AnnouncerPackAttributeId = value;
 
@@ -162,7 +170,8 @@ internal static class ReplayAttributeEvents
 
                 case ReplayAttributeEventType.HeroLevel:
                     {
-                        StormPlayer player = replay.PlayersWithOpenSlots[playerId - 1]!;
+                        if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
+                            break;
 
                         player.PlayerHero!.HeroLevel = int.Parse(value);
 
@@ -401,5 +410,14 @@ internal static class ReplayAttributeEvents
 
         stormPlayer = player;
         return banChooser;
+    }
+
+    // open slots do not have a player, but can still have per player attributes, such as in Sandbox games
+    private static StormPlayer? GetSlotPlayer(StormReplay replay, int playerId)
+    {
+        if (playerId >= 1 && playerId <= replay.PlayersWithOpenSlots.Length)
+            return replay.PlayersWithOpenSlots[playerId - 1];
+        else
+            return null;
     }
 }

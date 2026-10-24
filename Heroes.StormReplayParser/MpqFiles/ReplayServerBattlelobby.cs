@@ -470,10 +470,11 @@ internal static class ReplayServerBattlelobby
             // m_unk4
             bitReader.ReadBitArray(4);
 
-            if (replay.ReplayBuild >= 69228)
-                replay.ReplayBuild = bitReader.ReadInt32Unaligned(); // client base build
-            else
-                bitReader.ReadInt32Unaligned();
+            // client base build, which is 0 for some players, so it must not replace a known build
+            int clientBaseBuild = bitReader.ReadInt32Unaligned();
+
+            if (replay.ReplayBuild >= 69228 && clientBaseBuild > 0)
+                replay.ReplayBuild = clientBaseBuild;
 
             PlayerCollectionChoice(ref bitReader);
 
@@ -570,7 +571,7 @@ internal static class ReplayServerBattlelobby
                     portraitHash = value;
             }
 
-            bitReader.ReadBitArray(11); // b11
+            bitReader.ReadBitArray(11);  // b11; always 0, probably another count for a loop
 
             player.PortraitHash = portraitHash;
             player.RewardTagsCount = (int)rewardsTagsLength;
