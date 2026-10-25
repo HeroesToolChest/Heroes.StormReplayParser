@@ -48,8 +48,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Heroes.StormReplayParser.Tests"/>
-    <InternalsVisibleTo Include="HeroesParser"/>
-   
+    <InternalsVisibleTo Include="Heroes.StormReplayParser.Tests" />
+    <InternalsVisibleTo Include="HeroesParser" />
   </ItemGroup>
+  
 </Project>

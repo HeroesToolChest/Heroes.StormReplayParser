@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using System.Text.Json;
 
 namespace Heroes.StormReplayParser.MpqFiles;
 
@@ -15,15 +14,19 @@ internal static class ReplayServerBattlelobby
         if (replay.ReplayBuild <= 61718)
             return;
 
+        // The section up to the collection section is a merged copy of the headers of the map and its mods, which are in the Battle.net cache as .s2mh (versioned format) and .s2mi (publish info) files.
+
         for (int i = 0; i < 16; i++)
             replay.ClientListByWorkingSetSlotID[i] = new();
 
-        Dictionary<ReplayAttributeEventType, StormBattleLobbyAttribute> lobbyAttributesByAttributeEventType = [];
-        List<StormS2mFiles> s2mvFiles = [];
+        Dictionary<ReplayAttributeEventType, LobbyAttribute> lobbyAttributesByAttributeEventType = [];
+
         List<string> battleNetCachePaths = [];
+        List<StormS2mFiles> s2mvFiles = [];
 
         BitReader bitReader = new(source, EndianType.BigEndian);
 
+        // the Battle.net cache paths of the map and mod archives (s2ma), in dependency order with the map last
         uint dependenciesLength = bitReader.ReadBits(6);
 
         for (int i = 0; i < dependenciesLength; i++)
@@ -39,142 +42,98 @@ internal static class ReplayServerBattlelobby
             _ = new StormS2mFiles(ref bitReader);
         }
 
-        /* Attribute section */
+        /* Attribute section, the attribute definitions of all the mods (s2mh) */
 
-        uint count = bitReader.ReadBits(9); // total number of attributes
+        uint attributeLength = bitReader.ReadBits(9); // total number of attributes
 
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < attributeLength; i++)
         {
             bitReader.ReadInt32Unaligned(); // namespace
 
-            StormBattleLobbyAttribute stormBattleLobbyAttribute = new((ReplayAttributeEventType)bitReader.ReadInt32Unaligned());
+            LobbyAttribute lobbyAttribute = new((ReplayAttributeEventType)bitReader.ReadInt32Unaligned());
 
-            int attributeCount = (int)bitReader.ReadBits(12);
+            uint attributeValueLength = bitReader.ReadBits(12);
+            uint? valueModexIndex = null;
 
-            for (int j = 0; j < attributeCount; j++)
+            for (int j = 0; j < attributeValueLength; j++)
             {
-                StormBattleLobbyAttributeValue stormBattleLobbyAttributeValue = new()
-                {
-                    Value = bitReader.ReadStringFromUnalignedBytes(4), // attribute value
-                };
+                LobbyAttributeValue lobbyAttributeValue = new(ref bitReader, bitReader.ReadStringFromUnalignedBytes(4));
 
-                // first
-                if (bitReader.ReadBoolean())
-                {
-                    // f32
-                    if (bitReader.ReadBoolean())
-                    {
-                        bitReader.ReadBits(32);
-                    }
+                valueModexIndex ??= lobbyAttributeValue.NameStringReference?.ModIndex;
 
-                    bitReader.ReadBits(6); // NewField6
-                    stormBattleLobbyAttributeValue.FirstId = bitReader.ReadInt16Unaligned(); // word - id for s2ml xml
-                }
+                bitReader.ReadBits(3); // unknown, always 0, likely the length of an empty list
 
-                // second
-                if (bitReader.ReadBoolean())
-                {
-                    // f32
-                    if (bitReader.ReadBoolean())
-                    {
-                        bitReader.ReadBits(32);
-                    }
-
-                    bitReader.ReadBits(6); // NewField6
-                    stormBattleLobbyAttributeValue.SecondId = bitReader.ReadInt16Unaligned(); // word - id for s2ml xml
-                }
-
-                // f70
-                if (bitReader.ReadBoolean())
-                {
-                    bitReader.ReadBits(6); // NewField6
-                    bitReader.ReadBits(32); // NewField32
-                    bitReader.ReadBits(16); // NewField16
-                    bitReader.ReadBits(16); // NewField16
-                }
-
-                bitReader.ReadBitArray(1); // f1
-                bitReader.ReadBitArray(1); // f1
-                bitReader.ReadBitArray(1); // f1
-
-                stormBattleLobbyAttribute.Values.Add(stormBattleLobbyAttributeValue);
+                lobbyAttribute.Values.Add(lobbyAttributeValue);
             }
 
-            // EnabledWithAttribs
-            if (bitReader.ReadBoolean())
+            // name of the lobby attribute (for the group of attributes from the above loop)
+            LobbyAttributeValue? lobbyAttributeName = new(ref bitReader);
+            lobbyAttribute.EventTypeStringId = lobbyAttributeName?.NameStringReference?.StringId;
+            lobbyAttribute.ModIndex = lobbyAttributeName?.NameStringReference?.ModIndex ?? valueModexIndex; // the string table index is the position of the mod that defines the attribute
+
+            // requirements, the conditions for the attribute to be enabled
+            uint requirementsLength = bitReader.ReadBits(5);
+
+            for (int j = 0; j < requirementsLength; j++)
             {
-                bitReader.ReadBitArray(25); // NewField25
+                bitReader.ReadBits(5); // operation, 20 = a global attribute has one of the values, 21 = the same slot's attribute has one of the values
+                bitReader.ReadInt32Unaligned(); // namespace
 
-                uint typeCount = bitReader.ReadBits(5);
+                lobbyAttribute.EnabledEventType = (ReplayAttributeEventType)bitReader.ReadInt32Unaligned();
 
-                for (int x = 0; x < typeCount; x++)
+                uint enabledAttributeValueLength = bitReader.ReadBits(12);
+
+                for (int k = 0; k < enabledAttributeValueLength; k++)
                 {
-                    bitReader.ReadBitArray(5);
-
-                    bitReader.ReadInt32Unaligned(); // namespace
-
-                    stormBattleLobbyAttribute.EnabledEventType = (ReplayAttributeEventType)bitReader.ReadInt32Unaligned();
-
-                    int enabledAttributeCount = (int)bitReader.ReadBits(12);
-
-                    for (int j = 0; j < enabledAttributeCount; j++)
-                    {
-                        StormBattleLobbyEnabledAttributeValue stormBattleLobbyEnabledAttributeValue = new()
-                        {
-                            Value = bitReader.ReadStringFromUnalignedBytes(4), // attribute value
-                        };
-
-                        stormBattleLobbyAttribute.EnabledValues.Add(stormBattleLobbyEnabledAttributeValue);
-                    }
+                    lobbyAttribute.EnabledValues.Add(new LobbyEnabledAttributeValue(ref bitReader));
                 }
             }
 
-            // _end
-            bitReader.ReadBitArray(5); // NewField5
-            bitReader.ReadBitArray(5); // NewField5
-            bitReader.ReadBitArray(5); // NewField5
+            bitReader.ReadBits(5); // restriction, 1 = a value can only be used by one slot (fixed size teams and colors)
+            bitReader.ReadBits(5); // visibility, 3 = everyone, 1 = only the player ("Using Custom Observer UI")
+            bitReader.ReadBits(5); // access, 0 = the game, 1 = the player, 2 = the host, 3 = ban hero choices and player logo
+            bitReader.ReadBits(32); // option flags, 0x1 = team attribute, 0x8 = slot attribute (controller, team, participant role, tandem leader), 0x4 = unknown
 
-            bitReader.ReadBits(32); // newfield
+            // set default values
+            AttributeValueChoice(ref bitReader, replay, lobbyAttribute);
 
-            uint a170Length = bitReader.ReadBits(8);
-            for (int y = 0; y < a170Length; y++)
-            {
-                bitReader.ReadBitArray(5); // b5
-                bitReader.ReadBitArray(165); // b165
-                bitReader.ReadBitArray(15); // b15
-            }
+            bitReader.ReadBits(9); // sort order
 
-            // NewField
-            bitReader.ReadBitArray(11); // b11
-            bitReader.ReadBits(1); // f1
-            bitReader.ReadBits(9); // b9
-
-            if (!lobbyAttributesByAttributeEventType.TryAdd(stormBattleLobbyAttribute.EventType, stormBattleLobbyAttribute))
-                throw new StormParseException($"{_exceptionHeader}: duplicate attribute");
+            if (!lobbyAttributesByAttributeEventType.TryAdd(lobbyAttribute.EventType, lobbyAttribute))
+                throw new StormParseException($"{_exceptionHeader}: duplicate lobby attribute");
         }
+
+        /* Game header, the same as the map info in the map's s2mh, but using the merged string tables and s2mv list */
+
+        ReadLobbyStringReference(ref bitReader); // map name
+        ReadLobbyStringReference(ref bitReader); // map description
+        bitReader.ReadBoolean(); // unknown optional, never set
+
+        if (bitReader.ReadBoolean())
+            ReadImage(ref bitReader); // preview image, its s2mv index is the map's first s2mv in the s2mv list below
+
+        bitReader.ReadBits(4); // max players - 1
+        bitReader.ReadBits(5); // unknown, 22 for non-custom games, 0 (sometimes 1 or 5) for custom games
 
         /* Player attribute selections */
 
-        bitReader.ReadBitArray(30); // NewField
-        bitReader.ReadBits(16); // NewField
-        bitReader.ReadBitArray(81); // NewField
+        attributeLength = bitReader.ReadBits(9); // attribute count should be the same as previous
 
-        count = bitReader.ReadBits(9); // attribute count should be the same as previous
-
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < attributeLength; i++)
         {
             bitReader.ReadInt32Unaligned(); // namespace
 
             ReplayAttributeEventType attributeEventType = (ReplayAttributeEventType)bitReader.ReadInt32Unaligned();
 
-            PlayerSelectedAttributeChoice(ref bitReader, replay, lobbyAttributesByAttributeEventType[attributeEventType]);
+            AttributeValueChoice(ref bitReader, replay, lobbyAttributesByAttributeEventType[attributeEventType]);
         }
 
-        // the selections are not in attribute id order, so this can only be done once they have all been read
+        // set player teams, the selections are not in attribute id order, so this can only be done once they have all been read
         SetPlayerTeams(replay);
 
-        /* Local/locales section */
+        /* s2mv and locale section */
 
+        // the s2mv files of all the mods, without duplicates (images and JSON data)
         uint s2mvCacheHandlesLength = bitReader.ReadBits(6);
 
         for (int i = 0; i < s2mvCacheHandlesLength; i++)
@@ -182,201 +141,181 @@ internal static class ReplayServerBattlelobby
             s2mvFiles.Add(new StormS2mFiles(ref bitReader));
         }
 
-        uint localesLength = bitReader.ReadBits(5); // number of locales
+        int localesLength = (int)bitReader.ReadBits(5); // number of locales, either only "enUS" or all of them
+        Dictionary<string, StormS2mFiles[]> s2mlFilesByLocale = new(localesLength, StringComparer.Ordinal);
 
         for (int i = 0; i < localesLength; i++)
         {
-            bitReader.ReadStringFromUnalignedBytes(4);
+            string locale = bitReader.ReadStringFromUnalignedBytes(4); // locale, such as "enUS"
 
-            uint s2mlSize = bitReader.ReadBits(6); // number of s2ml in locale
+            // the string tables (s2ml), one per mod in the used mods order, the string table index of a string reference is its position in this list
+            // sometimes there is an extra handle at the end that is all zeros
+            uint s2mlSize = bitReader.ReadBits(6);
+            StormS2mFiles[] s2mlFiles = new StormS2mFiles[s2mlSize];
 
             for (int j = 0; j < s2mlSize; j++)
             {
-                _ = new StormS2mFiles(ref bitReader);
+                s2mlFiles[j] = new StormS2mFiles(ref bitReader);
             }
+
+            s2mlFilesByLocale[locale] = s2mlFiles;
         }
 
-        bitReader.ReadBitArray(128); // fil
+        // an attribute's mod index is the position of its mod's s2ml file in each locale, the attributes of the same mod share the same lookup
+        Dictionary<uint, Dictionary<string, StormS2mFiles>> s2mlFileByLocaleByModIndex = [];
 
+        foreach (LobbyAttribute attribute in lobbyAttributesByAttributeEventType.Values)
+        {
+            if (attribute.ModIndex is not uint modIndex)
+                continue;
+
+            if (!s2mlFileByLocaleByModIndex.TryGetValue(modIndex, out Dictionary<string, StormS2mFiles>? s2mlFileByLocale))
+            {
+                s2mlFileByLocale = new(s2mlFilesByLocale.Count, StringComparer.Ordinal);
+
+                foreach ((string locale, StormS2mFiles[] s2mlFiles) in s2mlFilesByLocale)
+                {
+                    if (modIndex < s2mlFiles.Length)
+                        s2mlFileByLocale[locale] = s2mlFiles[modIndex];
+                }
+
+                s2mlFileByLocaleByModIndex[modIndex] = s2mlFileByLocale;
+            }
+
+            attribute.S2mlFileByLocale = s2mlFileByLocale;
+        }
+
+        // unknown, the same value in all builds
+        bitReader.ReadULongBits(64);
+        bitReader.ReadULongBits(64);
+
+        // the map and its mods, in dependency order with the map last
         uint usedModsLength = bitReader.ReadBits(5);
 
         for (int i = 0; i < usedModsLength; i++)
         {
-            // ModId
-            bitReader.ReadBits(32); // id
-            bitReader.ReadBits(32); // ofs
-
-            // Priority
-            bitReader.ReadBits(4);
+            bitReader.ReadBits(32); // document id
+            bitReader.ReadBits(32); // version
+            bitReader.ReadBits(4); // priority, 2 for the mods, 0 for the map
         }
 
-        uint mods2Length = bitReader.ReadBits(7);
+        /*
+         * Document headers, one for each of the used mods, from their s2mh (header) and s2mi (publish info).
+         * Unlike the rest of this section, the string table and s2mv indexes in here are local to the document.
+         */
+        uint documentsLength = bitReader.ReadBits(7);
 
-        for (int i = 0; i < mods2Length; i++)
+        for (int i = 0; i < documentsLength; i++)
         {
-            // ModId
-            bitReader.ReadBits(32); // id
-            bitReader.ReadBits(32); // ofs
+            bitReader.ReadBits(32); // document id
+            bitReader.ReadBits(32); // version
+            bitReader.ReadBits(16); // major version
+            bitReader.ReadBits(16); // minor version
 
-            // n16
-            bitReader.ReadBits(16); // n16
-            bitReader.ReadBits(16); // n16
-            bitReader.ReadBits(24); // n24
-            bitReader.ReadBits(7); // n7
-            bitReader.ReadBits(15); // n15
+            ReadLobbyStringReference(ref bitReader); // name
+            ReadLobbyStringReference(ref bitReader); // description
+            bitReader.ReadBoolean(); // unknown optional, never set
 
-            bitReader.ReadBitArray(2); // f2
-            bitReader.ReadBitArray(74); // fil
+            if (bitReader.ReadBoolean())
+                ReadImage(ref bitReader); // preview image
 
-            uint s2mvCacheHandlesLength2 = bitReader.ReadBits(6);
+            bitReader.ReadBits(4); // max players - 1, 15 for mods and 9 for maps
 
-            for (int j = 0; j < s2mvCacheHandlesLength2; j++)
+            // the document's own s2mv files
+            uint documentS2mvLength = bitReader.ReadBits(6);
+
+            for (int j = 0; j < documentS2mvLength; j++)
             {
                 _ = new StormS2mFiles(ref bitReader);
             }
 
-            bitReader.ReadBitArray(1); // flag
+            bitReader.ReadBoolean(); // unknown, always false
 
-            // string toon
+            // author name, such as "blizzmaps#1"
             bitReader.ReadBits(8); // region
             bitReader.ReadStringFromUnalignedBytes(4); // programId
             bitReader.ReadBits(32); // realm
-            bitReader.ReadBlobAsString(7, 2);  // m_globalName
+            bitReader.ReadBlobAsString(7, 2); // m_globalName
 
-            // toon
+            // author toon handle
             bitReader.ReadBits(8); // region
             bitReader.ReadStringFromUnalignedBytes(4); // programId
             bitReader.ReadBits(32); // realm
             bitReader.ReadLongBits(64); // id
 
-            // trttt
-
-            // b32
+            // unknown, only on maps (such as 248 and 99)
             if (bitReader.ReadBoolean())
             {
-                bitReader.ReadBitArray(32);
+                bitReader.ReadBits(16);
+                bitReader.ReadBits(16);
             }
 
-            // b23
+            // unknown string, only on some maps
             if (bitReader.ReadBoolean())
+                ReadLobbyStringReference(ref bitReader);
+
+            // tags, such as "BLIZ" and "PRGN"
+            uint tagsLength = bitReader.ReadBits(5);
+
+            for (int j = 0; j < tagsLength; j++)
             {
-                bitReader.ReadBitArray(23);
+                bitReader.ReadStringFromUnalignedBytes(4);
             }
 
-            bitReader.ReadBitArray(1); // b1
+            bitReader.ReadBoolean(); // unknown, always false
 
-            // b32
-            if (bitReader.ReadBoolean())
-            {
-                bitReader.ReadBitArray(32);
-            }
-
-            bitReader.ReadBitArray(3); // b3
-
-            bitReader.ReadBits(30); // b30
-
-            bitReader.ReadBitArray(3); // b3
-
-            // filler
-            bitReader.ReadStringFromUnalignedBytes(2); // word
-            bitReader.ReadBitArray(8); // b8
-            bitReader.ReadBitArray(8); // b8
-            bitReader.ReadBitArray(34); // b34
+            // game variant summary, only partially decoded, the optional part is only on maps
+            bitReader.ReadBits(16);
+            bitReader.ReadBits(8);
+            bitReader.ReadBits(8);
+            bitReader.ReadULongBits(34);
 
             if (bitReader.ReadBoolean())
-            {
-                bitReader.ReadBitArray(54); // b54
-            }
+                bitReader.ReadULongBits(54);
 
-            bitReader.ReadBitArray(1); // b1
-            bitReader.ReadBitArray(5); // b5
-            bitReader.ReadBitArray(5); // b5
-            bitReader.ReadBitArray(5); // b5
+            bitReader.ReadBoolean();
+            bitReader.ReadBits(5);
+            bitReader.ReadBits(5);
+            bitReader.ReadBits(5);
 
-            // bbbb
-            // ModId
-            bitReader.ReadBits(32); // id
-            bitReader.ReadBits(32); // ofs
+            // publish info (s2mi)
+            bitReader.ReadBits(32); // document id
+            bitReader.ReadBits(32); // version
+            bitReader.ReadBits(32); // unknown, always 0
+            bitReader.ReadBoolean(); // unknown, always true
+            bitReader.ReadBits(21); // publish flags
+            bitReader.ReadBits(32); // 0xCAFEBABE
+            bitReader.ReadULongBits(64); // revision id
 
-            bitReader.ReadBits(32); // n32
-            bitReader.ReadBitArray(1); // f
-            bitReader.ReadBits(21); // 21
-
-            bitReader.ReadBits(32); // CAFEBABE
-
-            // fil28
-            bitReader.ReadBits(28);
-
-            // fil
-            bitReader.ReadBitArray(36);
-
-            // hero
             if (bitReader.ReadBoolean())
+                GameInfo(ref bitReader);
+
+            // the document ids this document depends on
+            uint documentDependenciesLength = bitReader.ReadBits(6);
+
+            for (int j = 0; j < documentDependenciesLength; j++)
             {
-                bitReader.ReadBitArray(11); // b11
-
-                uint size = bitReader.ReadBits(4);
-
-                for (int j = 0; j < size; j++)
-                {
-                    bitReader.ReadBits(6); // num
-                    bitReader.ReadBits(32); // b32
-                    bitReader.ReadBits(16); // b16
-                    bitReader.ReadBits(16); // b16
-                    bitReader.ReadBits(23); // b23
-                }
-
-                bitReader.ReadBitArray(4); // b4
-
-                ChoiceSection2(ref bitReader);
-
-                uint size2 = bitReader.ReadBits(7);
-
-                for (int x = 0; x < size2; x++)
-                {
-                    bitReader.ReadBitArray(23);
-                }
-
-                bitReader.ReadBitArray(11); // b11
-
-                if (bitReader.ReadBoolean())
-                {
-                    bitReader.ReadBitArray(38); // b38
-                    bitReader.ReadBitArray(16); // b16
-                    bitReader.ReadBitArray(16); // b16
-                }
-
-                bitReader.ReadBitArray(1); // b1
-
-                uint heroLength = bitReader.ReadBits(5);
-
-                for (int x = 0; x < heroLength; x++)
-                {
-                    bitReader.ReadStringFromUnalignedBytes(4); // Hero
-                }
-
-                bitReader.ReadBitArray(23); // b23
+                bitReader.ReadBits(32); // document id
+                bitReader.ReadBits(32); // version, always 0
             }
 
-            // ModDependencies
-            uint modDependenciesLength = bitReader.ReadBits(6);
-
-            for (int j = 0; j < modDependenciesLength; j++)
-            {
-                bitReader.ReadBits(32); // id
-                bitReader.ReadBits(32); // ofs
-            }
-
-            // fil
-            bitReader.ReadBitArray(32); // b32
+            bitReader.ReadBits(32); // unknown, always 0
         }
 
-        // s2mh
+        // the s2mh (header) files of the used mods, in the same order
         uint s2mhCacheHandlesLength = bitReader.ReadBits(6);
+        StormS2mFiles[] s2mhFiles = new StormS2mFiles[s2mhCacheHandlesLength];
 
         for (int i = 0; i < s2mhCacheHandlesLength; i++)
         {
-            _ = new StormS2mFiles(ref bitReader);
+            s2mhFiles[i] = new StormS2mFiles(ref bitReader);
+        }
+
+        // an attribute's mod index is the position of its mod's s2mh file
+        foreach (LobbyAttribute attribute in lobbyAttributesByAttributeEventType.Values)
+        {
+            if (attribute.ModIndex is uint modIndex && modIndex < s2mhFiles.Length)
+                attribute.S2mhFile = s2mhFiles[modIndex];
         }
 
         /* Collection section */
@@ -546,7 +485,7 @@ internal static class ReplayServerBattlelobby
 
         // for each player, such as "GEM (none)", "GOLD (HeroGold)", "XP (HeroXP)", "XHC (HeroGem)", "LOOT (HeroLootChest)", "Lcns (HeroLicense)", "PORT (HeroPortrait)", "POVT (HeroPortraitOverlay)", and "ICON (HeroIcon)"
         // these refer to the gamedata CReward type elements for Catatogry Tag
-        // the values are 0 or hashed licenses, "PORT" is the hashed license of the player's portrait
+        // the values are 0 or Battle.net unlockable ids, which are in the unlockable files (.unlk) of the Battle.net cache, one file per tag
         uint playerRewardTagsLength = bitReader.ReadBits(5); // num of players
 
         for (int i = 0; i < playerRewardTagsLength; i++)
@@ -559,7 +498,8 @@ internal static class ReplayServerBattlelobby
 
             PregameStormPlayer player = replay.ClientListByWorkingSetSlotID[workingSetSlotId];
 
-            uint? portraitHash = null;
+            uint? portraitUnlockableId = null;
+            uint? portraitBorderUnlockableId = null;
 
             for (int j = 0; j < rewardsTagsLength; j++)
             {
@@ -567,13 +507,17 @@ internal static class ReplayServerBattlelobby
                 string tag = bitReader.ReadStringFromUnalignedBytes(4); // tag - "GEM, GOLD, XP, etc.
                 uint value = bitReader.ReadBits(32);
 
+                // "PORT" is the  and "POVT" is the portrait's border
                 if (tag == "PORT")
-                    portraitHash = value;
+                    portraitUnlockableId = value;
+                else if (tag == "POVT")
+                    portraitBorderUnlockableId = value;
             }
 
-            bitReader.ReadBitArray(11);  // b11; always 0, probably another count for a loop
+            bitReader.ReadBits(11); // b11; always 0, probably another count for a loop
 
-            player.PortraitHash = portraitHash;
+            player.PortraitUnlockableId = portraitUnlockableId;
+            player.PortraitBorderUnlockableId = portraitBorderUnlockableId;
             player.RewardTagsCount = (int)rewardsTagsLength;
         }
 
@@ -644,15 +588,19 @@ internal static class ReplayServerBattlelobby
         replay.IsBattleLobbyPlayerInfoParsed = true;
     }
 
-    // ('_choice', [(0,8),{0:('GlobalValue',6256),1:('ByPlayerValue',6260)}]), #6261
-    private static void PlayerSelectedAttributeChoice(ref BitReader bitReader, StormReplayPregame replay, StormBattleLobbyAttribute attribute)
+    private static void ReadLobbyStringReference(ref BitReader bitReader) => _ = new LobbyStringReference(ref bitReader);
+
+    private static void ReadImage(ref BitReader bitReader) => _ = new LobbyImage(ref bitReader);
+
+    // the same layout as the player attribute selections, but for the default value of an attribute
+    private static void AttributeValueChoice(ref BitReader bitReader, StormReplayPregame replay, LobbyAttribute attribute)
     {
         switch (bitReader.ReadBits(8))
         {
             case 0: // GlobalValue
                 {
                     int attributeValueIndex = (int)bitReader.ReadBits(11); // ValueIndex
-                    bitReader.ReadBitArray(1); // IsSet
+                    bitReader.ReadBoolean(); // IsLocked, set in non-custom games
 
                     SetGlobalAttributeEvent(replay, attribute, attributeValueIndex);
 
@@ -666,7 +614,7 @@ internal static class ReplayServerBattlelobby
                     for (int playerSlotIndex = 0; playerSlotIndex < totalPlayerSlots; playerSlotIndex++)
                     {
                         int attributeValueIndex = (int)bitReader.ReadBits(11); // ValueIndex
-                        bitReader.ReadBitArray(1); // IsSet
+                        bitReader.ReadBoolean(); // IsLocked, set in non-custom games
 
                         SetPlayerAttributeEvent(replay, attribute, playerSlotIndex, attributeValueIndex);
                     }
@@ -675,11 +623,11 @@ internal static class ReplayServerBattlelobby
                 }
 
             default:
-                throw new NotImplementedException();
+                throw new StormParseException($"{_exceptionHeader}: unknown attribute default value type");
         }
     }
 
-    private static void SetGlobalAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int attributeValueIndex)
+    private static void SetGlobalAttributeEvent(StormReplayPregame replay, LobbyAttribute attribute, int attributeValueIndex)
     {
         string value = attribute.Values[attributeValueIndex].Value;
 
@@ -692,53 +640,53 @@ internal static class ReplayServerBattlelobby
                     break;
                 }
 
-            case ReplayAttributeEventType.DraftTeam1Ban1:
-            case ReplayAttributeEventType.DraftTeam1Ban2:
-            case ReplayAttributeEventType.DraftTeam1Ban3:
-            case ReplayAttributeEventType.DraftTeam2Ban1:
-            case ReplayAttributeEventType.DraftTeam2Ban2:
-            case ReplayAttributeEventType.DraftTeam2Ban3:
+            case ReplayAttributeEventType.Team1Ban1HeroChoice:
+            case ReplayAttributeEventType.Team1Ban2HeroChoice:
+            case ReplayAttributeEventType.Team1Ban3HeroChoice:
+            case ReplayAttributeEventType.Team2Ban1HeroChoice:
+            case ReplayAttributeEventType.Team2Ba2HeroChoice:
+            case ReplayAttributeEventType.Team2Ban3HeroChoice:
                 switch (attribute.EventType)
                 {
-                    case ReplayAttributeEventType.DraftTeam1Ban1:
+                    case ReplayAttributeEventType.Team1Ban1HeroChoice:
                         replay.TeamHeroAttributeIdBans[0][0] = value;
                         break;
-                    case ReplayAttributeEventType.DraftTeam1Ban2:
+                    case ReplayAttributeEventType.Team1Ban2HeroChoice:
                         replay.TeamHeroAttributeIdBans[0][1] = value;
                         break;
-                    case ReplayAttributeEventType.DraftTeam1Ban3:
+                    case ReplayAttributeEventType.Team1Ban3HeroChoice:
                         replay.TeamHeroAttributeIdBans[0][2] = value;
                         break;
-                    case ReplayAttributeEventType.DraftTeam2Ban1:
+                    case ReplayAttributeEventType.Team2Ban1HeroChoice:
                         replay.TeamHeroAttributeIdBans[1][0] = value;
                         break;
-                    case ReplayAttributeEventType.DraftTeam2Ban2:
+                    case ReplayAttributeEventType.Team2Ba2HeroChoice:
                         replay.TeamHeroAttributeIdBans[1][1] = value;
                         break;
-                    case ReplayAttributeEventType.DraftTeam2Ban3:
+                    case ReplayAttributeEventType.Team2Ban3HeroChoice:
                         replay.TeamHeroAttributeIdBans[1][2] = value;
                         break;
                 }
 
                 break;
 
-            case ReplayAttributeEventType.DraftTeam1BanChooserSlot:
+            case ReplayAttributeEventType.Team1BanChooser:
                 {
                     replay.TeamBanChoosers[0] = SetBanChooser(replay, value);
 
                     break;
                 }
 
-            case ReplayAttributeEventType.DraftTeam2BanChooserSlot:
+            case ReplayAttributeEventType.Team2BanChooser:
                 {
                     replay.TeamBanChoosers[1] = SetBanChooser(replay, value);
 
                     break;
                 }
 
-            case ReplayAttributeEventType.PrivacyOption:
+            case ReplayAttributeEventType.GamePrivacy:
                 {
-                    replay.GamePrivacy = ReplayAttributeEvents.GetPrivacyOption(value);
+                    replay.GamePrivacy = ReplayAttributeEvents.GetGamePrivacy(value);
 
                     break;
                 }
@@ -757,16 +705,16 @@ internal static class ReplayServerBattlelobby
                     break;
                 }
 
-            case ReplayAttributeEventType.DraftBanMode:
+            case ReplayAttributeEventType.BanMode:
                 {
-                    replay.BanMode = ReplayAttributeEvents.GetDraftBanMode(value);
+                    replay.BanMode = ReplayAttributeEvents.GetBanMode(value);
 
                     break;
                 }
 
-            case ReplayAttributeEventType.FirstReadyingTeam:
+            case ReplayAttributeEventType.FirstDraftTeam:
                 {
-                    replay.FirstDraftTeam = ReplayAttributeEvents.GetFirstReadyingTeam(value);
+                    replay.FirstDraftTeam = ReplayAttributeEvents.GetFirstDraftTeam(value);
 
                     break;
                 }
@@ -801,7 +749,7 @@ internal static class ReplayServerBattlelobby
         return banChooser;
     }
 
-    private static void SetPlayerAttributeEvent(StormReplayPregame replay, StormBattleLobbyAttribute attribute, int playerSlotIndex, int attributeValueIndex)
+    private static void SetPlayerAttributeEvent(StormReplayPregame replay, LobbyAttribute attribute, int playerSlotIndex, int attributeValueIndex)
     {
         string value = attribute.Values[attributeValueIndex].Value;
         PregameStormPlayer player = replay.ClientListByWorkingSetSlotID[playerSlotIndex];
@@ -810,21 +758,21 @@ internal static class ReplayServerBattlelobby
 
         switch (attribute.EventType)
         {
-            case ReplayAttributeEventType.PlayerType:
+            case ReplayAttributeEventType.Controller:
                 {
                     player.PlayerSlotType = ReplayAttributeEvents.GetPlayerType(value);
 
                     break;
                 }
 
-            case ReplayAttributeEventType.PlayerTeam1v1:
-            case ReplayAttributeEventType.PlayerTeam2v2:
-            case ReplayAttributeEventType.PlayerTeam3v3:
-            case ReplayAttributeEventType.PlayerTeam4v4:
-            case ReplayAttributeEventType.PlayerTeam5v5:
-            case ReplayAttributeEventType.PlayerTeam6v6:
+            case ReplayAttributeEventType.Team1v1:
+            case ReplayAttributeEventType.Team2v2:
+            case ReplayAttributeEventType.Team3v3:
+            case ReplayAttributeEventType.Team4v4:
+            case ReplayAttributeEventType.Team5v5:
+            case ReplayAttributeEventType.Team6v6:
                 {
-                    player.PlayerTeamValueByAttributeEventType.TryAdd(attribute.EventType, value);
+                    player.PlayerTeamValueByAttributeEventType[attribute.EventType] = value;
 
                     break;
                 }
@@ -850,14 +798,14 @@ internal static class ReplayServerBattlelobby
                     break;
                 }
 
-            case ReplayAttributeEventType.SkinAndSkinTint:
+            case ReplayAttributeEventType.Skin:
                 {
                     player.PlayerLoadout.SkinAndSkinTintAttributeId = value;
 
                     break;
                 }
 
-            case ReplayAttributeEventType.MountAndMountTint:
+            case ReplayAttributeEventType.Mount:
                 {
                     player.PlayerLoadout.MountAndMountTintAttributeId = value;
 
@@ -892,7 +840,7 @@ internal static class ReplayServerBattlelobby
                     break;
                 }
 
-            case ReplayAttributeEventType.Announcer:
+            case ReplayAttributeEventType.AnnouncerPack:
                 {
                     player.PlayerLoadout.AnnouncerPackAttributeId = value;
 
@@ -923,12 +871,12 @@ internal static class ReplayServerBattlelobby
     {
         ReplayAttributeEventType? playerTeamAttributeEventType = replay.TeamSize switch
         {
-            "1v1" => ReplayAttributeEventType.PlayerTeam1v1,
-            "2v2" => ReplayAttributeEventType.PlayerTeam2v2,
-            "3v3" => ReplayAttributeEventType.PlayerTeam3v3,
-            "4v4" => ReplayAttributeEventType.PlayerTeam4v4,
-            "5v5" => ReplayAttributeEventType.PlayerTeam5v5,
-            "6v6" => ReplayAttributeEventType.PlayerTeam6v6,
+            "1v1" => ReplayAttributeEventType.Team1v1,
+            "2v2" => ReplayAttributeEventType.Team2v2,
+            "3v3" => ReplayAttributeEventType.Team3v3,
+            "4v4" => ReplayAttributeEventType.Team4v4,
+            "5v5" => ReplayAttributeEventType.Team5v5,
+            "6v6" => ReplayAttributeEventType.Team6v6,
             _ => null,
         };
 
@@ -962,50 +910,56 @@ internal static class ReplayServerBattlelobby
         }
     }
 
-    // ('_choice', [(0,4),{0:('None',6353),1:('None',6354),2:('None',6355),3:('None',6356),4:('None',6357),5:('Data',6363)}]), #6364
-    private static void ChoiceSection2(ref BitReader bitReader)
+    // game info from the document's s2mh: screenshots, how to play, and matchmaker tags
+    private static void GameInfo(ref BitReader bitReader)
     {
-        switch (bitReader.ReadBits(4))
+        bitReader.ReadBits(11); // unknown, always 0, likely the lengths of two empty lists
+
+        uint screenshotsLength = bitReader.ReadBits(4);
+
+        for (int i = 0; i < screenshotsLength; i++)
         {
-            case 0: // None
-                {
-                    break;
-                }
-
-            case 1: // None
-                {
-                    break;
-                }
-
-            case 2: // None
-                {
-                    break;
-                }
-
-            case 3: // None
-                {
-                    break;
-                }
-
-            case 4: // None
-                {
-                    break;
-                }
-
-            case 5: // Data
-                {
-                    bitReader.ReadBitArray(40); // b40
-                    bitReader.ReadBitArray(16); // b16
-                    bitReader.ReadBitArray(79); // b79
-                    bitReader.ReadBitArray(160); // b160
-                    bitReader.ReadBitArray(105); // b105
-
-                    break;
-                }
-
-            default:
-                throw new NotImplementedException();
+            ReadImage(ref bitReader);
+            ReadLobbyStringReference(ref bitReader); // caption
         }
+
+        bitReader.ReadBits(4); // unknown, always 0, likely the length of an empty list
+
+        // the how to play headings, such as "Destroy the Enemy Core" and "Single Lane"
+        uint howToPlayLength = bitReader.ReadBits(4);
+
+        for (int i = 0; i < howToPlayLength; i++)
+        {
+            ReadLobbyStringReference(ref bitReader); // heading
+            bitReader.ReadBits(32); // index of the heading's first line in the how to play lines
+            bitReader.ReadBits(2); // list type
+            ReadLobbyStringReference(ref bitReader); // unknown, always 0
+        }
+
+        // the how to play lines that are under the headings
+        uint howToPlayLinesLength = bitReader.ReadBits(7);
+
+        for (int i = 0; i < howToPlayLinesLength; i++)
+        {
+            ReadLobbyStringReference(ref bitReader);
+        }
+
+        bitReader.ReadBits(11); // unknown, always 0, likely the lengths of two empty lists
+
+        if (bitReader.ReadBoolean())
+            ReadImage(ref bitReader); // 1920x1080 image, only on maps
+
+        bitReader.ReadBoolean(); // unknown optional, never set
+
+        // matchmaker tags, such as "Hero"
+        uint matchmakerTagsLength = bitReader.ReadBits(5);
+
+        for (int i = 0; i < matchmakerTagsLength; i++)
+        {
+            bitReader.ReadStringFromUnalignedBytes(4);
+        }
+
+        ReadLobbyStringReference(ref bitReader); // unknown, always 0
     }
 
     // the license id catalog is the same for all replays of the same build, so a provided catalog is used as is and never modified

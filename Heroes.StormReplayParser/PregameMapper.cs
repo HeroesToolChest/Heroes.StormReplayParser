@@ -33,7 +33,8 @@ internal static class PregameMapper
             stormPlayer.IsSilenced = stormPregamePlayer.IsSilenced;
             stormPlayer.IsVoiceSilenced = stormPregamePlayer.IsVoiceSilenced;
             stormPlayer.HasActiveBoost = stormPregamePlayer.HasActiveBoost;
-            stormPlayer.PortraitHash = stormPregamePlayer.PortraitHash;
+            stormPlayer.PortraitUnlockableId = stormPregamePlayer.PortraitUnlockableId;
+            stormPlayer.PortraitBorderUnlockableId = stormPregamePlayer.PortraitBorderUnlockableId;
             stormPlayer.OwnedLicenseIdsInternal = stormPregamePlayer.OwnedLicenseIdsInternal;
             stormPlayer.RewardTagsCount = stormPregamePlayer.RewardTagsCount;
 

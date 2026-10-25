@@ -85,6 +85,25 @@ public class CustomBattlefieldofEternity2ReplayParserTests
     }
 
     [TestMethod]
+    public void PortraitUnlockableIdTest()
+    {
+        // set without the license catalog parsing
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
+
+        Assert.AreEqual(2247611436, players[0].PortraitUnlockableId);
+        Assert.AreEqual(956270533, players[0].PortraitBorderUnlockableId); // basic border
+
+        Assert.AreEqual(2082266764, players[3].PortraitUnlockableId); // portrait without a license
+        Assert.AreEqual(2008600194, players[3].PortraitBorderUnlockableId); // storm border
+
+        Assert.AreEqual(3385697865, players[9].PortraitUnlockableId);
+        Assert.AreEqual(2008600194, players[9].PortraitBorderUnlockableId);
+
+        Assert.HasCount(3, _stormReplay.StormObservers);
+        Assert.IsTrue(_stormReplay.StormObservers.All(x => x.PortraitUnlockableId is null && x.PortraitBorderUnlockableId is null));
+    }
+
+    [TestMethod]
     public void PortraitLicenseWithNoLicenseParsingTest()
     {
         Assert.IsTrue(_stormReplay.StormPlayersWithObservers.All(x => x.PortraitLicenseId is null));

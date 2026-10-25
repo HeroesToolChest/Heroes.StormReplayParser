@@ -118,6 +118,24 @@ public class PregameStormPlayer
     public bool IsReplayOwner { get; set; }
 
     /// <summary>
+    /// Gets or sets the Battle.net unlockable id of the player's selected portrait.
+    /// <para>
+    /// This is the <c>m_unlockableId</c> of an entry in the <c>PORT</c> unlockable file (.unlk) of the Battle.net cache.
+    /// The portrait's name is in a string table file (.s2ql), at the <c>&lt;e&gt;</c> element whose id is the entry's <c>m_name.m_id</c>.
+    /// </para>
+    /// </summary>
+    public long? PortraitUnlockableId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Battle.net unlockable id of the player's selected portrait border, such as the basic border or the Storm border.
+    /// <para>
+    /// This is the <c>m_unlockableId</c> of an entry in the <c>POVT</c> unlockable file (.unlk) of the Battle.net cache.
+    /// The portrait's name is in a string table file (.s2ql), at the <c>&lt;e&gt;</c> element whose id is the entry's <c>m_name.m_id</c>.
+    /// </para>
+    /// </summary>
+    public long? PortraitBorderUnlockableId { get; set; }
+
+    /// <summary>
     /// Gets the player's hero's mastery tier levels. Only heroes with a tier level are included.
     /// <para>Only parsed for build 89754 and later.</para>
     /// </summary>
@@ -129,7 +147,7 @@ public class PregameStormPlayer
     public int HeroMasteryTiersCount => HeroMasteryTiersByHeroAttributeIdInternal.Count;
 
     /// <summary>
-    /// Gets a collection of owned license ids.
+    /// Gets a collection of owned license ids. The license ids are the <c>License</c> values of the <c>CReward</c> type entries in the game data.
     /// </summary>
     public IReadOnlyList<long> OwnedLicenseIds => OwnedLicenseIdsInternal.AsReadOnly();
 
@@ -141,8 +159,6 @@ public class PregameStormPlayer
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<long> OwnedLicenseIdsInternal { get; set; } = [];
-
-    internal uint? PortraitHash { get; set; }
 
     internal int? RewardTagsCount { get; set; }
 }

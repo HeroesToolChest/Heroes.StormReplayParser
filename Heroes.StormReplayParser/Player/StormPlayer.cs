@@ -131,13 +131,29 @@ public class StormPlayer
     /// <summary>
     /// Gets or sets the license of the player's selected portrait. This is the <c>License</c> value of the <c>CRewardPortrait</c> in the game data.
     /// <para>
-    /// This is only available in replays from build 89754 and later.
-    /// </para>
-    /// <para>
-    /// Will be <see langword="null"/> if the portrait does not have a license, which are mostly progression and achievement portraits, or if the player is an observer.
+    /// This will be <see langword="null"/> if the portrait does not have a license, which are mostly progression and achievement portraits, or if the player is an observer.
+    /// For these license-less portraits, the <see cref="PortraitUnlockableId"/> can be used to determine the portrait's name.
     /// </para>
     /// </summary>
     public long? PortraitLicenseId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Battle.net unlockable id of the player's selected portrait.
+    /// <para>
+    /// This is the <c>m_unlockableId</c> of an entry in the <c>PORT</c> unlockable file (.unlk) of the Battle.net cache.
+    /// The portrait's name is in a string table file (.s2ql), at the <c>&lt;e&gt;</c> element whose id is the entry's <c>m_name.m_id</c>.
+    /// </para>
+    /// </summary>
+    public long? PortraitUnlockableId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Battle.net unlockable id of the player's selected portrait border, such as the basic border or the Storm border.
+    /// <para>
+    /// This is the <c>m_unlockableId</c> of an entry in the <c>POVT</c> unlockable file (.unlk) of the Battle.net cache.
+    /// The portrait's name is in a string table file (.s2ql), at the <c>&lt;e&gt;</c> element whose id is the entry's <c>m_name.m_id</c>.
+    /// </para>
+    /// </summary>
+    public long? PortraitBorderUnlockableId { get; set; }
 
     /// <summary>
     /// Gets or sets the computer player difficulty.
@@ -193,10 +209,8 @@ public class StormPlayer
 
     internal uint? WorkingSetSlotId { get; set; }
 
-    // from replay.initData, m_rewards
+    // from replay.initData, m_rewards, the reward tag values followed by the Battle.net unlockable id of each owned license
     internal uint[] RewardHashes { get; set; } = [];
-
-    internal uint? PortraitHash { get; set; }
 
     // from replay.server.battlelobby, license ids
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

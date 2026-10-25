@@ -141,4 +141,11 @@ public class BattleLobbyStormLeague1Tests
         Assert.IsTrue(players[..5].All(x => x.Team == StormTeam.Blue));
         Assert.IsTrue(players[5..].All(x => x.Team == StormTeam.Red));
     }
+
+    [TestMethod]
+    public void PortraitUnlockableIdTest()
+    {
+        // only parsed for build 89754 and later
+        Assert.IsTrue(_stormReplay.StormPlayersWithObservers.All(x => x.PortraitUnlockableId is null && x.PortraitBorderUnlockableId is null));
+    }
 }

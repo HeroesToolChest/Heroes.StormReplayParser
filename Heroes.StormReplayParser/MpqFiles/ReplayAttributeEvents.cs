@@ -30,7 +30,7 @@ internal static class ReplayAttributeEvents
 
             switch (attribute)
             {
-                case ReplayAttributeEventType.PlayerType:
+                case ReplayAttributeEventType.Controller:
                     {
                         if (value == "Comp" || value == "Humn")
                         {
@@ -105,7 +105,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.SkinAndSkinTint:
+                case ReplayAttributeEventType.Skin:
                     {
                         if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
                             break;
@@ -118,7 +118,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.MountAndMountTint:
+                case ReplayAttributeEventType.Mount:
                     {
                         if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
                             break;
@@ -158,7 +158,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.Announcer:
+                case ReplayAttributeEventType.AnnouncerPack:
                     {
                         if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
                             break;
@@ -211,37 +211,37 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.DraftTeam1Ban1:
-                case ReplayAttributeEventType.DraftTeam1Ban2:
-                case ReplayAttributeEventType.DraftTeam1Ban3:
-                case ReplayAttributeEventType.DraftTeam2Ban1:
-                case ReplayAttributeEventType.DraftTeam2Ban2:
-                case ReplayAttributeEventType.DraftTeam2Ban3:
+                case ReplayAttributeEventType.Team1Ban1HeroChoice:
+                case ReplayAttributeEventType.Team1Ban2HeroChoice:
+                case ReplayAttributeEventType.Team1Ban3HeroChoice:
+                case ReplayAttributeEventType.Team2Ban1HeroChoice:
+                case ReplayAttributeEventType.Team2Ba2HeroChoice:
+                case ReplayAttributeEventType.Team2Ban3HeroChoice:
                     switch (attribute)
                     {
-                        case ReplayAttributeEventType.DraftTeam1Ban1:
+                        case ReplayAttributeEventType.Team1Ban1HeroChoice:
                             replay.TeamHeroAttributeIdBans[0][0] = value;
                             break;
-                        case ReplayAttributeEventType.DraftTeam1Ban2:
+                        case ReplayAttributeEventType.Team1Ban2HeroChoice:
                             replay.TeamHeroAttributeIdBans[0][1] = value;
                             break;
-                        case ReplayAttributeEventType.DraftTeam1Ban3:
+                        case ReplayAttributeEventType.Team1Ban3HeroChoice:
                             replay.TeamHeroAttributeIdBans[0][2] = value;
                             break;
-                        case ReplayAttributeEventType.DraftTeam2Ban1:
+                        case ReplayAttributeEventType.Team2Ban1HeroChoice:
                             replay.TeamHeroAttributeIdBans[1][0] = value;
                             break;
-                        case ReplayAttributeEventType.DraftTeam2Ban2:
+                        case ReplayAttributeEventType.Team2Ba2HeroChoice:
                             replay.TeamHeroAttributeIdBans[1][1] = value;
                             break;
-                        case ReplayAttributeEventType.DraftTeam2Ban3:
+                        case ReplayAttributeEventType.Team2Ban3HeroChoice:
                             replay.TeamHeroAttributeIdBans[1][2] = value;
                             break;
                     }
 
                     break;
 
-                case ReplayAttributeEventType.DraftTeam1BanChooserSlot:
+                case ReplayAttributeEventType.Team1BanChooser:
                     {
                         replay.TeamBanChooserTypes[0] = SetBanChooser(replay, value, out StormPlayer? stormPlayer);
                         replay.TeamBanPlayerChooser[0] = stormPlayer;
@@ -249,7 +249,7 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.DraftTeam2BanChooserSlot:
+                case ReplayAttributeEventType.Team2BanChooser:
                     {
                         replay.TeamBanChooserTypes[1] = SetBanChooser(replay, value, out StormPlayer? stormPlayer);
                         replay.TeamBanPlayerChooser[1] = stormPlayer;
@@ -257,23 +257,23 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
-                case ReplayAttributeEventType.FirstReadyingTeam:
+                case ReplayAttributeEventType.FirstDraftTeam:
                     {
-                        replay.FirstDraftTeam = GetFirstReadyingTeam(value);
+                        replay.FirstDraftTeam = GetFirstDraftTeam(value);
 
                         break;
                     }
 
-                case ReplayAttributeEventType.PrivacyOption:
+                case ReplayAttributeEventType.GamePrivacy:
                     {
-                        replay.GamePrivacy = GetPrivacyOption(value);
+                        replay.GamePrivacy = GetGamePrivacy(value);
 
                         break;
                     }
 
-                case ReplayAttributeEventType.DraftBanMode:
+                case ReplayAttributeEventType.BanMode:
                     {
-                        replay.BanMode = GetDraftBanMode(value);
+                        replay.BanMode = GetBanMode(value);
 
                         break;
                     }
@@ -327,7 +327,7 @@ internal static class ReplayAttributeEvents
         _ => StormGameSpeed.Unknown,
     };
 
-    internal static StormGamePrivacy GetPrivacyOption(string value) => value switch
+    internal static StormGamePrivacy GetGamePrivacy(string value) => value switch
     {
         "Norm" => StormGamePrivacy.Normal,
         "NoMH" => StormGamePrivacy.NoMatchHistory,
@@ -343,7 +343,7 @@ internal static class ReplayAttributeEvents
         _ => StormReadyMode.Unknown,
     };
 
-    internal static StormBanMode GetDraftBanMode(string value) => value switch
+    internal static StormBanMode GetBanMode(string value) => value switch
     {
         "" => StormBanMode.NotUsingBans,
         "1ban" => StormBanMode.OneBan,
@@ -354,7 +354,7 @@ internal static class ReplayAttributeEvents
         _ => StormBanMode.Unknown,
     };
 
-    internal static StormFirstDraftTeam GetFirstReadyingTeam(string value) => value switch
+    internal static StormFirstDraftTeam GetFirstDraftTeam(string value) => value switch
     {
         "" => StormFirstDraftTeam.CoinToss,
         "T1" => StormFirstDraftTeam.Team1,

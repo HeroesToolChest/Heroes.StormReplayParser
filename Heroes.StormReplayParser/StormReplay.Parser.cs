@@ -119,10 +119,10 @@ public partial class StormReplay
             if (player.LastCameraUpdateEvent > latestCameraUpdateEvent)
                 latestCameraUpdateEvent = player.LastCameraUpdateEvent;
 
-            if (player.PortraitHash is not null && player.RewardTagsCount.HasValue && player.RewardHashes.Length - player.RewardTagsCount == player.OwnedLicenseIdsInternal.Count)
+            if (player.PortraitUnlockableId is not null && player.RewardTagsCount.HasValue && player.RewardHashes.Length - player.RewardTagsCount == player.OwnedLicenseIdsInternal.Count)
             {
                 // can be -1 if portrait is default
-                int ownedIndex = player.RewardHashes.AsSpan(player.RewardTagsCount.Value).IndexOf(player.PortraitHash.Value);
+                int ownedIndex = player.RewardHashes.AsSpan(player.RewardTagsCount.Value).IndexOf((uint)player.PortraitUnlockableId.Value);
 
                 if (ownedIndex >= 0)
                     player.PortraitLicenseId = player.OwnedLicenseIdsInternal[ownedIndex];

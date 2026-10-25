@@ -35,4 +35,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="S2MFiles\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

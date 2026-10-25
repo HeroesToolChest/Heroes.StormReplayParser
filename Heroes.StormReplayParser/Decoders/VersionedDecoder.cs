@@ -1,4 +1,7 @@
-﻿namespace Heroes.StormReplayParser.Decoders;
+﻿using System.Text.Encodings.Web;
+using System.Text.Unicode;
+
+namespace Heroes.StormReplayParser.Decoders;
 
 /// <summary>
 /// Contains the information for the version decoder.
@@ -25,7 +28,9 @@ public class VersionedDecoder
                     ArrayData[i] = new VersionedDecoder(ref bitReader);
                 break;
             case 0x01: // bitblob
-                throw new NotImplementedException();
+                BitLength = (int)bitReader.ReadVInt();
+                Value = bitReader.ReadAlignedBytes((BitLength.Value + 7) / 8).ToArray();
+                break;
             case 0x02: // blob
                 Value = bitReader.ReadAlignedBytes((int)bitReader.ReadVInt()).ToArray();
                 break;
@@ -45,13 +50,9 @@ public class VersionedDecoder
                 {
                     int index = (int)bitReader.ReadVInt();
 
-                    if (index != i)
-                    {
-                        for (int j = i; j < index; j++)
-                        {
-                            Structure.Add(null!);
-                        }
-                    }
+                    // the field tags can skip numbers, so the skipped fields are added as null to keep each field at the index of its tag
+                    while (Structure.Count < index)
+                        Structure.Add(null!);
 
                     Structure.Add(new VersionedDecoder(ref bitReader));
                 }
@@ -105,6 +106,11 @@ public class VersionedDecoder
     public byte DataType { get; }
 
     /// <summary>
+    /// Gets the number of bits for a bit array. The bits are in <see cref="Value"/>.
+    /// </summary>
+    public int? BitLength { get; }
+
+    /// <summary>
     /// Gets the value in the current structure as a 32-bit unsigned integer.
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
@@ -115,7 +121,7 @@ public class VersionedDecoder
         return DataType switch
         {
             0x00 => throw new InvalidOperationException("Invalid call, use ArrayData"),
-            0x01 => throw new NotImplementedException(),
+            0x01 => throw new InvalidOperationException("Invalid call, use Value and BitLength"),
             0x02 => throw new InvalidOperationException("Invalid call, use GetValueAsString()"),
             0x03 => Get32UIntFromVInt(),
             0x04 => throw new InvalidOperationException("Invalid call, use OptionalData"),
@@ -140,7 +146,7 @@ public class VersionedDecoder
         return DataType switch
         {
             0x00 => throw new InvalidOperationException("Invalid call, use ArrayData"),
-            0x01 => throw new NotImplementedException(),
+            0x01 => throw new InvalidOperationException("Invalid call, use Value and BitLength"),
             0x02 => throw new InvalidOperationException("Invalid call, use GetValueAsString()"),
             0x03 => Get64IntFromVInt(),
             0x04 => throw new InvalidOperationException("Invalid call, use OptionalData"),
@@ -166,6 +172,7 @@ public class VersionedDecoder
         return DataType switch
         {
             0x00 => ArrayData is not null ? $"[{string.Join(", ", ArrayData.Select(i => i?.ToString()))}]" : null,
+            0x01 => Value is not null ? $"0x{Convert.ToHexString(Value).ToLowerInvariant()}" : null,
             0x02 => Value is not null ? @$"""{Encoding.UTF8.GetString(Value)}""" : null,
             0x03 => $"Choice: Flag: {BinaryPrimitivesExtensions.ReadVIntLittleEndian(Value)} , Data: {ChoiceData}",
             0x04 => OptionalData?.ToString(),
@@ -188,10 +195,13 @@ public class VersionedDecoder
         return DataType switch
         {
             0x00 => ArrayData is not null ? GetArrayAsJson(ArrayData) : "null",
-            0x02 => Value is not null ? $"\"{Encoding.UTF8.GetString(Value)}\"" : "null",
+            0x01 => Value is not null ? $"\"0x{Convert.ToHexString(Value).ToLowerInvariant()}\"" : "null",
+            0x02 => Value is not null ? GetBlobAsJson(Value) : "null",
+            0x03 => ChoiceData is not null ? $"{{\"choice\": {BinaryPrimitivesExtensions.ReadVIntLittleEndian(Value)},\"value\": {ChoiceData.ToJson()}}}" : "null",
             0x04 => OptionalData is not null ? OptionalData.ToJson() : "null",
             0x05 => Structure is not null ? GetStructureAsJson(Structure) : "null",
-            0x07 => _endianType == EndianType.BigEndian ? BinaryPrimitives.ReadUInt32BigEndian(Value).ToString() : BinaryPrimitives.ReadUInt32LittleEndian(Value).ToString(),
+            0x06 => Value is not null ? Value[0].ToString() : "null",
+            0x07 => Value is not null ? GetFourBytesAsJson(Value, _endianType == EndianType.BigEndian ? BinaryPrimitives.ReadUInt32BigEndian(Value) : BinaryPrimitives.ReadUInt32LittleEndian(Value)) : "null",
             0x08 => _endianType == EndianType.BigEndian ? BinaryPrimitives.ReadUInt64BigEndian(Value).ToString() : BinaryPrimitives.ReadUInt64LittleEndian(Value).ToString(),
             0x09 => BinaryPrimitivesExtensions.ReadVIntLittleEndian(Value).ToString(),
 
@@ -199,22 +209,54 @@ public class VersionedDecoder
         };
     }
 
+    // four bytes are usually a FourCC, such as "T1" (zero padded) or "enUS", but can also be a number,
+    // so printable text is written along with its number, anything else is written as just the number
+    private static string GetFourBytesAsJson(ReadOnlySpan<byte> value, uint number)
+    {
+        ReadOnlySpan<byte> text = value.Trim((byte)0);
+
+        if (text.IsEmpty || text.ContainsAnyExceptInRange((byte)0x20, (byte)0x7E))
+            return number.ToString();
+
+        return $"{{\"text\": \"{JsonEncodedText.Encode(text, JavaScriptEncoder.UnsafeRelaxedJsonEscaping)}\",\"value\": {number}}}";
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string GetStructureAsJson(List<VersionedDecoder> structure)
     {
         StringBuilder sb = new("{");
+        bool isFirst = true;
 
         for (int i = 0; i < structure.Count; i++)
         {
-            sb.Append($"\"{i}\": {structure[i].ToJson()}");
+            // a field tag that is not in the structure
+            if (structure[i] is null)
+                continue;
 
-            if (i < structure.Count - 1)
+            if (!isFirst)
                 sb.Append(',');
+
+            sb.Append($"\"{i}\": {structure[i].ToJson()}");
+            isFirst = false;
         }
 
         sb.Append('}');
 
         return sb.ToString();
+    }
+
+    // text is written as a string, anything else (such as the cache handles in .s2mh files) is written as hex
+    private static string GetBlobAsJson(byte[] value)
+    {
+        if (Utf8.IsValid(value))
+        {
+            string text = Encoding.UTF8.GetString(value);
+
+            if (!text.Any(x => char.IsControl(x) && x is not ('\t' or '\n' or '\r')))
+                return $"\"{JsonEncodedText.Encode(text, JavaScriptEncoder.UnsafeRelaxedJsonEscaping)}\"";
+        }
+
+        return $"\"0x{Convert.ToHexString(value).ToLowerInvariant()}\"";
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

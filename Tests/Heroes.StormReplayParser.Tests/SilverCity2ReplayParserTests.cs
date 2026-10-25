@@ -46,4 +46,20 @@ public class SilverCity2ReplayParserTests
         Assert.IsNotNull(replay.LicenseIdCatalog);
         Assert.HasCount(5418, replay.LicenseIdCatalog);
     }
+
+    [TestMethod]
+    public void PortraitUnlockableIdTest()
+    {
+        List<StormPlayer> players = [.. _stormReplay.StormPlayers];
+
+        // portraits without a license still have an unlockable id
+        Assert.AreEqual(650062108, players[0].PortraitUnlockableId); // DeathwingPortraitMastery
+        Assert.AreEqual(3060093027, players[1].PortraitUnlockableId); // 2019Season3SLMaster
+        Assert.AreEqual(2655706998, players[2].PortraitUnlockableId); // CallofKelThuzadPortrait
+        Assert.AreEqual(1581472426, players[3].PortraitUnlockableId); // ButcherCarbotsPortrait
+
+        Assert.AreEqual(956270533, players[0].PortraitBorderUnlockableId); // basic border
+        Assert.AreEqual(2008600194, players[1].PortraitBorderUnlockableId); // storm border
+        Assert.AreEqual(4198120300, players[9].PortraitBorderUnlockableId);
+    }
 }
