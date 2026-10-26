@@ -18,7 +18,7 @@ public class ParsePregameOptions
     /// <summary>
     /// Gets or sets a value indicating whether to parse the license catalog.
     /// <para>
-    /// If <see langword="false"/>, <see cref="PregameStormPlayer.OwnedLicenseIds"/> will be empty.
+    /// If <see langword="false"/>, <see cref="PregameStormPlayer.LicenseIds"/> will be empty.
     /// </para>
     /// </summary>
     public bool ShouldParseLicenseCatalog { get; set; } = false;

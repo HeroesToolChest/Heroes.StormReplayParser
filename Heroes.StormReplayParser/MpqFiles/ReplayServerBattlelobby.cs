@@ -330,10 +330,10 @@ internal static class ReplayServerBattlelobby
         if (collectionLength != hasCollectionLength)
             throw new StormParseException($"{_exceptionHeader}: collection license lengths do not match: {collectionLength} != {hasCollectionLength}");
 
-        // for each item, 2 bytes for each of the 16 player slots (m_workingSetSlotId), non-zero if the player owns the item
-        ReadOnlySpan<byte> collectionOwnedFlags = bitReader.ReadAlignedBytes(hasCollectionLength * 16 * 2);
+        // for each item, 2 bytes for each of the 16 player slots (m_workingSetSlotId), non-zero if the player has a license for the item (owned or free to play)
+        ReadOnlySpan<byte> collectionLicenseFlags = bitReader.ReadAlignedBytes(hasCollectionLength * 16 * 2);
 
-        SetLicenseIds(replay, collectionLicenses, collectionLength, collectionOwnedFlags, shouldParseLicenseCatalog);
+        SetLicenseIds(replay, collectionLicenses, collectionLength, collectionLicenseFlags, shouldParseLicenseCatalog);
 
         /* init data section */
         if (replay.ReplayBuild >= 85027)
@@ -963,7 +963,7 @@ internal static class ReplayServerBattlelobby
     }
 
     // the license id catalog is the same for all replays of the same build, so a provided catalog is used as is and never modified
-    private static void SetLicenseIds(StormReplayPregame replay, ReadOnlySpan<byte> licenseIds, int licenseIdsLength, ReadOnlySpan<byte> ownedFlags, bool shouldParseLicenseCatalog)
+    private static void SetLicenseIds(StormReplayPregame replay, ReadOnlySpan<byte> licenseIds, int licenseIdsLength, ReadOnlySpan<byte> licenseFlags, bool shouldParseLicenseCatalog)
     {
         IReadOnlySet<long>? providedCatalog = replay.LicenseIdCatalog;
 
@@ -987,8 +987,8 @@ internal static class ReplayServerBattlelobby
             {
                 int flagIndex = ((item * 16) + i) * 2;
 
-                if ((ownedFlags[flagIndex] | ownedFlags[flagIndex + 1]) != 0)
-                    replay.ClientListByWorkingSetSlotID[i].OwnedLicenseIdsInternal.Add(licenseId);
+                if ((licenseFlags[flagIndex] | licenseFlags[flagIndex + 1]) != 0)
+                    replay.ClientListByWorkingSetSlotID[i].LicenseIdsInternal.Add(licenseId);
             }
         }
 

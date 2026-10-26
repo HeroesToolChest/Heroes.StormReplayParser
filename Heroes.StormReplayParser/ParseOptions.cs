@@ -11,10 +11,11 @@ public class ParseOptions
     public static ParseOptions DefaultParsing => new();
 
     /// <summary>
-    /// Gets the minimal parse options. No parsing of tracker, game, or message events.
+    /// Gets the minimal parse options. Disallows ptr and no parsing of tracker, game, or message events.
     /// </summary>
     public static ParseOptions MinimalParsing => new()
     {
+        AllowPTR = false,
         ShouldParseTrackerEvents = false,
         ShouldParseGameEvents = false,
         ShouldParseMessageEvents = false,
@@ -43,7 +44,7 @@ public class ParseOptions
     /// <summary>
     /// Gets or sets a value indicating whether to parse the license catalog.
     /// <para>
-    /// If <see langword="false"/>, <see cref="StormPlayer.PortraitLicenseId"/> will be <see langword="null"/> and <see cref="StormPlayer.OwnedLicenseIds"/> will be empty.
+    /// If <see langword="false"/>, <see cref="StormPlayer.PortraitLicenseId"/> will be <see langword="null"/> and <see cref="StormPlayer.LicenseIds"/> will be empty.
     /// </para>
     /// </summary>
     public bool ShouldParseLicenseCatalog { get; set; } = false;

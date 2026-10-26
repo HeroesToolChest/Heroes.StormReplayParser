@@ -45,9 +45,11 @@ public partial class StormReplay
     /// Parses a <c>.StormReplay</c> file.
     /// </summary>
     /// <param name="path">The path to the <c>.StormReplay</c> file.</param>
-    /// <param name="parseOptions">Sets the parsing options. If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</param>
+    /// <param name="parseOptions">Sets the parsing options. Default is <see cref="ParseOptions.DefaultParsing"/>.
+    /// <para>If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</para>
+    /// </param>
     /// <param name="licenseIdCatalog">
-    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) are owned by the players in the replay.
+    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) the players in the replay have a license for.
     /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
     /// </param>
     /// <returns>A <see cref="StormReplayResult"/>.</returns>
@@ -68,9 +70,11 @@ public partial class StormReplay
     /// Parses a <c>.StormReplay</c> stream.
     /// </summary>
     /// <param name="stream">The stream containing the <c>.StormReplay</c> data.</param>
-    /// <param name="parseOptions">Sets the parsing options. If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</param>
+    /// <param name="parseOptions">Sets the parsing options. Default is <see cref="ParseOptions.DefaultParsing"/>.
+    /// <para>If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</para>
+    /// </param>
     /// <param name="licenseIdCatalog">
-    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) are owned by the players in the replay.
+    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) the players in the replay have a license for.
     /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
     /// </param>
     /// <returns>A <see cref="StormReplayResult"/>.</returns>
@@ -119,13 +123,13 @@ public partial class StormReplay
             if (player.LastCameraUpdateEvent > latestCameraUpdateEvent)
                 latestCameraUpdateEvent = player.LastCameraUpdateEvent;
 
-            if (player.PortraitUnlockableId is not null && player.RewardTagsCount.HasValue && player.RewardHashes.Length - player.RewardTagsCount == player.OwnedLicenseIdsInternal.Count)
+            if (player.PortraitUnlockableId is not null && player.RewardTagsCount.HasValue && player.RewardHashes.Length - player.RewardTagsCount == player.LicenseIdsInternal.Count)
             {
                 // can be -1 if portrait is default
-                int ownedIndex = player.RewardHashes.AsSpan(player.RewardTagsCount.Value).IndexOf((uint)player.PortraitUnlockableId.Value);
+                int licenseIndex = player.RewardHashes.AsSpan(player.RewardTagsCount.Value).IndexOf((uint)player.PortraitUnlockableId.Value);
 
-                if (ownedIndex >= 0)
-                    player.PortraitLicenseId = player.OwnedLicenseIdsInternal[ownedIndex];
+                if (licenseIndex >= 0)
+                    player.PortraitLicenseId = player.LicenseIdsInternal[licenseIndex];
             }
 
             // empty since no longer needed

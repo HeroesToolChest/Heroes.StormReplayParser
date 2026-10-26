@@ -35,7 +35,7 @@ internal static class PregameMapper
             stormPlayer.HasActiveBoost = stormPregamePlayer.HasActiveBoost;
             stormPlayer.PortraitUnlockableId = stormPregamePlayer.PortraitUnlockableId;
             stormPlayer.PortraitBorderUnlockableId = stormPregamePlayer.PortraitBorderUnlockableId;
-            stormPlayer.OwnedLicenseIdsInternal = stormPregamePlayer.OwnedLicenseIdsInternal;
+            stormPlayer.LicenseIdsInternal = stormPregamePlayer.LicenseIdsInternal;
             stormPlayer.RewardTagsCount = stormPregamePlayer.RewardTagsCount;
 
             if (stormPregamePlayer.IsReplayOwner)

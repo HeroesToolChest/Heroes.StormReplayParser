@@ -186,12 +186,13 @@ public class StormPlayer
     public int? MatchAwardsCount => ScoreResult?.MatchAwards.Count;
 
     /// <summary>
-    /// Gets a collection of owned license ids.
+    /// Gets a collection of the player's license ids. The license ids are the <c>License</c> values of the <c>CReward</c> type entries in the game data.
     /// <para>
-    /// This is used to determine if the player owns a specific hero, skin, mount, announcer, or other content.
+    /// A license is for a hero, skin, mount, announcer, or other content. These are not only the player's owned content, but also the free-to-play
+    /// heroes (including the ones that require a higher account level).
     /// </para>
     /// </summary>
-    public IReadOnlyList<long> OwnedLicenseIds => OwnedLicenseIdsInternal.AsReadOnly();
+    public IReadOnlyList<long> LicenseIds => LicenseIdsInternal.AsReadOnly();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal Dictionary<string, HeroMasteryTier> HeroMasteryTiersByHeroAttributeIdInternal { get; set; } = new(StringComparer.Ordinal);
@@ -209,12 +210,12 @@ public class StormPlayer
 
     internal uint? WorkingSetSlotId { get; set; }
 
-    // from replay.initData, m_rewards, the reward tag values followed by the Battle.net unlockable id of each owned license
+    // from replay.initData, m_rewards, the reward tag values followed by the Battle.net unlockable id of each of the player's licenses
     internal uint[] RewardHashes { get; set; } = [];
 
     // from replay.server.battlelobby, license ids
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<long> OwnedLicenseIdsInternal { get; set; } = [];
+    internal List<long> LicenseIdsInternal { get; set; } = [];
 
     internal int? RewardTagsCount { get; set; }
 

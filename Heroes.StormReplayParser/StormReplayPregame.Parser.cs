@@ -42,7 +42,7 @@ public partial class StormReplayPregame
     /// <param name="path">The path to the <c>replay.server.battlelobby</c> file.</param>
     /// <param name="parsePregameOptions">Sets the pregame parsing options.</param>
     /// <param name="licenseIdCatalog">
-    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) are owned by the players in the replay.
+    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) the players in the replay have a license for.
     /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
     /// </param>
     /// <returns>A <see cref="StormReplayPregameResult"/>.</returns>
@@ -65,7 +65,7 @@ public partial class StormReplayPregame
     /// <param name="stream">The stream containing the <c>replay.server.battlelobby</c> data.</param>
     /// <param name="parsePregameOptions">Sets the pregame parsing options.</param>
     /// <param name="licenseIdCatalog">
-    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) are owned by the players in the replay.
+    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) the players in the replay have a license for.
     /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
     /// </param>
     /// <returns>A <see cref="StormReplayPregameResult"/>.</returns>

@@ -147,9 +147,13 @@ public class PregameStormPlayer
     public int HeroMasteryTiersCount => HeroMasteryTiersByHeroAttributeIdInternal.Count;
 
     /// <summary>
-    /// Gets a collection of owned license ids. The license ids are the <c>License</c> values of the <c>CReward</c> type entries in the game data.
+    /// Gets a collection of the player's license ids. The license ids are the <c>License</c> values of the <c>CReward</c> type entries in the game data.
+    /// <para>
+    /// A license is for a hero, skin, mount, announcer, or other content. These are not only the player's owned content, but also the free-to-play
+    /// heroes (including the ones that require a higher account level).
+    /// </para>
     /// </summary>
-    public IReadOnlyList<long> OwnedLicenseIds => OwnedLicenseIdsInternal.AsReadOnly();
+    public IReadOnlyList<long> LicenseIds => LicenseIdsInternal.AsReadOnly();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal Dictionary<string, HeroMasteryTier> HeroMasteryTiersByHeroAttributeIdInternal { get; } = new(StringComparer.Ordinal);
@@ -158,7 +162,7 @@ public class PregameStormPlayer
     internal Dictionary<ReplayAttributeEventType, string> PlayerTeamValueByAttributeEventType { get; } = [];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal List<long> OwnedLicenseIdsInternal { get; set; } = [];
+    internal List<long> LicenseIdsInternal { get; set; } = [];
 
     internal int? RewardTagsCount { get; set; }
 }
