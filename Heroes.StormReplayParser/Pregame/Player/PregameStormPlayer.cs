@@ -136,13 +136,12 @@ public class PregameStormPlayer
     public long? PortraitBorderUnlockableId { get; set; }
 
     /// <summary>
-    /// Gets the player's hero's mastery tier levels. Only heroes with a tier level are included.
-    /// <para>Only parsed for build 89754 and later.</para>
+    /// Gets the player's mastery taunt tier for each hero that has at least tier 1.
     /// </summary>
     public IReadOnlyList<HeroMasteryTier> HeroMasteryTiers => [.. HeroMasteryTiersByHeroAttributeIdInternal.Values];
 
     /// <summary>
-    /// Gets the amount of hero mastery tiers.
+    /// Gets the amount of hero taunt mastery tiers.
     /// </summary>
     public int HeroMasteryTiersCount => HeroMasteryTiersByHeroAttributeIdInternal.Count;
 

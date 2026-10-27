@@ -138,6 +138,15 @@ public class VolskayaFoundry1ReplayParserTests
     }
 
     [TestMethod]
+    public void HeroMasteryRingTierTest()
+    {
+        // (Jaina) and (Thrall)
+        int?[] expected = [null, 2, null, null, 2, null, null, null, null, null];
+
+        Assert.AreSequenceEqual(expected, _stormReplay.StormPlayers.Select(x => x.PlayerHero!.HeroMasteryRingTier).ToArray());
+    }
+
+    [TestMethod]
     public void DraftOrderTest()
     {
         var draft = _stormReplay.DraftPicks.ToList();

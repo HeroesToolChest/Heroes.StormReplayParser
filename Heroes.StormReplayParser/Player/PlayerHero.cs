@@ -29,8 +29,19 @@ public class PlayerHero
 
     /// <summary>
     /// Gets or sets the hero's level. This will be a 1 if the hero is auto selected (<see cref="StormPlayer.IsAutoSelect"/>).
+    /// <para>
+    /// This is capped at 20, use <see cref="HeroMasteryTier.TierLevel"/> to calculate a hero's minimal level.
+    /// </para>
     /// </summary>
     public int HeroLevel { get; set; } = 0;
+
+    /// <summary>
+    /// Gets or sets the tier of the hero mastery ring that the player has equipped on the hero. This is a tier from 1 to 3.
+    /// <para>
+    /// This will be <see langword="null"/> if no mastery ring is equipped.
+    /// </para>
+    /// </summary>
+    public int? HeroMasteryRingTier { get; set; }
 
     /// <inheritdoc/>
     public override string? ToString()

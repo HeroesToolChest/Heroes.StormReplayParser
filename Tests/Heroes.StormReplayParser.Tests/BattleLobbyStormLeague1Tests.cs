@@ -72,7 +72,7 @@ public class BattleLobbyStormLeague1Tests
         Assert.AreEqual(player5.PartyValue, player6.PartyValue);
 
         PregameStormPlayer player3 = _stormReplay.StormPlayers.ToList()[3];
-        Assert.AreEqual(3, player3.PlayerHero!.HeroMasteryTier);
+        Assert.AreEqual(3, player3.PlayerHero!.HeroMasteryRingTier);
     }
 
     [TestMethod]
@@ -82,7 +82,7 @@ public class BattleLobbyStormLeague1Tests
 
         Assert.AreEqual("Mura", hero4!.HeroAttributeId);
         Assert.AreEqual(20, hero4.HeroLevel);
-        Assert.IsNull(hero4.HeroMasteryTier);
+        Assert.IsNull(hero4.HeroMasteryRingTier);
     }
 
     [TestMethod]

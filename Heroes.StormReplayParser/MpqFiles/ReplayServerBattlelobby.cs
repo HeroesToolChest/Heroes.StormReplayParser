@@ -849,15 +849,7 @@ internal static class ReplayServerBattlelobby
 
             case ReplayAttributeEventType.HeroMasteryRingTier:
                 {
-                    if (value == string.Empty)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        if (int.TryParse(value[^1..], out int tierLevel))
-                            player.PlayerHero.HeroMasteryTier = tierLevel;
-                    }
+                    player.PlayerHero.HeroMasteryRingTier = ReplayAttributeEvents.GetHeroMasteryRingTier(value);
 
                     break;
                 }

@@ -192,4 +192,13 @@ public class CustomBattlefieldofEternity2ReplayParserTests
         // no collection data for observers
         Assert.IsTrue(replay.StormObservers.All(x => x.PortraitLicenseId is null));
     }
+
+    [TestMethod]
+    public void HeroMasteryRingTierTest()
+    {
+        // (Li-Ming)
+        int?[] expected = [null, null, null, null, null, 3, null, null, null, null];
+
+        Assert.AreSequenceEqual(expected, _stormReplay.StormPlayers.Select(x => x.PlayerHero!.HeroMasteryRingTier).ToArray());
+    }
 }

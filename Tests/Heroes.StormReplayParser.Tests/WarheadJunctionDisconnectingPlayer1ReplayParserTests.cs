@@ -52,4 +52,13 @@ public class WarheadJunctionDisconnectingPlayer1ReplayParserTests
 
         Assert.IsTrue(result.Replay.StormPlayers.All(x => x.PlayerDisconnects.Count == 0));
     }
+
+    [TestMethod]
+    public void HeroMasteryRingTierTest()
+    {
+        // (Nova) and (Greymane)
+        int?[] expected = [null, null, 1, null, null, null, null, 3, null, null];
+
+        Assert.AreSequenceEqual(expected, _stormReplay.StormPlayers.Select(x => x.PlayerHero!.HeroMasteryRingTier).ToArray());
+    }
 }

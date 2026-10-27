@@ -38,12 +38,12 @@ public class StormPlayer
     public PlayerLoadout PlayerLoadout { get; set; } = new PlayerLoadout();
 
     /// <summary>
-    /// Gets the player's hero's mastery tier levels.
+    /// Gets the player's mastery taunt tier for each hero that has at least tier 1.
     /// </summary>
     public IReadOnlyList<HeroMasteryTier> HeroMasteryTiers => [.. HeroMasteryTiersByHeroAttributeIdInternal.Values];
 
     /// <summary>
-    /// Gets the amount of hero mastery tiers.
+    /// Gets the amount of hero taunt mastery tiers.
     /// </summary>
     public int HeroMasteryTiersCount => HeroMasteryTiersByHeroAttributeIdInternal.Count;
 

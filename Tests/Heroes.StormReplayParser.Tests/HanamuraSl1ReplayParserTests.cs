@@ -46,4 +46,13 @@ public class HanamuraSl1ReplayParserTests
         Assert.IsNull(_stormReplay.GetTeamBanPlayerChooser(StormTeam.Red));
         Assert.IsNull(_stormReplay.GetTeamBanPlayerChooser(StormTeam.Observer));
     }
+
+    [TestMethod]
+    public void HeroMasteryRingTierTest()
+    {
+        // (Fenix)
+        int?[] expected = [null, null, null, 3, null, null, null, null, null, null];
+
+        Assert.AreSequenceEqual(expected, _stormReplay.StormPlayers.Select(x => x.PlayerHero!.HeroMasteryRingTier).ToArray());
+    }
 }

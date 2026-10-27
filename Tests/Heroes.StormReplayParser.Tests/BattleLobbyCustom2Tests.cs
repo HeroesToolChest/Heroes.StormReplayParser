@@ -39,6 +39,15 @@ public class BattleLobbyCustom2Tests
     }
 
     [TestMethod]
+    public void HeroMasteryRingTierTest()
+    {
+        // only (Wiza) has a mastery ring equipped, observers do not have one
+        int?[] expected = [null, null, null, null, null, null, 3, null, null, null, null, null, null];
+
+        Assert.AreSequenceEqual(expected, _stormReplay.StormPlayersWithObservers.Select(x => x.PlayerHero?.HeroMasteryRingTier).ToArray());
+    }
+
+    [TestMethod]
     public void PlayerTeamTest()
     {
         List<PregameStormPlayer> players = [.. _stormReplay.StormPlayers];

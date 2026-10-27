@@ -181,6 +181,16 @@ internal static class ReplayAttributeEvents
                         break;
                     }
 
+                case ReplayAttributeEventType.HeroMasteryRingTier:
+                    {
+                        if (GetSlotPlayer(replay, playerId) is not StormPlayer player)
+                            break;
+
+                        player.PlayerHero!.HeroMasteryRingTier = GetHeroMasteryRingTier(value);
+
+                        break;
+                    }
+
                 case ReplayAttributeEventType.LobbyMode:
                     {
                         if (replay.ReplayBuild < 43905 && replay.GameMode != StormGameMode.Custom)
@@ -379,6 +389,16 @@ internal static class ReplayAttributeEvents
         "Watc" => PlayerType.Observer,
 
         _ => PlayerType.Unknown,
+    };
+
+    // the value is empty when no hero mastery ring is equipped
+    internal static int? GetHeroMasteryRingTier(string value) => value switch
+    {
+        "HMT1" => 1,
+        "HMT2" => 2,
+        "HMT3" => 3,
+
+        _ => null,
     };
 
     internal static ComputerDifficulty GetComputerDifficultyLevel(string value) => value switch

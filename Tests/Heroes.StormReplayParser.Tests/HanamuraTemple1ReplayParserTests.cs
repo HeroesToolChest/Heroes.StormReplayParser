@@ -112,4 +112,11 @@ public class HanamuraTemple1ReplayParserTests
 
         Assert.IsEmpty(draft);
     }
+
+    [TestMethod]
+    public void HeroMasteryRingTierTest()
+    {
+        // the replay is too old to have mastery rings
+        Assert.IsTrue(_stormReplay.StormPlayers.All(x => x.PlayerHero!.HeroMasteryRingTier is null));
+    }
 }

@@ -76,7 +76,7 @@ public class BattleLobbyARAM1Tests
 
         Assert.AreEqual("Ragn", hero4!.HeroAttributeId);
         Assert.AreEqual(1, hero4.HeroLevel);
-        Assert.IsNull(hero4.HeroMasteryTier);
+        Assert.IsNull(hero4.HeroMasteryRingTier);
     }
 
     [TestMethod]
