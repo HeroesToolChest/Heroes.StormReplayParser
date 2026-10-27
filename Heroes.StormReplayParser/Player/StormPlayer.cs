@@ -124,8 +124,7 @@ public class StormPlayer
 
     /// <summary>
     /// Gets or sets a value indicating whether the player chooses the bans for their team.
-    /// <para>In ranked games it is the player with the highest MMR, which is currently not known.</para>
-    /// <para>For custom games, it is the specific player chosen to select the bans.</para>
+    /// <para>In ranked games, this will always be <see langword="false"/>, as it is not known who the specific player is.</para>
     /// </summary>
     public bool IsBanChooser { get; set; }
 

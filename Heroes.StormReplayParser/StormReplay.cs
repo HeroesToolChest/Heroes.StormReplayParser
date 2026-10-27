@@ -297,6 +297,8 @@ public partial class StormReplay
 
     /// <summary>
     /// Gets the player marked as the ban chooser for the specified team.
+    /// <para>In ranked games it is the player with the highest MMR, which is currently not known.</para>
+    /// <para>For custom games, it is the specific player chosen to select the bans.</para>
     /// </summary>
     /// <param name="stormTeam">The <see cref="StormTeam"/>.</param>
     /// <returns>The ban chooser for the specified team, or <see langword="null"/> no ban chooser is found.</returns>

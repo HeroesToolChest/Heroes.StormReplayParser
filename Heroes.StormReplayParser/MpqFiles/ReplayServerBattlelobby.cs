@@ -330,7 +330,7 @@ internal static class ReplayServerBattlelobby
         if (collectionLength != hasCollectionLength)
             throw new StormParseException($"{_exceptionHeader}: collection license lengths do not match: {collectionLength} != {hasCollectionLength}");
 
-        // for each item, 2 bytes for each of the 16 player slots (m_workingSetSlotId), non-zero if the player has a license for the item (owned or free to play)
+        // for each item, 2 bytes for each of the 16 player slots (m_workingSetSlotId), non-zero if the player has a license for the item
         ReadOnlySpan<byte> collectionLicenseFlags = bitReader.ReadAlignedBytes(hasCollectionLength * 16 * 2);
 
         SetLicenseIds(replay, collectionLicenses, collectionLength, collectionLicenseFlags, shouldParseLicenseCatalog);

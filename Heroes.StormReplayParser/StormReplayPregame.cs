@@ -170,6 +170,8 @@ public partial class StormReplayPregame
 
     /// <summary>
     /// Gets how a team's ban chooser is determined.
+    /// <para>In ranked games it is the player with the highest MMR, which is currently not known.</para>
+    /// <para>For custom games, it is the specific player chosen to select the bans.</para>
     /// </summary>
     /// <param name="stormTeam">The <see cref="StormTeam"/> to obtain the ban chooser for.</param>
     /// <returns>A <see cref="StormBanChooserType"/>.</returns>
