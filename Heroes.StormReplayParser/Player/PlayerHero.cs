@@ -8,22 +8,31 @@ public class PlayerHero
     /// <summary>
     /// Gets or sets the hero id. Not recommended to use an identifier as certain Brawl maps and ARAM will have
     /// this set to be the pre-selected hero. For AI games, this will be empty.
+    /// <para>
+    /// This is the <c>id</c> value of the <c>CHero</c> element in the game data.
+    /// </para>
     /// </summary>
     public string HeroId { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the hero unit id. This is set from tracker events.
+    /// <para>
+    /// This is the <c>id</c> value of the <c>CUnit</c> element in the game data.
+    /// </para>
     /// </summary>
     public string HeroUnitId { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the hero name (this is a localized name).
+    /// Gets or sets the hero name (this name is localized).
     /// </summary>
     public string HeroName { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the hero attribute id. Not recommended to use an identifier as certain Brawl maps and ARAM will have
     /// this set to be the pre-selected hero. For AI games, this will be empty.
+    /// <para>
+    /// This is the <c>AttributeId</c> value of the <c>CHero</c> element in the game data.
+    /// </para>
     /// </summary>
     public string HeroAttributeId { get; set; } = string.Empty;
 

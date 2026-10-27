@@ -8,7 +8,7 @@ public class ScoreResult
     /// <summary>
     /// Gets the score results that are validated but not set as a property of the <see cref="ScoreResult"/> class.
     /// </summary>
-    public Dictionary<string, int> MiscellaneousScoreResultEvents { get; } = new Dictionary<string, int>();
+    public Dictionary<string, int> MiscellaneousScoreResultEvents { get; } = [];
 
     /// <summary>
     /// Gets the score results that have yet to be validated.
@@ -256,5 +256,5 @@ public class ScoreResult
     /// </summary>
     public int Multikill { get; set; } = 0;
 
-    internal HashSet<MatchAwardType> MatchAwards { get; set; } = new HashSet<MatchAwardType>();
+    internal HashSet<MatchAwardType> MatchAwards { get; set; } = [];
 }

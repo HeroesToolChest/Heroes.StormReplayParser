@@ -11,7 +11,10 @@ public class StormDraftPick
 #endif
 
     /// <summary>
-    /// Gets or sets the name of the selected hero (internal name - CHeroId).
+    /// Gets or sets the id of the selected hero.
+    /// <para>
+    /// This is the <c>id</c> value of the <c>CHero</c> element in the game data.
+    /// </para>
     /// </summary>
     public string HeroSelected { get; set; } = string.Empty;
 

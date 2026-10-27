@@ -27,10 +27,10 @@ public class ToonHandle : IEquatable<ToonHandle>
 
     /// <summary>
     /// <para>
-    /// Gets or sets the the shortcut id. Usually in the format of T:XXXXXXXX@XXX. May not always start with T:.
+    /// Gets or sets the the shortcut id. Usually in the format of <c>T:XXXXXXXX@XXX</c>. May not always start with <c>T:</c>.
     /// </para>
     /// <para>
-    /// This id is used in the user's document folder (typically in the format of T_XXXXXXXX_XXX@REGION).
+    /// This id is used in the user's document folder (typically in the format of <c>T_XXXXXXXX_XXX@REGION</c>).
     /// </para>
     /// <para>
     /// This id is associated to the player's account in this region.

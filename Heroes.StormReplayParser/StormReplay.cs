@@ -168,7 +168,6 @@ public partial class StormReplay
     /// <summary>
     /// Gets a collection of chat messages.
     /// These chat messages are from the perspective of the replay <see cref="Owner"/>'s team which includes the enemy team's team chat messages but do not contain the <see cref="StormTeam.Observer"/> team's team chat messages.
-    ///
     /// <para>
     /// These do not contain the message channel of the chat message, so it cannot be determined if the message was sent to the team chat or to all players.
     /// </para>
@@ -199,7 +198,7 @@ public partial class StormReplay
     /// <summary>
     /// Gets the set of license ids. This is all of the collection items of a build.
     /// <para>
-    /// This will be <see langword="null"/> if not set or parsed.
+    /// This will be <see langword="null"/> if not set or not parsed.
     /// </para>
     /// <para>
     /// This is the same for all replays of the same build.

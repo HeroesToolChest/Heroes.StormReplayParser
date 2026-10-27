@@ -12,6 +12,7 @@ public class PregameStormPlayer
 
     /// <summary>
     /// Gets the player's name.
+    /// <para>See <see cref="BattleTagName"/> for full battletag name.</para>
     /// </summary>
     public string Name
     {
@@ -127,7 +128,7 @@ public class PregameStormPlayer
     public long? PortraitUnlockableId { get; set; }
 
     /// <summary>
-    /// Gets or sets the Battle.net unlockable id of the player's selected portrait border, such as the basic border or the Storm border.
+    /// Gets or sets the Battle.net unlockable id of the player's selected portrait border, such as the Basic border or the Storm border.
     /// <para>
     /// This is the <c>m_unlockableId</c> of an entry in the <c>POVT</c> unlockable file (.unlk) of the Battle.net cache.
     /// The portrait's name is in a string table file (.s2ql), at the <c>&lt;e&gt;</c> element whose id is the entry's <c>m_name.m_id</c>.

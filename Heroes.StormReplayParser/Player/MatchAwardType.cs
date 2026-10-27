@@ -11,196 +11,196 @@ public enum MatchAwardType
     MVP = 1,
 
     /// <summary>
-    /// Specifies the Dominator award.
+    /// Specifies the <c>Dominator</c> award.
     /// </summary>
     HighestKillStreak = 2,
 
     /// <summary>
-    /// Specifies the Experienced award.
+    /// Specifies the <c>Experienced</c> award.
     /// </summary>
     MostXPContribution = 3,
 
     /// <summary>
-    /// Specifies the Painbringer award.
+    /// Specifies the <c>Painbringer</c> award.
     /// </summary>
     MostHeroDamageDone = 4,
 
     /// <summary>
-    /// Specifies the Siege Master award.
+    /// Specifies the <c>Siege Master</c> award.
     /// </summary>
     MostSiegeDamageDone = 5,
 
     /// <summary>
-    /// Specifies the Bulwark award.
+    /// Specifies the <c>Bulwark</c> award.
     /// </summary>
     MostDamageTaken = 6,
 
     /// <summary>
-    /// Specifies the Main Healer award.
+    /// Specifies the <c>Main Healer</c> award.
     /// </summary>
     MostHealing = 7,
 
     /// <summary>
-    /// Specifies the Stunner award.
+    /// Specifies the <c>Stunner</c> award.
     /// </summary>
     MostStuns = 8,
 
     /// <summary>
-    /// Specifies the Headhunter award.
+    /// Specifies the <c>Headhunter</c> award.
     /// </summary>
     MostMercCampsCaptured = 9,
 
     // MapSpecific = 10, - Instead of tracking this generic one, just check if the player has one of the other map-specific Match Awards above 1000
 
     /// <summary>
-    /// Specifies the Finisher award.
+    /// Specifies the <c>Finisher</c> award.
     /// </summary>
     MostKills = 11,
 
     /// <summary>
-    /// Specifies the Hat Trick award.
+    /// Specifies the <c>Hat Trick</c> award.
     /// </summary>
     HatTrick = 12,
 
     /// <summary>
-    /// Specifies the Clutch Healer award.
+    /// Specifies the <c>Clutch Healer</c> award.
     /// </summary>
     ClutchHealer = 13,
 
     /// <summary>
-    /// Specifies the Protector award.
+    /// Specifies the <c>Protector</c> award.
     /// </summary>
     MostProtection = 14,
 
     /// <summary>
-    /// Specifies the Sole Survivor award.
+    /// Specifies the <c>Sole Survivor</c> award.
     /// </summary>
     ZeroDeaths = 15,
 
     /// <summary>
-    /// Specifies the Trapper award.
+    /// Specifies the <c>Trapper</c> award.
     /// </summary>
     MostRoots = 16,
 
     /// <summary>
-    /// Specifies the Team Player award.
+    /// Specifies the <c>Team Player</c> award.
     /// </summary>
     ZeroOutnumberedDeaths = 17,
 
     /// <summary>
-    /// Specifies the Daredevil award.
+    /// Specifies the <c>Daredevil</c> award.
     /// </summary>
     MostDaredevilEscapes = 18,
 
     /// <summary>
-    /// Specifies the Escape Artist award.
+    /// Specifies the <c>Escape Artist</c> award.
     /// </summary>
     MostEscapes = 19,
 
     /// <summary>
-    /// Specifies the Silencer award.
+    /// Specifies the <c>Silencer</c> award.
     /// </summary>
     MostSilences = 20,
 
     /// <summary>
-    /// Specifies the Guardian award.
+    /// Specifies the <c>Guardian</c> award.
     /// </summary>
     MostTeamfightDamageTaken = 21,
 
     /// <summary>
-    /// Specifies the Combat Medic award.
+    /// Specifies the <c>Combat Medic</c> award.
     /// </summary>
     MostTeamfightHealingDone = 22,
 
     /// <summary>
-    /// Specifies the Scrapper award.
+    /// Specifies the <c>Scrapper</c> award.
     /// </summary>
     MostTeamfightHeroDamageDone = 23,
 
     /// <summary>
-    /// Specifies the Avenger award.
+    /// Specifies the <c>Avenger</c> award.
     /// </summary>
     MostVengeancesPerformed = 24,
 
     /// <summary>
-    /// Specifies the Immortal Slayer award.
+    /// Specifies the <c>Immortal Slayer</c> award.
     /// </summary>
     MostImmortalDamage = 1001,
 
     /// <summary>
-    /// Specifies the Moneybags award.
+    /// Specifies the <c>Moneybags</c> award.
     /// </summary>
     MostCoinsPaid = 1002,
 
     /// <summary>
-    /// Specifies the Master of the Curse award.
+    /// Specifies the <c>Master of the Curse</c> award.
     /// </summary>
     MostCurseDamageDone = 1003,
 
     /// <summary>
-    /// Specifies the Shriner award.
+    /// Specifies the <c>Shriner</c> award.
     /// </summary>
     MostDragonShrinesCaptured = 1004,
 
     /// <summary>
-    /// Specifies the Garden Terror award.
+    /// Specifies the <c>Garden Terror</c> award.
     /// </summary>
     MostDamageToPlants = 1005,
 
     /// <summary>
-    /// Specifies the Skull Collector award.
+    /// Specifies the <c>Skull Collector</c> award.
     /// </summary>
     MostSkullsCollected = 1006,
 
     /// <summary>
-    /// Specifies the Guardian Slayer award.
+    /// Specifies the <c>Guardian Slayer</c> award.
     /// </summary>
     MostDamageToMinions = 1007,
 
     /// <summary>
-    /// Specifies the Temple Master award.
+    /// Specifies the <c>Temple Master</c> award.
     /// </summary>
     MostTimeInTemple = 1008,
 
     /// <summary>
-    /// Specifies the Jeweler award.
+    /// Specifies the <c>Jeweler</c> award.
     /// </summary>
     MostGemsTurnedIn = 1009,
 
     /// <summary>
-    /// Specifies the Cannoneer award.
+    /// Specifies the <c>Cannoneer</c> award.
     /// </summary>
     MostAltarDamage = 1010,
 
     // Lost Cavern = 1011 - No map award
 
     /// <summary>
-    /// Specifies the Zerg Crusher award.
+    /// Specifies the <c>Zerg Crusher</c> award.
     /// </summary>
     MostDamageDoneToZerg = 1012,
 
     /// <summary>
-    /// Specifies the Da Bomb award.
+    /// Specifies the <c>Da Bomb</c> award.
     /// </summary>
     MostNukeDamageDone = 1013,
 
     /// <summary>
-    /// Specifies the Pusher award.
+    /// Specifies the <c>Pusher</c> award.
     /// </summary>
     MostTimePushing = 1016,
 
     /// <summary>
-    /// Specifies the Point Guard award.
+    /// Specifies the <c>Point Guard</c> award.
     /// </summary>
     MostTimeOnPoint = 1019,
 
     /// <summary>
-    /// Specifies the Loyal Defender award.
+    /// Specifies the <c>Loyal Defender</c> award.
     /// </summary>
     MostInterruptedCageUnlocks = 1022,
 
     /// <summary>
-    /// Specifies the Seed Collector award.
+    /// Specifies the <c>Seed Collector</c> award.
     /// </summary>
     MostSeedsCollected = 1023,
 }

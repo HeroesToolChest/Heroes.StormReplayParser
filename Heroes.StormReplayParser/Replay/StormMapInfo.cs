@@ -12,6 +12,7 @@ public class StormMapInfo
 
     /// <summary>
     /// Gets or sets the map id name. Not all maps have this set. Sandbox maps could have this set to their respective non-sandbox map id.
+    /// <para>This is from the map's stormmod <c>mapscript.galaxy</c> file.</para>
     /// </summary>
     public string? MapId { get; set; }
 

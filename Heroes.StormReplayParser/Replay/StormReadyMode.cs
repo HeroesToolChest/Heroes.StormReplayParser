@@ -11,12 +11,12 @@ public enum StormReadyMode
     Unknown = 0,
 
     /// <summary>
-    /// Indicates a First Come First Serve mode.
+    /// Indicates a <c>First Come First Serve</c> mode.
     /// </summary>
     FCFS = 1,
 
     /// <summary>
-    /// Indicates a predetermined mode.
+    /// Indicates a <c>Predetermined</c> mode.
     /// </summary>
     Predetermined = 2,
 }

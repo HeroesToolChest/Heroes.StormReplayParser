@@ -7,6 +7,9 @@ public class PregamePlayerHero
 {
     /// <summary>
     /// Gets or sets the hero attribute id. For certain Brawl maps and ARAM this is the pre-selected hero.
+    /// <para>
+    /// This is the <c>AttributeId</c> value of the <c>CHero</c> element in the game data.
+    /// </para>
     /// </summary>
     public string HeroAttributeId { get; set; } = string.Empty;
 

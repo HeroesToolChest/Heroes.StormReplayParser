@@ -12,6 +12,9 @@ public class HeroTalent
 
     /// <summary>
     /// Gets or sets the identifier of this talent.
+    /// <para>
+    /// This is the <c>id</c> value of the <c>CTalent</c> element in the game data.
+    /// </para>
     /// </summary>
     public string? TalentNameId { get; set; }
 
