@@ -5,6 +5,9 @@
 /// </summary>
 public partial class StormReplayPregame
 {
+    // buffers up to this size are allocated on the stack, larger ones are rented from the array pool
+    private const int MaxStackAllocSize = 1024;
+
     private readonly ParsePregameOptions _parsePregameOptions;
     private readonly Stream? _battlelobbyStream;
 
@@ -62,7 +65,10 @@ public partial class StormReplayPregame
     /// <summary>
     /// Parses a <c>replay.server.battlelobby</c> stream.
     /// </summary>
-    /// <param name="stream">The stream containing the <c>replay.server.battlelobby</c> data.</param>
+    /// <param name="stream">
+    /// The stream containing the <c>replay.server.battlelobby</c> data. The data is read from the stream's current position to its end.
+    /// <para>The stream must support seeking, and it is disposed after parsing.</para>
+    /// </param>
     /// <param name="parsePregameOptions">Sets the pregame parsing options.</param>
     /// <param name="licenseIdCatalog">
     /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) the players in the replay have a license for.
@@ -109,10 +115,27 @@ public partial class StormReplayPregame
 
         using Stream fileStream = _battlelobbyStream;
 
-        Span<byte> buffer = stackalloc byte[(int)fileStream.Length];
-        fileStream.ReadExactly(buffer);
+        // read from the current position, the stream may not be at the start
+        int length = checked((int)(fileStream.Length - fileStream.Position));
 
-        ReplayServerBattlelobby.Parse(this, buffer, true, _parsePregameOptions.ShouldParseLicenseCatalog);
+        byte[]? poolBuffer = null;
+
+        Span<byte> buffer = length <= MaxStackAllocSize
+            ? stackalloc byte[MaxStackAllocSize]
+            : (poolBuffer = ArrayPool<byte>.Shared.Rent(length));
+
+        try
+        {
+            buffer = buffer[..length];
+            fileStream.ReadExactly(buffer);
+
+            ReplayServerBattlelobby.Parse(this, buffer, true, _parsePregameOptions.ShouldParseLicenseCatalog);
+        }
+        finally
+        {
+            if (poolBuffer is not null)
+                ArrayPool<byte>.Shared.Return(poolBuffer);
+        }
 
         ValidateResult();
     }

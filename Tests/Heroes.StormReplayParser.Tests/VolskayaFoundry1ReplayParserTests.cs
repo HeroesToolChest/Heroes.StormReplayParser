@@ -671,6 +671,47 @@ public class VolskayaFoundry1ReplayParserTests
     }
 
     [TestMethod]
+    public void ParseStreamNotAtStartTest()
+    {
+        byte[] replayBytes = File.ReadAllBytes(Path.Combine(_replaysFolder, _replayFile));
+
+        using MemoryStream stream = new();
+        stream.Write([1, 2, 3, 4]);
+        stream.Write(replayBytes);
+        stream.Position = 4;
+
+        StormReplayResult result = StormReplay.Parse(stream, ParseOptions.MinimalParsing);
+
+        Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+        Assert.AreEqual(77548, result.Replay.ReplayBuild);
+        Assert.AreEqual(10, result.Replay.PlayersCount);
+    }
+
+    [TestMethod]
+    public void ParseStreamDisposesStreamTest()
+    {
+        using FileStream stream = File.OpenRead(Path.Combine(_replaysFolder, _replayFile));
+
+        StormReplayResult result = StormReplay.Parse(stream, ParseOptions.MinimalParsing);
+
+        Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+        Assert.IsFalse(stream.CanRead);
+    }
+
+    [TestMethod]
+    public void ParseStreamFailedToOpenDisposesStreamTest()
+    {
+        // left at the end after writing, so there is no replay to read
+        using MemoryStream stream = new();
+        stream.Write(File.ReadAllBytes(Path.Combine(_replaysFolder, _replayFile)));
+
+        StormReplayResult result = StormReplay.Parse(stream, ParseOptions.MinimalParsing);
+
+        Assert.AreEqual(StormReplayParseStatus.Exception, result.Status);
+        Assert.IsFalse(stream.CanRead);
+    }
+
+    [TestMethod]
     public void TrackerEventsVersionedDecoderToJsonTest()
     {
         int i = 0;

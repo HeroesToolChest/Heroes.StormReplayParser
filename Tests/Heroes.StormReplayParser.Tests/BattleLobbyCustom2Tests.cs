@@ -185,4 +185,31 @@ public class BattleLobbyCustom2Tests
         Assert.IsNotNull(replay.LicenseIdCatalog);
         Assert.HasCount(5418, replay.LicenseIdCatalog);
     }
+
+    [TestMethod]
+    public void ParseStreamNotAtStartTest()
+    {
+        byte[] battlelobby = File.ReadAllBytes(Path.Combine(_replaysFolder, _replayFile));
+
+        using MemoryStream stream = new();
+        stream.Write([1, 2, 3, 4]);
+        stream.Write(battlelobby);
+        stream.Position = 4;
+
+        StormReplayPregameResult result = StormReplayPregame.Parse(stream);
+
+        Assert.AreEqual(StormReplayPregameParseStatus.Success, result.Status);
+        Assert.AreEqual(13, result.ReplayBattleLobby.PlayersWithObserversCount);
+    }
+
+    [TestMethod]
+    public void ParseSmallStreamTest()
+    {
+        // small enough to use the stack buffer, but not a valid battlelobby
+        using MemoryStream stream = new(new byte[16]);
+
+        StormReplayPregameResult result = StormReplayPregame.Parse(stream);
+
+        Assert.AreEqual(StormReplayPregameParseStatus.Exception, result.Status);
+    }
 }

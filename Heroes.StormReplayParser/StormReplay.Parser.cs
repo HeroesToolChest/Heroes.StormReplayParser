@@ -35,6 +35,8 @@ public partial class StormReplay
         }
         catch (Exception exception)
         {
+            // without an archive, the stream would not be disposed after parsing
+            stream.Dispose();
             SetFailed(exception);
         }
     }
@@ -69,7 +71,10 @@ public partial class StormReplay
     /// <summary>
     /// Parses a <c>.StormReplay</c> stream.
     /// </summary>
-    /// <param name="stream">The stream containing the <c>.StormReplay</c> data.</param>
+    /// <param name="stream">
+    /// The stream containing the <c>.StormReplay</c> data. The replay is read from the stream's current position.
+    /// <para>The stream must support seeking, and it is disposed after parsing.</para>
+    /// </param>
     /// <param name="parseOptions">Sets the parsing options. Default is <see cref="ParseOptions.DefaultParsing"/>.
     /// <para>If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</para>
     /// </param>
