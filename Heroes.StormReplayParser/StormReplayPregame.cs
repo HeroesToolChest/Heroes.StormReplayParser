@@ -129,7 +129,7 @@ public partial class StormReplayPregame
     /// <summary>
     /// Gets the set of license ids. This is all of the collection items of a build.
     /// <para>
-    /// This will be <see langword="null"/> if not set or parsed.
+    /// This requires <see cref="ParsePregameOptions.ShouldParseLicenseCatalog"/>, or a license id catalog passed to the <c>Parse</c> methods of <see cref="StormReplayPregame"/>. Otherwise, this will be <see langword="null"/>.
     /// </para>
     /// <para>
     /// This is the same for all replays of the same build.

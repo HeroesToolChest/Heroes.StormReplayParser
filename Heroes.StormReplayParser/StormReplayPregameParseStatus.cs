@@ -22,6 +22,9 @@ public enum StormReplayPregameParseStatus
 
     /// <summary>
     /// Indicates a successful parse and that the replay is from the PTR region.
+    /// <para>
+    /// This is only used when <see cref="ParsePregameOptions.AllowPTR"/> is <see langword="false"/>.
+    /// </para>
     /// </summary>
     PTRRegion = 15,
 }

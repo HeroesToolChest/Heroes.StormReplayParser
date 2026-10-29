@@ -149,7 +149,10 @@ public class PregameStormPlayer
     /// Gets a collection of the player's license ids. The license ids are the <c>License</c> values of the <c>CReward</c> type entries in the game data.
     /// <para>
     /// A license is for a hero, skin, mount, announcer, or other content. These are not only the player's owned content, but also the free-to-play
-    /// heroes (including the ones that require a higher account level).
+    /// heroes (including the ones that require an account level the player has not yet reached).
+    /// </para>
+    /// <para>
+    /// This requires <see cref="ParsePregameOptions.ShouldParseLicenseCatalog"/>, or a license id catalog passed to the <c>Parse</c> methods of <see cref="StormReplayPregame"/>. Otherwise, this will be empty.
     /// </para>
     /// </summary>
     public IReadOnlyList<long> LicenseIds => LicenseIdsInternal.AsReadOnly();

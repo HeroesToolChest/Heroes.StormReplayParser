@@ -157,11 +157,18 @@ public partial class StormReplay
 
     /// <summary>
     /// Gets a collection of tracker events.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseTrackerEvents"/>. If it is <see langword="false"/>, this will be empty.
+    /// The unit tracker events also require <see cref="ParseOptions.ShouldParseTrackerUnitEvents"/>.
+    /// </para>
     /// </summary>
     public IReadOnlyList<StormTrackerEvent> TrackerEvents => TrackerEventsInternal.AsReadOnly();
 
     /// <summary>
     /// Gets a collection of game events.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseGameEvents"/> and <see cref="ParseOptions.ShouldKeepGameEvents"/>. If either is <see langword="false"/>, this will be empty.
+    /// </para>
     /// </summary>
     public IReadOnlyList<StormGameEvent> GameEvents => GameEventsInternal.AsReadOnly();
 
@@ -171,22 +178,34 @@ public partial class StormReplay
     /// <para>
     /// These do not contain the message channel of the chat message, so it cannot be determined if the message was sent to the team chat or to all players.
     /// </para>
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseGameEvents"/>. If it is <see langword="false"/>, this will be empty.
+    /// </para>
     /// </summary>
     public IReadOnlyList<ChatMessage> TeamChatMessages => ChatMessageEventInternal.AsReadOnly();
 
     /// <summary>
     /// Gets a collection of all messages.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseMessageEvents"/>. If it is <see langword="false"/>, this will be empty.
+    /// </para>
     /// </summary>
     public IReadOnlyList<IStormMessage> Messages => MessagesInternal.AsReadOnly();
 
     /// <summary>
     /// Gets a collection of only chat messages.
     /// These chat messages are from the perspective of the replay <see cref="Owner"/>'s team and do not contain the other teams' team chat messages (enemy and observer).
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseMessageEvents"/>. If it is <see langword="false"/>, this will be empty.
+    /// </para>
     /// </summary>
     public IEnumerable<IStormMessage> ChatMessages => MessagesInternal.Where(x => x.MessageEventType == StormMessageEventType.SChatMessage);
 
     /// <summary>
     /// Gets a collection of the draft order.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseTrackerEvents"/>. If it is <see langword="false"/>, this will be empty.
+    /// </para>
     /// </summary>
     public IReadOnlyList<StormDraftPick> DraftPicks => DraftPicksInternal.AsReadOnly();
 
@@ -198,7 +217,7 @@ public partial class StormReplay
     /// <summary>
     /// Gets the set of license ids. This is all of the collection items of a build.
     /// <para>
-    /// This will be <see langword="null"/> if not set or not parsed.
+    /// This requires <see cref="ParseOptions.ShouldParseLicenseCatalog"/>, or a license id catalog passed to the <c>Parse</c> methods of <see cref="StormReplay"/>. Otherwise, this will be <see langword="null"/>.
     /// </para>
     /// <para>
     /// This is the same for all replays of the same build.
@@ -312,6 +331,9 @@ public partial class StormReplay
 
     /// <summary>
     /// Gets a team's final level at the end of the game.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseTrackerEvents"/>. If it is <see langword="false"/>, this returns <see langword="null"/>.
+    /// </para>
     /// </summary>
     /// <param name="team">The team value.</param>
     /// <returns>The team's level.</returns>
@@ -327,6 +349,9 @@ public partial class StormReplay
 
     /// <summary>
     /// Gets a collection of a <see cref="StormTeam"/>'s levels.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseTrackerEvents"/>. If it is <see langword="false"/>, this returns <see langword="null"/>.
+    /// </para>
     /// </summary>
     /// <param name="team">The team value.</param>
     /// <returns>A collection of the team's levels or <see langword="null"/> if it does not exists.</returns>
@@ -342,6 +367,9 @@ public partial class StormReplay
 
     /// <summary>
     /// Gets a collection of a team's experience breakdown that occurs during periodic intervals.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseTrackerEvents"/>. If it is <see langword="false"/>, this returns <see langword="null"/>.
+    /// </para>
     /// </summary>
     /// <param name="team">The team value.</param>
     /// <returns>A collection of the team's xp or <see langword="null"/> if it does not exist.</returns>

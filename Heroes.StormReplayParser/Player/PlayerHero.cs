@@ -15,9 +15,12 @@ public class PlayerHero
     public string HeroId { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the hero unit id. This is set from tracker events.
+    /// Gets or sets the hero unit id.
     /// <para>
     /// This is the <c>id</c> value of the <c>CUnit</c> element in the game data.
+    /// </para>
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseTrackerEvents"/>. If it is <see langword="false"/>, this will be empty.
     /// </para>
     /// </summary>
     public string HeroUnitId { get; set; } = string.Empty;

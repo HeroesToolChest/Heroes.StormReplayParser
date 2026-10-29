@@ -114,6 +114,9 @@ public class StormPlayer
 
     /// <summary>
     /// Gets or sets a value indicating whether the player's platform is a mac.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseGameEvents"/>. If it is <see langword="false"/>, this will be <see langword="false"/>.
+    /// </para>
     /// </summary>
     public bool IsPlatformMac { get; set; }
 
@@ -136,6 +139,9 @@ public class StormPlayer
     /// <para>
     /// This will be <see langword="null"/> if the portrait does not have a license, which are mostly progression and achievement portraits, or if the player is an observer.
     /// For these license-less portraits, the <see cref="PortraitUnlockableId"/> can be used to determine the portrait's name.
+    /// </para>
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseLicenseCatalog"/>, or a license id catalog passed to the <c>Parse</c> methods of <see cref="StormReplay"/>. Otherwise, this will be <see langword="null"/>.
     /// </para>
     /// </summary>
     public long? PortraitLicenseId { get; set; }
@@ -165,26 +171,42 @@ public class StormPlayer
 
     /// <summary>
     /// Gets the player's score result.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseTrackerEvents"/>. If it is <see langword="false"/>, this will be <see langword="null"/>.
+    /// </para>
     /// </summary>
     public ScoreResult? ScoreResult => _scoreResult?.Invoke(_player!.Value) ?? null;
 
     /// <summary>
     /// Gets the match awards earned.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseTrackerEvents"/>. If it is <see langword="false"/>, this will be <see langword="null"/>.
+    /// </para>
     /// </summary>
     public IReadOnlyList<MatchAwardType>? MatchAwards => ScoreResult?.MatchAwards.ToList();
 
     /// <summary>
     /// Gets the player's selected talents.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseTrackerEvents"/> or <see cref="ParseOptions.ShouldParseGameEvents"/>, which each set different properties of the talents.
+    /// If both are <see langword="false"/>, this will be empty.
+    /// </para>
     /// </summary>
     public IReadOnlyList<HeroTalent> Talents => TalentsInternal.AsReadOnly();
 
     /// <summary>
     /// Gets the player's times when they left and rejoined the game.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseGameEvents"/>. If it is <see langword="false"/>, this will be empty.
+    /// </para>
     /// </summary>
     public IReadOnlyList<PlayerDisconnect> PlayerDisconnects => PlayerDisconnectsInternal.AsReadOnly();
 
     /// <summary>
     /// Gets the amount of match awards.
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseTrackerEvents"/>. If it is <see langword="false"/>, this will be <see langword="null"/>.
+    /// </para>
     /// </summary>
     public int? MatchAwardsCount => ScoreResult?.MatchAwards.Count;
 
@@ -192,7 +214,10 @@ public class StormPlayer
     /// Gets a collection of the player's license ids. The license ids are the <c>License</c> values of the <c>CReward</c> type entries in the game data.
     /// <para>
     /// A license is for a hero, skin, mount, announcer, or other content. These are not only the player's owned content, but also the free-to-play
-    /// heroes (including the ones that require a higher account level).
+    /// heroes (including the ones that require an account level the player has not yet reached).
+    /// </para>
+    /// <para>
+    /// This requires <see cref="ParseOptions.ShouldParseLicenseCatalog"/>, or a license id catalog passed to the <c>Parse</c> methods of <see cref="StormReplay"/>. Otherwise, this will be empty.
     /// </para>
     /// </summary>
     public IReadOnlyList<long> LicenseIds => LicenseIdsInternal.AsReadOnly();
