@@ -29,6 +29,9 @@ internal static class ReplayServerBattlelobby
         // the Battle.net cache paths of the map and mod archives (s2ma), in dependency order with the map last
         uint dependenciesLength = bitReader.ReadBits(6);
 
+        if (dependenciesLength == 0)
+            throw new StormParseException($"{_exceptionHeader}: not a battlelobby file, there are no s2ma dependencies");
+
         for (int i = 0; i < dependenciesLength; i++)
         {
             battleNetCachePaths.Add(bitReader.ReadBlobAsString(10));
@@ -36,6 +39,9 @@ internal static class ReplayServerBattlelobby
 
         // repeat s2ma cache handles for the above
         uint s2maCacheHandleLength = bitReader.ReadBits(6);
+
+        if (s2maCacheHandleLength != dependenciesLength)
+            throw new StormParseException($"{_exceptionHeader}: not a battlelobby file, the s2ma cache handle count does not match the dependency count");
 
         for (int i = 0; i < s2maCacheHandleLength; i++)
         {
