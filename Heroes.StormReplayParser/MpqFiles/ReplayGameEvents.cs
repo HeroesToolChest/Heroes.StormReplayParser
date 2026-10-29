@@ -4,11 +4,12 @@ internal static class ReplayGameEvents
 {
     public static string FileName { get; } = "replay.game.events";
 
-    public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
+    public static void Parse(StormReplay replay, ReadOnlySpan<byte> source, bool shouldKeepGameEvents)
     {
         BitReader bitReader = new(source, EndianType.BigEndian);
 
         uint ticksElapsed = 0;
+        StormGameEvent? lastGameEvent = null;
 
         while (bitReader.Index < bitReader.Length)
         {
@@ -1107,12 +1108,18 @@ internal static class ReplayGameEvents
             bitReader.AlignToByte();
 
             if (gameEvent is not null)
-                replay.GameEventsInternal.Add(gameEvent.Value);
+            {
+                if (shouldKeepGameEvents)
+                    replay.GameEventsInternal.Add(gameEvent.Value);
+
+                lastGameEvent = gameEvent;
+            }
         }
 
-        if (replay.GameEventsInternal[^1].GameEventType == StormGameEventType.SGameUserLeaveEvent)
+        // when the last event is a player leaving, that player is the replay owner
+        if (lastGameEvent?.GameEventType == StormGameEventType.SGameUserLeaveEvent)
         {
-            replay.Owner = replay.GameEventsInternal[^1].MessageSender;
+            replay.Owner = lastGameEvent.Value.MessageSender;
 
             foreach (StormPlayer? player in replay.ClientListByUserID)
             {

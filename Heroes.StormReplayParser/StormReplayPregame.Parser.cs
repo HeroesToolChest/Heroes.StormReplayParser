@@ -1,7 +1,7 @@
 ﻿namespace Heroes.StormReplayParser;
 
 /// <summary>
-/// /// Contains the information to parse a Heroes of the Storm replay battlelobby file.
+/// Contains the information to parse a Heroes of the Storm replay battlelobby file.
 /// </summary>
 public partial class StormReplayPregame
 {
@@ -41,15 +41,23 @@ public partial class StormReplayPregame
 
     /// <summary>
     /// Parses a <c>replay.server.battlelobby</c> file.
+    /// <para>
+    /// Errors from opening or parsing the file are not thrown. Instead, the result's <see cref="StormReplayPregameResult.Status"/> is <see cref="StormReplayPregameParseStatus.Exception"/>
+    /// and <see cref="StormReplayPregameResult.Exception"/> has the error. This includes a file that is not a battlelobby file.
+    /// </para>
     /// </summary>
-    /// <param name="path">The path to the <c>replay.server.battlelobby</c> file.</param>
-    /// <param name="parsePregameOptions">Sets the pregame parsing options.</param>
+    /// <param name="path">The path to the <c>replay.server.battlelobby</c> file. The file is opened for reading and closed after parsing.</param>
+    /// <param name="parsePregameOptions">The pregame parsing options. If <see langword="null"/>, <see cref="ParsePregameOptions.DefaultParsing"/> is used.</param>
     /// <param name="licenseIdCatalog">
-    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) the players in the replay have a license for.
-    /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
+    /// A license id catalog, which is the set of all the license ids of a build, such as the <see cref="LicenseIdCatalog"/> of another battlelobby file of the same build.
+    /// <para>
+    /// If one is passed, the players' license ids are always parsed, even if <see cref="ParsePregameOptions.ShouldParseLicenseCatalog"/> is <see langword="false"/>.
+    /// If it matches the battlelobby file's catalog, it is used as this <see cref="LicenseIdCatalog"/>, so battlelobby files of the same build can share one set.
+    /// If it does not match, such as a catalog from a different build, a new set is created from the battlelobby file.
+    /// </para>
     /// </param>
-    /// <returns>A <see cref="StormReplayPregameResult"/>.</returns>
-    /// <exception cref="ArgumentException"><paramref name="path"/> cannot be <see langword="null"/> or empty.</exception>
+    /// <returns>A <see cref="StormReplayPregameResult"/> with the parsed battlelobby file and its parse status.</returns>
+    /// <exception cref="ArgumentException"><paramref name="path"/> is <see langword="null"/>, empty, or only whitespace.</exception>
     public static StormReplayPregameResult Parse(string path, ParsePregameOptions? parsePregameOptions = null, IReadOnlySet<long>? licenseIdCatalog = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -64,17 +72,25 @@ public partial class StormReplayPregame
 
     /// <summary>
     /// Parses a <c>replay.server.battlelobby</c> stream.
+    /// <para>
+    /// Errors from reading or parsing the data are not thrown. Instead, the result's <see cref="StormReplayPregameResult.Status"/> is <see cref="StormReplayPregameParseStatus.Exception"/>
+    /// and <see cref="StormReplayPregameResult.Exception"/> has the error. This includes data that is not a battlelobby file.
+    /// </para>
     /// </summary>
     /// <param name="stream">
     /// The stream containing the <c>replay.server.battlelobby</c> data. The data is read from the stream's current position to its end.
     /// <para>The stream must support seeking, and it is disposed after parsing.</para>
     /// </param>
-    /// <param name="parsePregameOptions">Sets the pregame parsing options.</param>
+    /// <param name="parsePregameOptions">The pregame parsing options. If <see langword="null"/>, <see cref="ParsePregameOptions.DefaultParsing"/> is used.</param>
     /// <param name="licenseIdCatalog">
-    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) the players in the replay have a license for.
-    /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
+    /// A license id catalog, which is the set of all the license ids of a build, such as the <see cref="LicenseIdCatalog"/> of another battlelobby file of the same build.
+    /// <para>
+    /// If one is passed, the players' license ids are always parsed, even if <see cref="ParsePregameOptions.ShouldParseLicenseCatalog"/> is <see langword="false"/>.
+    /// If it matches the battlelobby file's catalog, it is used as this <see cref="LicenseIdCatalog"/>, so battlelobby files of the same build can share one set.
+    /// If it does not match, such as a catalog from a different build, a new set is created from the battlelobby file.
+    /// </para>
     /// </param>
-    /// <returns>A <see cref="StormReplayPregameResult"/>.</returns>
+    /// <returns>A <see cref="StormReplayPregameResult"/> with the parsed battlelobby file and its parse status.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
     public static StormReplayPregameResult Parse(Stream stream, ParsePregameOptions? parsePregameOptions = null, IReadOnlySet<long>? licenseIdCatalog = null)
     {

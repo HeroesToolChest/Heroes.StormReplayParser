@@ -45,17 +45,28 @@ public partial class StormReplay
 
     /// <summary>
     /// Parses a <c>.StormReplay</c> file.
+    /// <para>
+    /// Errors from opening or parsing the replay are not thrown. Instead, the result's <see cref="StormReplayResult.Status"/> is <see cref="StormReplayParseStatus.Exception"/>
+    /// and <see cref="StormReplayResult.Exception"/> has the error.
+    /// </para>
     /// </summary>
-    /// <param name="path">The path to the <c>.StormReplay</c> file.</param>
-    /// <param name="parseOptions">Sets the parsing options. Default is <see cref="ParseOptions.DefaultParsing"/>.
-    /// <para>If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</para>
+    /// <param name="path">The path to the <c>.StormReplay</c> file. The file is opened for reading and closed after parsing.</param>
+    /// <param name="parseOptions">
+    /// The parsing options. If <see langword="null"/>, <see cref="ParseOptions.DefaultParsing"/> is used.
+    /// <para>
+    /// By default, PTR replays are not allowed, so a PTR replay that parses successfully has the status <see cref="StormReplayParseStatus.PTRRegion"/>. See <see cref="ParseOptions.AllowPTR"/>.
+    /// </para>
     /// </param>
     /// <param name="licenseIdCatalog">
-    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) the players in the replay have a license for.
-    /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
+    /// A license id catalog, which is the set of all the license ids of a build, such as the <see cref="LicenseIdCatalog"/> of another replay of the same build.
+    /// <para>
+    /// If one is passed, the players' license ids are always parsed, even if <see cref="ParseOptions.ShouldParseLicenseCatalog"/> is <see langword="false"/>.
+    /// If it matches the replay's catalog, it is used as this replay's <see cref="LicenseIdCatalog"/>, so replays of the same build can share one set.
+    /// If it does not match, such as a catalog from a different build, a new set is created from the replay.
+    /// </para>
     /// </param>
-    /// <returns>A <see cref="StormReplayResult"/>.</returns>
-    /// <exception cref="ArgumentException"><paramref name="path"/> cannot be <see langword="null"/> or empty.</exception>
+    /// <returns>A <see cref="StormReplayResult"/> with the parsed replay and its parse status.</returns>
+    /// <exception cref="ArgumentException"><paramref name="path"/> is <see langword="null"/>, empty, or only whitespace.</exception>
     public static StormReplayResult Parse(string path, ParseOptions? parseOptions = null, IReadOnlySet<long>? licenseIdCatalog = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -70,19 +81,30 @@ public partial class StormReplay
 
     /// <summary>
     /// Parses a <c>.StormReplay</c> stream.
+    /// <para>
+    /// Errors from reading or parsing the replay are not thrown. Instead, the result's <see cref="StormReplayResult.Status"/> is <see cref="StormReplayParseStatus.Exception"/>
+    /// and <see cref="StormReplayResult.Exception"/> has the error.
+    /// </para>
     /// </summary>
     /// <param name="stream">
     /// The stream containing the <c>.StormReplay</c> data. The replay is read from the stream's current position.
     /// <para>The stream must support seeking, and it is disposed after parsing.</para>
     /// </param>
-    /// <param name="parseOptions">Sets the parsing options. Default is <see cref="ParseOptions.DefaultParsing"/>.
-    /// <para>If <see cref="ParseOptions.AllowPTR"/> is <see langword="false"/> the result status will be <see cref="StormReplayParseStatus.PTRRegion"/> if the replay is successfully parsed.</para>
+    /// <param name="parseOptions">
+    /// The parsing options. If <see langword="null"/>, <see cref="ParseOptions.DefaultParsing"/> is used.
+    /// <para>
+    /// By default, PTR replays are not allowed, so a PTR replay that parses successfully has the status <see cref="StormReplayParseStatus.PTRRegion"/>. See <see cref="ParseOptions.AllowPTR"/>.
+    /// </para>
     /// </param>
     /// <param name="licenseIdCatalog">
-    /// A set of license Ids to use for parsing. This is used to determine which collection items (heroes, skins, etc...) the players in the replay have a license for.
-    /// <para>This set is the same for all replays of the same build and can be obtained from <see cref="LicenseIdCatalog"/>.</para>
+    /// A license id catalog, which is the set of all the license ids of a build, such as the <see cref="LicenseIdCatalog"/> of another replay of the same build.
+    /// <para>
+    /// If one is passed, the players' license ids are always parsed, even if <see cref="ParseOptions.ShouldParseLicenseCatalog"/> is <see langword="false"/>.
+    /// If it matches the replay's catalog, it is used as this replay's <see cref="LicenseIdCatalog"/>, so replays of the same build can share one set.
+    /// If it does not match, such as a catalog from a different build, a new set is created from the replay.
+    /// </para>
     /// </param>
-    /// <returns>A <see cref="StormReplayResult"/>.</returns>
+    /// <returns>A <see cref="StormReplayResult"/> with the parsed replay and its parse status.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
     public static StormReplayResult Parse(Stream stream, ParseOptions? parseOptions = null, IReadOnlySet<long>? licenseIdCatalog = null)
     {
@@ -189,7 +211,7 @@ public partial class StormReplay
         ParseReplayServerBattlelobby(pool);
 
         if (_parseOptions.ShouldParseGameEvents)
-            ParseMpqFile(pool, ReplayGameEvents.FileName, ReplayGameEvents.Parse);
+            ParseMpqFile(pool, ReplayGameEvents.FileName, static (replay, buffer) => ReplayGameEvents.Parse(replay, buffer, replay._parseOptions.ShouldKeepGameEvents));
 
         if (_parseOptions.ShouldParseTrackerEvents)
             ParseMpqFile(pool, ReplayTrackerEvents.FileName, static (replay, buffer) => ReplayTrackerEvents.Parse(replay, buffer, replay._parseOptions.ShouldParseTrackerUnitEvents));

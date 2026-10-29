@@ -5,6 +5,9 @@
 /// </summary>
 public class StormGameEventData
 {
+    private readonly ulong _value;
+    private readonly object? _reference;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="StormGameEventData"/> class.
     /// </summary>
@@ -12,7 +15,7 @@ public class StormGameEventData
     public StormGameEventData(bool value)
     {
         DataType = StormGameEventDataType.Bool;
-        Boolean = value;
+        _value = value ? 1UL : 0UL;
     }
 
     /// <summary>
@@ -22,7 +25,7 @@ public class StormGameEventData
     public StormGameEventData(int value)
     {
         DataType = StormGameEventDataType.Integer32;
-        Integer32 = value;
+        _value = (uint)value;
     }
 
     /// <summary>
@@ -32,7 +35,7 @@ public class StormGameEventData
     public StormGameEventData(uint value)
     {
         DataType = StormGameEventDataType.UnsignedInteger32;
-        UnsignedInteger32 = value;
+        _value = value;
     }
 
     /// <summary>
@@ -42,7 +45,7 @@ public class StormGameEventData
     public StormGameEventData(ulong value)
     {
         DataType = StormGameEventDataType.UnsignedInteger64;
-        UnsignedInteger64 = value;
+        _value = value;
     }
 
     /// <summary>
@@ -52,7 +55,7 @@ public class StormGameEventData
     public StormGameEventData(string? value)
     {
         DataType = StormGameEventDataType.Blob;
-        Blob = value;
+        _reference = value;
     }
 
     /// <summary>
@@ -62,7 +65,7 @@ public class StormGameEventData
     public StormGameEventData(StormDataStructure<StormGameEventData>? structure)
     {
         DataType = StormGameEventDataType.Structure;
-        Structure = structure;
+        _reference = structure;
     }
 
     /// <summary>
@@ -72,7 +75,7 @@ public class StormGameEventData
     public StormGameEventData(StormGameEventData[]? array)
     {
         DataType = StormGameEventDataType.Array;
-        Array = array;
+        _reference = array;
     }
 
     /// <summary>
@@ -82,7 +85,7 @@ public class StormGameEventData
     public StormGameEventData(bool[] bitArray)
     {
         DataType = StormGameEventDataType.BitArray;
-        BitArray = bitArray;
+        _reference = bitArray;
     }
 
     /// <summary>
@@ -93,42 +96,42 @@ public class StormGameEventData
     /// <summary>
     /// Gets the structure.
     /// </summary>
-    public StormDataStructure<StormGameEventData>? Structure { get; } = null;
+    public StormDataStructure<StormGameEventData>? Structure => DataType == StormGameEventDataType.Structure ? (StormDataStructure<StormGameEventData>?)_reference : null;
 
     /// <summary>
     /// Gets the boolean value.
     /// </summary>
-    public bool? Boolean { get; } = null;
+    public bool? Boolean => DataType == StormGameEventDataType.Bool ? _value != 0 : null;
 
     /// <summary>
     /// Gets the string value.
     /// </summary>
-    public string? Blob { get; } = null;
+    public string? Blob => DataType == StormGameEventDataType.Blob ? (string?)_reference : null;
 
     /// <summary>
     /// Gets the 32-bit signed integer.
     /// </summary>
-    public int? Integer32 { get; } = null;
+    public int? Integer32 => DataType == StormGameEventDataType.Integer32 ? (int)_value : null;
 
     /// <summary>
     /// Gets the 32-bit unsigned integer.
     /// </summary>
-    public uint? UnsignedInteger32 { get; } = null;
+    public uint? UnsignedInteger32 => DataType == StormGameEventDataType.UnsignedInteger32 ? (uint)_value : null;
 
     /// <summary>
     /// Gets the 64-bit unsigned integer.
     /// </summary>
-    public ulong? UnsignedInteger64 { get; } = null;
+    public ulong? UnsignedInteger64 => DataType == StormGameEventDataType.UnsignedInteger64 ? _value : null;
 
     /// <summary>
     /// Gets the array.
     /// </summary>
-    public StormGameEventData[]? Array { get; } = null;
+    public StormGameEventData[]? Array => DataType == StormGameEventDataType.Array ? (StormGameEventData[]?)_reference : null;
 
     /// <summary>
     /// Gets the array of boooleans.
     /// </summary>
-    public bool[]? BitArray { get; } = null;
+    public bool[]? BitArray => DataType == StormGameEventDataType.BitArray ? (bool[]?)_reference : null;
 
     /// <inheritdoc/>
     public override string? ToString()
