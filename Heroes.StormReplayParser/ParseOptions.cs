@@ -19,6 +19,7 @@ public class ParseOptions
         ShouldParseTrackerEvents = false,
         ShouldParseGameEvents = false,
         ShouldParseMessageEvents = false,
+        ShouldParseLicenseCatalog = false,
     };
 
     /// <summary>
@@ -42,9 +43,13 @@ public class ParseOptions
     public bool ShouldParseMessageEvents { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether to parse the license catalog.
+    /// Gets or sets a value indicating whether to parse the license id catalog and the players' license ids when no license id catalog is passed to <see cref="StormReplay.Parse(string, ParseOptions, IReadOnlySet{long})"/> or <see cref="StormReplay.Parse(Stream, ParseOptions, IReadOnlySet{long})"/>.
     /// <para>
-    /// If <see langword="false"/>, <see cref="StormPlayer.PortraitLicenseId"/> will be <see langword="null"/> and <see cref="StormPlayer.LicenseIds"/> will be empty.
+    /// If <see langword="false"/> and no license id catalog is passed, <see cref="StormReplay.LicenseIdCatalog"/> and <see cref="StormPlayer.PortraitLicenseId"/> will be <see langword="null"/>,
+    /// and <see cref="StormPlayer.LicenseIds"/> will be empty.
+    /// </para>
+    /// <para>
+    /// If a license id catalog is passed, these are always parsed and this option is ignored.
     /// </para>
     /// </summary>
     public bool ShouldParseLicenseCatalog { get; set; } = false;
