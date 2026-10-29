@@ -617,6 +617,54 @@ public class VolskayaFoundry1ReplayParserTests
 
     [TestMethod]
     [TestCategory("Parsing Options")]
+    public void NoTrackerUnitEventsParsingTest()
+    {
+        StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), new ParseOptions()
+        {
+            ShouldParseTrackerUnitEvents = false,
+        });
+
+        StormReplay replay = result.Replay;
+
+        Assert.AreEqual(StormReplayParseStatus.Success, result.Status);
+
+        // the unit events are left out, and the other tracker events are the same
+        Assert.Contains(x => ReplayTrackerEvents.IsUnitEvent(x.TrackerEventType), _stormReplay.TrackerEvents);
+        Assert.DoesNotContain(x => ReplayTrackerEvents.IsUnitEvent(x.TrackerEventType), replay.TrackerEvents);
+        Assert.AreSequenceEqual(_stormReplay.TrackerEvents.Where(x => !ReplayTrackerEvents.IsUnitEvent(x.TrackerEventType)).ToList(), replay.TrackerEvents.ToList());
+
+        // none of the data parsed from the tracker events changes
+        Assert.AreSequenceEqual(
+            _stormReplay.DraftPicks.Select(x => $"{x.HeroSelected} {x.Team} {x.PickType} {x.Player?.Name}").ToList(),
+            replay.DraftPicks.Select(x => $"{x.HeroSelected} {x.Team} {x.PickType} {x.Player?.Name}").ToList());
+        Assert.AreEqual(_stormReplay.MapInfo.MapId, replay.MapInfo.MapId);
+
+        StormTeam[] teams = [StormTeam.Blue, StormTeam.Red];
+
+        foreach (StormTeam team in teams)
+        {
+            Assert.IsNotEmpty(replay.GetTeamLevels(team)!);
+            Assert.IsNotEmpty(replay.GetTeamXPBreakdown(team)!);
+            Assert.AreEqual(JsonSerializer.Serialize(_stormReplay.GetTeamLevels(team)), JsonSerializer.Serialize(replay.GetTeamLevels(team)));
+            Assert.AreEqual(JsonSerializer.Serialize(_stormReplay.GetTeamXPBreakdown(team)), JsonSerializer.Serialize(replay.GetTeamXPBreakdown(team)));
+        }
+
+        List<StormPlayer> expectedPlayers = [.. _stormReplay.StormPlayers];
+        List<StormPlayer> players = [.. replay.StormPlayers];
+
+        Assert.HasCount(expectedPlayers.Count, players);
+
+        for (int i = 0; i < players.Count; i++)
+        {
+            Assert.IsNotNull(players[i].ScoreResult);
+            Assert.AreEqual(expectedPlayers[i].PlayerHero?.HeroUnitId, players[i].PlayerHero?.HeroUnitId);
+            Assert.AreEqual(JsonSerializer.Serialize(expectedPlayers[i].Talents), JsonSerializer.Serialize(players[i].Talents));
+            Assert.AreEqual(JsonSerializer.Serialize(expectedPlayers[i].ScoreResult), JsonSerializer.Serialize(players[i].ScoreResult));
+        }
+    }
+
+    [TestMethod]
+    [TestCategory("Parsing Options")]
     public void MinimalParsingTests()
     {
         StormReplayResult result = StormReplay.Parse(Path.Combine(_replaysFolder, _replayFile), ParseOptions.MinimalParsing);
@@ -779,6 +827,16 @@ public class VolskayaFoundry1ReplayParserTests
         Assert.AreSame(owner, players[6]);
         Assert.ContainsSingle(x => x.IsReplayOwner, players);
     }
+
+    //private static bool IsUnitEvent(StormTrackerEventType type) => type is
+    //    StormTrackerEventType.UnitBornEvent or
+    //    StormTrackerEventType.UnitDiedEvent or
+    //    StormTrackerEventType.UnitOwnerChangeEvent or
+    //    StormTrackerEventType.UnitTypeChangeEvent or
+    //    StormTrackerEventType.UnitInitEvent or
+    //    StormTrackerEventType.UnitDoneEvent or
+    //    StormTrackerEventType.UnitPositionsEvent or
+    //    StormTrackerEventType.UnitRevivedEvent;
 
     private static void NoTrackerEvents(StormReplayResult result)
     {

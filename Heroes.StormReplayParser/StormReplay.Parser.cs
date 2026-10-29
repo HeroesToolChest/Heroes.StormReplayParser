@@ -192,7 +192,7 @@ public partial class StormReplay
             ParseMpqFile(pool, ReplayGameEvents.FileName, ReplayGameEvents.Parse);
 
         if (_parseOptions.ShouldParseTrackerEvents)
-            ParseMpqFile(pool, ReplayTrackerEvents.FileName, ReplayTrackerEvents.Parse);
+            ParseMpqFile(pool, ReplayTrackerEvents.FileName, static (replay, buffer) => ReplayTrackerEvents.Parse(replay, buffer, replay._parseOptions.ShouldParseTrackerUnitEvents));
 
         if (_parseOptions.ShouldParseMessageEvents)
             ParseMpqFile(pool, ReplayMessageEvents.FileName, ReplayMessageEvents.Parse);

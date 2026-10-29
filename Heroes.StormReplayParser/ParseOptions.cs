@@ -17,6 +17,7 @@ public class ParseOptions
     {
         AllowPTR = false,
         ShouldParseTrackerEvents = false,
+        ShouldParseTrackerUnitEvents = false,
         ShouldParseGameEvents = false,
         ShouldParseMessageEvents = false,
         ShouldParseLicenseCatalog = false,
@@ -31,6 +32,22 @@ public class ParseOptions
     /// Gets or sets a value indicating whether the tracker events should be parsed.
     /// </summary>
     public bool ShouldParseTrackerEvents { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the unit tracker events should be parsed.
+    /// <para>
+    /// These are the <see cref="StormTrackerEventType.UnitBornEvent"/>, <see cref="StormTrackerEventType.UnitDiedEvent"/>, <see cref="StormTrackerEventType.UnitOwnerChangeEvent"/>,
+    /// <see cref="StormTrackerEventType.UnitTypeChangeEvent"/>, <see cref="StormTrackerEventType.UnitInitEvent"/>, <see cref="StormTrackerEventType.UnitDoneEvent"/>,
+    /// <see cref="StormTrackerEventType.UnitPositionsEvent"/>, and <see cref="StormTrackerEventType.UnitRevivedEvent"/> events.
+    /// </para>
+    /// <para>
+    /// If <see langword="false"/>, these are skipped and left out of <see cref="StormReplay.TrackerEvents"/>. None of the other replay data comes from them.
+    /// </para>
+    /// <para>
+    /// This has no effect if <see cref="ShouldParseTrackerEvents"/> is <see langword="false"/>.
+    /// </para>
+    /// </summary>
+    public bool ShouldParseTrackerUnitEvents { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether the game events should be parsed.

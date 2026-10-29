@@ -4,7 +4,7 @@ internal static class ReplayTrackerEvents
 {
     public static string FileName { get; } = "replay.tracker.events";
 
-    public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
+    public static void Parse(StormReplay replay, ReadOnlySpan<byte> source, bool shouldParseUnitEvents)
     {
         BitReader bitReader = new(source, EndianType.BigEndian);
 
@@ -12,15 +12,39 @@ internal static class ReplayTrackerEvents
 
         while (bitReader.Index < source.Length)
         {
-            gameLoop += new VersionedDecoder(ref bitReader).ChoiceData!.GetValueAsUInt32();
+            // the game loop delta is a choice (0x03) of a vint (0x09)
+            bitReader.ReadAlignedByte(); // choice
+            bitReader.ReadVInt(); // choice tag
+            bitReader.ReadAlignedByte(); // vint
+            gameLoop += (uint)bitReader.ReadVInt();
 
             TimeSpan timeSpan = TimeSpan.FromSeconds(gameLoop / 16.0);
-            StormTrackerEventType type = (StormTrackerEventType)new VersionedDecoder(ref bitReader).GetValueAsUInt32();
+
+            // the event type is a vint (0x09)
+            bitReader.ReadAlignedByte(); // vint
+            StormTrackerEventType type = (StormTrackerEventType)bitReader.ReadVInt();
+
+            if (!shouldParseUnitEvents && IsUnitEvent(type))
+            {
+                VersionedDecoder.Skip(ref bitReader);
+                continue;
+            }
+
             VersionedDecoder decoder = new(ref bitReader);
 
             AddParsedTrackerEvent(replay, new StormTrackerEvent(type, timeSpan, decoder));
         }
     }
+
+    internal static bool IsUnitEvent(StormTrackerEventType type) => type is
+        StormTrackerEventType.UnitBornEvent or
+        StormTrackerEventType.UnitDiedEvent or
+        StormTrackerEventType.UnitOwnerChangeEvent or
+        StormTrackerEventType.UnitTypeChangeEvent or
+        StormTrackerEventType.UnitInitEvent or
+        StormTrackerEventType.UnitDoneEvent or
+        StormTrackerEventType.UnitPositionsEvent or
+        StormTrackerEventType.UnitRevivedEvent;
 
     private static void AddParsedTrackerEvent(StormReplay replay, StormTrackerEvent stormTrackerEvent)
     {
@@ -97,26 +121,22 @@ internal static class ReplayTrackerEvents
 
     private static void ParseStatGameEvent(StormReplay replay, StormTrackerEvent stormTrackerEvent)
     {
-        byte[]? value = stormTrackerEvent.VersionedDecoder!.Structure?[0].Value;
-        if (value is null)
-            return;
+        ReadOnlySpan<byte> value = stormTrackerEvent.VersionedDecoder!.Structure?[0].Value;
 
-        ReadOnlySpan<byte> valueSpan = value;
-
-        if (valueSpan.SequenceEqual("LevelUp"u8))
+        if (value.SequenceEqual("LevelUp"u8))
         {
             StatLevelUp(replay, stormTrackerEvent);
         }
-        else if (valueSpan.SequenceEqual("PeriodicXPBreakdown"u8))
+        else if (value.SequenceEqual("PeriodicXPBreakdown"u8))
         {
             StatPeriodXPBreakdown(replay, stormTrackerEvent);
         }
-        else if (valueSpan.SequenceEqual("EndOfGameXPBreakdown"u8))
+        else if (value.SequenceEqual("EndOfGameXPBreakdown"u8))
         {
             StatEndOfGameXPBreakdown(replay, stormTrackerEvent);
         }
-        else if (valueSpan.SequenceEqual("StatEndOfGameTalentChoices"u8) ||
-                 valueSpan.SequenceEqual("EndOfGameTalentChoices"u8))
+        else if (value.SequenceEqual("StatEndOfGameTalentChoices"u8) ||
+                 value.SequenceEqual("EndOfGameTalentChoices"u8))
         {
             StatEndOfGameTalentChoices(replay, stormTrackerEvent);
         }
@@ -127,11 +147,9 @@ internal static class ReplayTrackerEvents
         byte[]? playerIdValue = stormTrackerEvent.VersionedDecoder!.Structure?[2].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
         byte[]? levelValue = stormTrackerEvent.VersionedDecoder!.Structure?[2].OptionalData?.ArrayData?[1].Structure?[0].Structure?[0].Value;
 
-        if (playerIdValue is null || levelValue is null)
-            return;
-
-        if (!((ReadOnlySpan<byte>)playerIdValue).SequenceEqual("PlayerID"u8) ||
-            !((ReadOnlySpan<byte>)levelValue).SequenceEqual("Level"u8))
+        // a null value is an empty span, which never matches
+        if (!"PlayerID"u8.SequenceEqual(playerIdValue) ||
+            !"Level"u8.SequenceEqual(levelValue))
             return;
 
         int playerId = (int)stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32();
@@ -161,18 +179,15 @@ internal static class ReplayTrackerEvents
         byte[]? heroXPValue = stormTrackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[5].Structure?[0].Structure?[0].Value;
         byte[]? trickleXPValue = stormTrackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[6].Structure?[0].Structure?[0].Value;
 
-        if (teamLevelValue is null || gameTimeValue is null || previousGameTimeValue is null || minionXPValue is null ||
-            creepXPValue is null || structureXPValue is null || heroXPValue is null || trickleXPValue is null)
-            return;
-
-        if (!((ReadOnlySpan<byte>)teamLevelValue).SequenceEqual("TeamLevel"u8) ||
-            !((ReadOnlySpan<byte>)gameTimeValue).SequenceEqual("GameTime"u8) ||
-            !((ReadOnlySpan<byte>)previousGameTimeValue).SequenceEqual("PreviousGameTime"u8) ||
-            !((ReadOnlySpan<byte>)minionXPValue).SequenceEqual("MinionXP"u8) ||
-            !((ReadOnlySpan<byte>)creepXPValue).SequenceEqual("CreepXP"u8) ||
-            !((ReadOnlySpan<byte>)structureXPValue).SequenceEqual("StructureXP"u8) ||
-            !((ReadOnlySpan<byte>)heroXPValue).SequenceEqual("HeroXP"u8) ||
-            !((ReadOnlySpan<byte>)trickleXPValue).SequenceEqual("TrickleXP"u8))
+        // a null value is an empty span, which never matches
+        if (!"TeamLevel"u8.SequenceEqual(teamLevelValue) ||
+            !"GameTime"u8.SequenceEqual(gameTimeValue) ||
+            !"PreviousGameTime"u8.SequenceEqual(previousGameTimeValue) ||
+            !"MinionXP"u8.SequenceEqual(minionXPValue) ||
+            !"CreepXP"u8.SequenceEqual(creepXPValue) ||
+            !"StructureXP"u8.SequenceEqual(structureXPValue) ||
+            !"HeroXP"u8.SequenceEqual(heroXPValue) ||
+            !"TrickleXP"u8.SequenceEqual(trickleXPValue))
             return;
 
         uint team = stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32() - 1;
@@ -199,16 +214,13 @@ internal static class ReplayTrackerEvents
         byte[]? heroXPValue = stormTrackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[3].Structure?[0].Structure?[0].Value;
         byte[]? trickleXPValue = stormTrackerEvent.VersionedDecoder?.Structure?[3].OptionalData?.ArrayData?[4].Structure?[0].Structure?[0].Value;
 
-        if (playerIdValue is null || minionXPValue is null || creepXPValue is null || structureXPValue is null ||
-            heroXPValue is null || trickleXPValue is null)
-            return;
-
-        if (!((ReadOnlySpan<byte>)playerIdValue).SequenceEqual("PlayerID"u8) ||
-            !((ReadOnlySpan<byte>)minionXPValue).SequenceEqual("MinionXP"u8) ||
-            !((ReadOnlySpan<byte>)creepXPValue).SequenceEqual("CreepXP"u8) ||
-            !((ReadOnlySpan<byte>)structureXPValue).SequenceEqual("StructureXP"u8) ||
-            !((ReadOnlySpan<byte>)heroXPValue).SequenceEqual("HeroXP"u8) ||
-            !((ReadOnlySpan<byte>)trickleXPValue).SequenceEqual("TrickleXP"u8))
+        // a null value is an empty span, which never matches
+        if (!"PlayerID"u8.SequenceEqual(playerIdValue) ||
+            !"MinionXP"u8.SequenceEqual(minionXPValue) ||
+            !"CreepXP"u8.SequenceEqual(creepXPValue) ||
+            !"StructureXP"u8.SequenceEqual(structureXPValue) ||
+            !"HeroXP"u8.SequenceEqual(heroXPValue) ||
+            !"TrickleXP"u8.SequenceEqual(trickleXPValue))
             return;
 
         uint playerId = stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32();
@@ -243,11 +255,9 @@ internal static class ReplayTrackerEvents
         byte[]? playerIdValue = stormTrackerEvent.VersionedDecoder?.Structure?[2].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
         byte[]? heroValue = stormTrackerEvent.VersionedDecoder?.Structure?[1].OptionalData?.ArrayData?[0].Structure?[0].Structure?[0].Value;
 
-        if (playerIdValue is null || heroValue is null)
-            return;
-
-        if (!((ReadOnlySpan<byte>)playerIdValue).SequenceEqual("PlayerID"u8) ||
-            !((ReadOnlySpan<byte>)heroValue).SequenceEqual("Hero"u8))
+        // a null value is an empty span, which never matches
+        if (!"PlayerID"u8.SequenceEqual(playerIdValue) ||
+            !"Hero"u8.SequenceEqual(heroValue))
             return;
 
         StormPlayer player = replay.PlayersWithOpenSlots[stormTrackerEvent.VersionedDecoder!.Structure![2].OptionalData!.ArrayData![0].Structure![1].GetValueAsUInt32() - 1]!;
@@ -695,9 +705,9 @@ internal static class ReplayTrackerEvents
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AddTalentInfo(StormTrackerEvent stormTrackerEvent, StormPlayer player, int tierStringIndex, ReadOnlySpan<byte> value, int talentNameIndex, int heroTalentIndex)
     {
-        byte[] tierChoiceValue = stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData![tierStringIndex].Structure![0].Structure![0].Value!;
+        byte[]? tierChoiceValue = stormTrackerEvent.VersionedDecoder!.Structure![1].OptionalData!.ArrayData![tierStringIndex].Structure![0].Structure![0].Value;
 
-        if (((ReadOnlySpan<byte>)tierChoiceValue).SequenceEqual(value))
+        if (value.SequenceEqual(tierChoiceValue))
         {
             if (player.TalentsInternal.Count <= heroTalentIndex)
                 player.TalentsInternal.Add(new HeroTalent());

@@ -209,6 +209,59 @@ public class VersionedDecoder
         };
     }
 
+    /// <summary>
+    /// Moves the <paramref name="bitReader"/> past a versioned value without decoding it.
+    /// </summary>
+    /// <param name="bitReader">The <see cref="BitReader"/> containing the bytes to skip.</param>
+    internal static void Skip(ref BitReader bitReader)
+    {
+        switch (bitReader.ReadAlignedByte())
+        {
+            case 0x00: // array
+                long arrayLength = bitReader.ReadVInt();
+                for (long i = 0; i < arrayLength; i++)
+                    Skip(ref bitReader);
+                break;
+            case 0x01: // bitblob
+                bitReader.ReadAlignedBytes(((int)bitReader.ReadVInt() + 7) / 8);
+                break;
+            case 0x02: // blob
+                bitReader.ReadAlignedBytes((int)bitReader.ReadVInt());
+                break;
+            case 0x03: // choice
+                bitReader.ReadVInt(); // choice tag
+                Skip(ref bitReader);
+                break;
+            case 0x04: // optional
+                if (bitReader.ReadAlignedByte() != 0)
+                    Skip(ref bitReader);
+                break;
+            case 0x05: // struct
+                long structureLength = bitReader.ReadVInt();
+                for (long i = 0; i < structureLength; i++)
+                {
+                    bitReader.ReadVInt(); // field tag
+                    Skip(ref bitReader);
+                }
+
+                break;
+            case 0x06: // u8
+                bitReader.ReadAlignedByte();
+                break;
+            case 0x07: // u32
+                bitReader.ReadAlignedBytes(4);
+                break;
+            case 0x08: // u64
+                bitReader.ReadAlignedBytes(8);
+                break;
+            case 0x09: // vint
+                bitReader.ReadVInt();
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
     // four bytes are usually a FourCC, such as "T1" (zero padded) or "enUS", but can also be a number,
     // so printable text is written along with its number, anything else is written as just the number
     private static string GetFourBytesAsJson(ReadOnlySpan<byte> value, uint number)

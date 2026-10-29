@@ -1,6 +1,4 @@
-﻿using Heroes.StormReplayParser.Pregame.Player;
-
-namespace Heroes.StormReplayParser.Tests;
+﻿namespace Heroes.StormReplayParser.Tests;
 
 [TestClass]
 public class BattleLobbyARAM1Tests
