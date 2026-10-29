@@ -12,8 +12,8 @@ public class PregamePlayerLoadout
     public string SkinAndSkinTintAttributeId { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the player's mount of their selected hero.
-    /// <para>This is the <c>id</c> value of the <c>CMount</c> element in the game data.</para>
+    /// Gets or sets the player's mount attribute id of their selected hero.
+    /// <para>This is the <c>AttributeId</c> value of the <c>CMount</c> element in the game data.</para>
     /// </summary>
     public string MountAndMountTintAttributeId { get; set; } = string.Empty;
 
