@@ -4,7 +4,7 @@ namespace Heroes.StormReplayParser.MpqFiles;
 
 internal static class ReplayServerBattlelobby
 {
-    private const string _exceptionHeader = "battlelobby";
+    private const string ExceptionHeader = "battlelobby";
 
     public static string FileName { get; } = "replay.server.battlelobby";
 
@@ -30,7 +30,7 @@ internal static class ReplayServerBattlelobby
         uint dependenciesLength = bitReader.ReadBits(6);
 
         if (dependenciesLength == 0)
-            throw new StormParseException($"{_exceptionHeader}: not a battlelobby file, there are no s2ma dependencies");
+            throw new StormParseException($"{ExceptionHeader}: not a battlelobby file, there are no s2ma dependencies");
 
         for (int i = 0; i < dependenciesLength; i++)
         {
@@ -41,7 +41,7 @@ internal static class ReplayServerBattlelobby
         uint s2maCacheHandleLength = bitReader.ReadBits(6);
 
         if (s2maCacheHandleLength != dependenciesLength)
-            throw new StormParseException($"{_exceptionHeader}: not a battlelobby file, the s2ma cache handle count does not match the dependency count");
+            throw new StormParseException($"{ExceptionHeader}: not a battlelobby file, the s2ma cache handle count does not match the dependency count");
 
         for (int i = 0; i < s2maCacheHandleLength; i++)
         {
@@ -106,7 +106,7 @@ internal static class ReplayServerBattlelobby
             bitReader.ReadBits(9); // sort order
 
             if (!lobbyAttributesByAttributeEventType.TryAdd(lobbyAttribute.EventType, lobbyAttribute))
-                throw new StormParseException($"{_exceptionHeader}: duplicate lobby attribute");
+                throw new StormParseException($"{ExceptionHeader}: duplicate lobby attribute");
         }
 
         /* Game header, the same as the map info in the map's s2mh, but using the merged string tables and s2mv list */
@@ -334,7 +334,7 @@ internal static class ReplayServerBattlelobby
         int hasCollectionLength = (int)bitReader.ReadBits(32);
 
         if (collectionLength != hasCollectionLength)
-            throw new StormParseException($"{_exceptionHeader}: collection license lengths do not match: {collectionLength} != {hasCollectionLength}");
+            throw new StormParseException($"{ExceptionHeader}: collection license lengths do not match: {collectionLength} != {hasCollectionLength}");
 
         // for each item, 2 bytes for each of the 16 player slots (m_workingSetSlotId), non-zero if the player has a license for the item
         ReadOnlySpan<byte> collectionLicenseFlags = bitReader.ReadAlignedBytes(hasCollectionLength * 16 * 2);
@@ -384,7 +384,7 @@ internal static class ReplayServerBattlelobby
 
             // string toon T:xxxxxxxx
             bitReader.ReadBits(8); // region
-            if (bitReader.ReadStringFromUnalignedBytes(4) != "Hero") throw new StormParseException($"{_exceptionHeader}: Not Hero"); // programId
+            if (bitReader.ReadStringFromUnalignedBytes(4) != "Hero") throw new StormParseException($"{ExceptionHeader}: Not Hero"); // programId
             bitReader.ReadBits(32); // realm
 
             playerToonHandle.ShortcutId = bitReader.ReadBlobAsString(7, 2); // region global id
@@ -398,7 +398,7 @@ internal static class ReplayServerBattlelobby
 
                 // repeat string toon T:xxxxxxxx
                 bitReader.ReadBits(8); // region
-                if (bitReader.ReadStringFromUnalignedBytes(4) != "Hero") throw new StormParseException($"{_exceptionHeader}: Not Hero"); // programId
+                if (bitReader.ReadStringFromUnalignedBytes(4) != "Hero") throw new StormParseException($"{ExceptionHeader}: Not Hero"); // programId
                 bitReader.ReadBits(32); // realm
                 bitReader.ReadBlobAsString(7, 2); // region global id
 
@@ -445,7 +445,7 @@ internal static class ReplayServerBattlelobby
                 int poundIndex = player.BattleTagName.IndexOf('#');
 
                 if (!string.IsNullOrEmpty(player.BattleTagName) && poundIndex < 0)
-                    throw new StormParseException($"{_exceptionHeader}: Invalid battletag");
+                    throw new StormParseException($"{ExceptionHeader}: Invalid battletag");
             }
 
             if (replay.ReplayBuild >= 51978)
@@ -500,7 +500,7 @@ internal static class ReplayServerBattlelobby
             uint rewardsTagsLength = bitReader.ReadBits(11);
 
             if (!workingSetSlotIdByPlayerLobbyId.TryGetValue(playerLobbyId, out uint workingSetSlotId))
-                throw new StormParseException($"{_exceptionHeader}: player lobby id not found");
+                throw new StormParseException($"{ExceptionHeader}: player lobby id not found");
 
             PregameStormPlayer player = replay.ClientListByWorkingSetSlotID[workingSetSlotId];
 
@@ -629,7 +629,7 @@ internal static class ReplayServerBattlelobby
                 }
 
             default:
-                throw new StormParseException($"{_exceptionHeader}: unknown attribute default value type");
+                throw new StormParseException($"{ExceptionHeader}: unknown attribute default value type");
         }
     }
 

@@ -24,8 +24,8 @@ public class LostCavernNonSingleUnit1ReplayParserTests
     [TestMethod]
     public void PlayerListTest()
     {
-        Assert.AreEqual(10, _stormReplay.StormPlayers.Count());
-        Assert.AreEqual(10, _stormReplay.StormPlayersWithObservers.Count());
+        Assert.HasCount(10, _stormReplay.StormPlayers);
+        Assert.HasCount(10, _stormReplay.StormPlayersWithObservers);
     }
 
     [TestMethod]

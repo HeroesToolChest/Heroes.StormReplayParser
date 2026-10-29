@@ -13,7 +13,7 @@ public class ScoreResult
     /// <summary>
     /// Gets the score results that have yet to be validated.
     /// </summary>
-    public Dictionary<string, int> NewScoreResultEvents { get; } = new Dictionary<string, int>();
+    public Dictionary<string, int> NewScoreResultEvents { get; } = [];
 
     /// <summary>
     /// Gets or sets the hero level.

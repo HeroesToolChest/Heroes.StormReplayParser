@@ -22,8 +22,8 @@ public class CustomBattlefieldofEternity1ReplayParserTests
     [TestMethod]
     public void PlayerListTest()
     {
-        Assert.AreEqual(10, _stormReplay.StormPlayers.Count());
-        Assert.AreEqual(11, _stormReplay.StormPlayersWithObservers.Count());
+        Assert.HasCount(10, _stormReplay.StormPlayers);
+        Assert.HasCount(11, _stormReplay.StormPlayersWithObservers);
     }
 
     [TestMethod]
