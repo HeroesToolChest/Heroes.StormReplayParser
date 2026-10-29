@@ -58,8 +58,6 @@ else
 
 ### Parsing a Stream
 A replay can also be parsed from a `Stream`, such as a `FileStream`.
-- The replay is read from the stream's current position, so it does not have to be at the start of the stream.
-- The stream must support seeking.
 - The stream is disposed after parsing.
 
 Example:
@@ -203,8 +201,6 @@ else
 
 ### Parsing a Stream
 A battlelobby file can also be parsed from a `Stream`, such as a `FileStream`.
-- The data is read from the stream's current position to its end.
-- The stream must support seeking.
 - The stream is disposed after parsing.
 
 Example:
