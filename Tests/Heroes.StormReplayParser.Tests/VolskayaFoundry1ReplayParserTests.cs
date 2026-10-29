@@ -828,16 +828,6 @@ public class VolskayaFoundry1ReplayParserTests
         Assert.ContainsSingle(x => x.IsReplayOwner, players);
     }
 
-    //private static bool IsUnitEvent(StormTrackerEventType type) => type is
-    //    StormTrackerEventType.UnitBornEvent or
-    //    StormTrackerEventType.UnitDiedEvent or
-    //    StormTrackerEventType.UnitOwnerChangeEvent or
-    //    StormTrackerEventType.UnitTypeChangeEvent or
-    //    StormTrackerEventType.UnitInitEvent or
-    //    StormTrackerEventType.UnitDoneEvent or
-    //    StormTrackerEventType.UnitPositionsEvent or
-    //    StormTrackerEventType.UnitRevivedEvent;
-
     private static void NoTrackerEvents(StormReplayResult result)
     {
         StormReplay replay = result.Replay!;
