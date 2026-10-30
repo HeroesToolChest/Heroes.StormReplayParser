@@ -226,7 +226,7 @@ Besides the battlelobby file, a `ParsePregameOptions` may also be passed in.
 | `ShouldParseLicenseCatalog` | `false` | Whether the license id catalog and the players' license ids are parsed. A license id catalog can also be passed in, the same as with [replays](#license-ids). |
 
 ## Data References
-Some data returned will be references to the game data, such as the ids and attribute ids of heroes, talents, and loadout items. Such data can be obtained from [HeroesDataParser](https://github.com/HeroesToolChest/HeroesDataParser). From there other resource links can be found.
+Some data returned will be references to the game data, such as the ids and attribute ids of heroes, talents, and loadout items. Such data can be obtained from [Heroes Data Parser](https://github.com/HeroesToolChest/HeroesDataParser). From there other resource links can be found.
 
 Examples, from a build 98348 replay of a player playing Arthas:
 
@@ -244,7 +244,7 @@ Examples, from a build 98348 replay of a player playing Arthas:
 
 Each `PlayerLoadout` item (skin, mount, banner, spray, announcer pack, and voice line) has both an id and an attribute id. The `PregamePlayerLoadout` of a battlelobby file only has the attribute ids, such as `PregamePlayerLoadout.MountAndMountTintAttributeId`.
 
-The license ids are numbers, so they are matched to the game data by the `License` value of the `CReward` type elements, such as `CRewardHero`, `CRewardSkin`, and `CRewardPortrait`. The reward license data of HeroesDataParser has the license id of each of these elements. A license id can belong to more than one element.
+The license ids are numbers, so they are matched to the game data by the `License` value of the `CReward` type elements, such as `CRewardHero`, `CRewardSkin`, and `CRewardPortrait`. The reward license data of Heroes Data Parser has the license id of each of these elements. A license id can belong to more than one element.
 
 The portrait and portrait border unlockable ids (`StormPlayer.PortraitUnlockableId`, `StormPlayer.PortraitBorderUnlockableId`) are not from the game data, but from the unlockable files (`.unlk`) of the Battle.net cache.
 
