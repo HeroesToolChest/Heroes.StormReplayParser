@@ -295,3 +295,7 @@ dotnet_diagnostic.SA1512.severity = none
 # SA1518: Use line endings correctly at end of file
 dotnet_diagnostic.SA1518.severity = none
 
+# CA1852: Seal internal types
+dotnet_diagnostic.CA1852.severity = warning
+# CA1852 is off by default when the assembly has InternalsVisibleTo
+dotnet_code_quality.CA1852.ignore_internalsvisibleto = true
