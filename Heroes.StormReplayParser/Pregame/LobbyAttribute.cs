@@ -1,6 +1,6 @@
 ﻿namespace Heroes.StormReplayParser.Pregame;
 
-internal class LobbyAttribute
+internal sealed class LobbyAttribute
 {
     public LobbyAttribute(ReplayAttributeEventType replayAttributeEventType)
     {
