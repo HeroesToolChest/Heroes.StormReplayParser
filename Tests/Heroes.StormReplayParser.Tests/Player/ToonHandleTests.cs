@@ -1,4 +1,4 @@
-﻿namespace Heroes.StormReplayParser.Tests.Player;
+﻿namespace Heroes.StormReplayParser.Player.Tests;
 
 [TestClass]
 public class ToonHandleTests
