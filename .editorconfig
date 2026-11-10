@@ -299,3 +299,11 @@ dotnet_diagnostic.SA1518.severity = none
 dotnet_diagnostic.CA1852.severity = warning
 # CA1852 is off by default when the assembly has InternalsVisibleTo
 dotnet_code_quality.CA1852.ignore_internalsvisibleto = true
+
+# Test projects use <production namespace>.Tests
+# instead of folder-based namespaces
+[Tests/**/*.cs]
+dotnet_style_namespace_match_folder = false
+
+# IDE0130: Namespace does not match folder structure
+dotnet_diagnostic.IDE0130.severity = none
