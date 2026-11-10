@@ -124,9 +124,9 @@ public class BattleLobbyARAM1Tests
     [TestMethod]
     public void BanChooserTest()
     {
-        Assert.AreEqual(StormBanChooserType.None, _stormReplay.GetTeamBanChooser(StormTeam.Blue));
-        Assert.AreEqual(StormBanChooserType.None, _stormReplay.GetTeamBanChooser(StormTeam.Red));
-        Assert.AreEqual(StormBanChooserType.Unknown, _stormReplay.GetTeamBanChooser(StormTeam.Observer));
+        Assert.AreEqual(StormBanChooserType.None, _stormReplay.GetTeamBanChooserType(StormTeam.Blue));
+        Assert.AreEqual(StormBanChooserType.None, _stormReplay.GetTeamBanChooserType(StormTeam.Red));
+        Assert.AreEqual(StormBanChooserType.Unknown, _stormReplay.GetTeamBanChooserType(StormTeam.Observer));
         Assert.DoesNotContain(x => x.IsBanChooser, _stormReplay.StormPlayers);
     }
 

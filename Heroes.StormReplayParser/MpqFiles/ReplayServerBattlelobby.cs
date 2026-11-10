@@ -678,14 +678,14 @@ internal static class ReplayServerBattlelobby
 
             case ReplayAttributeEventType.Team1BanChooser:
                 {
-                    replay.TeamBanChoosers[0] = SetBanChooser(replay, value);
+                    replay.TeamBanChooserTypes[0] = SetBanChooser(replay, value);
 
                     break;
                 }
 
             case ReplayAttributeEventType.Team2BanChooser:
                 {
-                    replay.TeamBanChoosers[1] = SetBanChooser(replay, value);
+                    replay.TeamBanChooserTypes[1] = SetBanChooser(replay, value);
 
                     break;
                 }

@@ -150,7 +150,7 @@ public partial class StormReplayPregame
 
     internal string?[][] TeamHeroAttributeIdBans { get; private set; } = [[null, null, null], [null, null, null]];
 
-    internal StormBanChooserType[] TeamBanChoosers { get; private set; } = [StormBanChooserType.Unknown, StormBanChooserType.Unknown];
+    internal StormBanChooserType[] TeamBanChooserTypes { get; private set; } = [StormBanChooserType.Unknown, StormBanChooserType.Unknown];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal List<string> DisabledHeroAttributeIdList { get; private set; } = [];
@@ -173,14 +173,14 @@ public partial class StormReplayPregame
     /// <para>In ranked games it is the player with the highest MMR, which is currently not known.</para>
     /// <para>For custom games, it is the specific player chosen to select the bans.</para>
     /// </summary>
-    /// <param name="stormTeam">The <see cref="StormTeam"/> to obtain the ban chooser for.</param>
+    /// <param name="stormTeam">The <see cref="StormTeam"/> to obtain the ban chooser type for.</param>
     /// <returns>A <see cref="StormBanChooserType"/>.</returns>
-    public StormBanChooserType GetTeamBanChooser(StormTeam stormTeam)
+    public StormBanChooserType GetTeamBanChooserType(StormTeam stormTeam)
     {
         if (!(stormTeam == StormTeam.Blue || stormTeam == StormTeam.Red))
             return StormBanChooserType.Unknown;
 
-        return TeamBanChoosers[(int)stormTeam];
+        return TeamBanChooserTypes[(int)stormTeam];
     }
 
     private static Func<PregameStormPlayer, bool> PlayersFunc() => x => x?.PlayerType != PlayerType.Observer && (x?.PlayerSlotType == PlayerSlotType.Human || x?.PlayerSlotType == PlayerSlotType.Computer);
