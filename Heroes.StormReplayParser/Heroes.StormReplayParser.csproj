@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>2.3.0</Version>
+    <Version>2.4.0-alpha.1</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Authors>Kevin Oliva</Authors>
     <Copyright>Copyright © 2020 - 2026 Kevin Oliva</Copyright>
@@ -23,8 +23,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Heroes.MpqTool" Version="1.4.0" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.3.151-beta">
+    <PackageReference Include="Heroes.MpqTool" Version="1.5.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.3.177-beta">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -39,12 +39,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>BitLocator</_Parameter1>
-    </AssemblyAttribute>
   </ItemGroup>
 
   <ItemGroup>
