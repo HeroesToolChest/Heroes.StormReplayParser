@@ -11,7 +11,7 @@ public enum StormReplayParseStatus
     /// This is not returned by the parser.
     /// </para>
     /// </summary>
-    Unknonwn = -1,
+    Unknown = -1,
 
     /// <summary>
     /// Indicates a successful parse.
